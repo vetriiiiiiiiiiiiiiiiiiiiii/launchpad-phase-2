@@ -143,7 +143,7 @@
   const fuseNodes = $$('.fuse__node');
   const expo = $('[data-hscroll]');
   const expoTrack = $('.expo__track', expo);
-  const lightZones = $$('.statement, .launch--two, .expo, .marks, .shop');
+  const lightZones = $$('[data-tone="light"]');
   const introThread = $('.thread--intro');
   const pitch = $('.pitch');
   const cards = $$('.card', pitch);
@@ -302,7 +302,7 @@
   // cursor: the Launchpad rocket steers in the direction you move
   doc.classList.add('has-cursor');
   const cur = $('.cursor'), rocket = $('.cursor__rocket', cur), label = $('.cursor__label', cur);
-  const lightSel = '.statement, .launch--two, .expo, .marks, .shop';
+  const lightSel = '[data-tone="light"]';
   let mx = -100, my = -100, pmx = mx, pmy = my, ang = -28, speed = 0, boost = 0;
   addEventListener('pointermove', (e) => {
     mx = e.clientX; my = e.clientY;
