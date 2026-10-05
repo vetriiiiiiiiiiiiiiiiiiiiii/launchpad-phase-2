@@ -1,0 +1,26 @@
+/* ---------- page turn between routes ---------- */
+.turn {
+  position: fixed; inset: 0; z-index: 95; pointer-events: none;
+  display: grid; place-items: center;
+  background: radial-gradient(130% 90% at 50% 0%, #076a4f 0%, #04503b 45%, #023b2c 100%);
+}
+.turn__word {
+  font-family: var(--sans); font-weight: 600; font-stretch: 125%; text-transform: uppercase;
+  font-size: clamp(18px, 3vw, 40px); color: var(--paper);
+}
+/* the product page's main sits inside the router; keep its body colour */
+main.lp { display: block; }
+
+/* the intro begins in the dark: the hall stays hidden until the curtain is there to cover it */
+.hero__room { opacity: 0; transition: opacity 1.2s var(--ease); }
+.hero.is-develop .hero__room { opacity: 1; }
+
+/* "Reveal" in the finale: a slow sheen moving across mint and paper */
+.mask {
+  background: linear-gradient(110deg, #fafbf8 0%, #7fe0b5 30%, #fafbf8 50%, #a8eccd 70%, #fafbf8 100%) 0 0 / 220% 100% !important;
+  -webkit-background-clip: text !important; background-clip: text !important; color: transparent;
+  filter: none !important;
+  animation: sheen 6s linear infinite;
+}
+@keyframes sheen { to { background-position: -220% 0; } }
+@media (prefers-reduced-motion: reduce) { .mask { animation: none; } }

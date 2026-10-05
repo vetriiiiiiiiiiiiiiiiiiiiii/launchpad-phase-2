@@ -3,7 +3,7 @@
    The object itself is never rendered: only the fabric describes it.
    When product imagery exists, set data-product-src on the .product-slot
    and this module steps aside. */
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js';
+import * as THREE from 'three';
 
 const v = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -220,7 +220,7 @@ export function mountStage(host, key, { mobile = false, interactive = null, idle
     const p = S.plinth;
     const plinth = new THREE.Mesh(
       new THREE.BoxGeometry(p.hx * 2, p.hy * 2, p.hz * 2),
-      new THREE.MeshStandardMaterial({ color: p.color, roughness: .55, metalness: 0 }));
+      new THREE.MeshStandardMaterial({ color: p.color, roughness: .55, metalness: 0, emissive: key === 'two' ? 0x8fb8a4 : 0x05543e, emissiveIntensity: key === 'two' ? .12 : .9 }));
     plinth.position.y = p.hy; plinth.castShadow = plinth.receiveShadow = true;
     scene.add(plinth);
   }
@@ -378,6 +378,11 @@ export function mountStage(host, key, { mobile = false, interactive = null, idle
     start() { if (!running) { running = true; last = performance.now(); raf = requestAnimationFrame(frame); } },
     stop() { running = false; cancelAnimationFrame(raf); },
     get ready() { return settled >= SETTLE; },
+    dispose() {
+      running = false; cancelAnimationFrame(raf);
+      scene.traverse((o) => { o.geometry?.dispose(); if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m.dispose()); });
+      renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
+    },
   };
 }
 
@@ -413,7 +418,7 @@ export function mountLineup(host, { mobile = false } = {}) {
     if (S.plinth) {
       const pl = S.plinth;
       const m = new THREE.Mesh(new THREE.BoxGeometry(pl.hx * 2, pl.hy * 2, pl.hz * 2),
-        new THREE.MeshStandardMaterial({ color: key === 'two' ? 0xe4efe8 : pl.color, roughness: .55 }));
+        new THREE.MeshStandardMaterial({ color: key === 'two' ? 0xe4efe8 : pl.color, roughness: .55, emissive: key === 'two' ? 0x8fb8a4 : 0x05543e, emissiveIntensity: key === 'two' ? .12 : .9 }));
       m.position.set(ox, pl.hy, 0); m.castShadow = m.receiveShadow = true; scene.add(m);
     }
     const cloth = new Cloth(N, S.cloth.size, S.cloth.y, sdf, ox);
@@ -470,5 +475,10 @@ export function mountLineup(host, { mobile = false } = {}) {
     warm(b = 40) { return settle(b); },
     start() { if (!running) { running = true; last = performance.now(); raf = requestAnimationFrame(frame); } },
     stop() { running = false; cancelAnimationFrame(raf); },
+    dispose() {
+      running = false; cancelAnimationFrame(raf);
+      scene.traverse((o) => { o.geometry?.dispose(); if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m.dispose()); });
+      renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
+    },
   };
 }
