@@ -9,11 +9,13 @@ import Grain from './components/Grain.jsx';
 import SmoothScroll from './components/SmoothScroll.jsx';
 import PageTransition from './components/PageTransition.jsx';
 import { PeekProvider } from './components/Peek.jsx';
+import Loader from './components/Loader.jsx';
 
 export default function App() {
   const location = useLocation();
   return (
     <PeekProvider>
+      <Loader />
       <Grain />
       <Cursor />
       <SmoothScroll />

@@ -4,6 +4,7 @@ import Btn from '../components/Btn.jsx';
 import { useScrollVars } from '../hooks/useScroll.js';
 import { useCountdown } from '../hooks/useCountdown.js';
 import { reduceMotion } from '../hooks/env.js';
+import { loaderDone, onLoaderDone } from '../lib/loader.js';
 import { IMG, P } from '../lib/images.js';
 
 const PHASES = ['', 'is-logo', 'is-develop', 'is-open', 'is-copy'];
@@ -18,6 +19,10 @@ export default function Hero() {
   const ref = useRef(null);
   const skipNow = reduceMotion || !!seen();
   const [phase, setPhase] = useState(skipNow ? 4 : 0);
+  // the loading screen hands over its wordmark: the hero picks it up already in place
+  const [handoff, setHandoff] = useState(false);
+  const [ready, setReady] = useState(loaderDone());
+  useEffect(() => onLoaderDone(() => setReady(true)), []);
   const { d } = useCountdown();
   useScrollVars(ref);
 
@@ -30,18 +35,20 @@ export default function Hero() {
     }
     document.body.classList.add('is-loading');
     window.lenis?.stop();
-    const delays = [350, 1950, 1600, 1300];
+    if (!ready) return undefined;            // wait in the dark until the loader is done
+    if (phase === 0) { setHandoff(true); setPhase(1); return undefined; }
+    const delays = [0, 1500, 1600, 1300];
     const t = setTimeout(() => setPhase((p) => p + 1), delays[phase]);
     return () => clearTimeout(t);
-  }, [phase]);
+  }, [phase, ready]);
 
   useEffect(() => {
-    const impatient = () => setPhase((p) => (p >= 2 ? 4 : p));
+    const impatient = () => { if (loaderDone()) setPhase((p) => (p >= 2 ? 4 : p)); };
     ['wheel', 'touchstart', 'keydown'].forEach((t) => addEventListener(t, impatient, { passive: true }));
     return () => ['wheel', 'touchstart', 'keydown'].forEach((t) => removeEventListener(t, impatient));
   }, []);
 
-  const cls = ['hero', ...PHASES.slice(1, phase + 1)].join(' ');
+  const cls = ['hero', handoff && phase < 2 && 'from-loader', ...PHASES.slice(1, phase + 1)].filter(Boolean).join(' ');
   const set = [900, 1800, 2600].map((w) => `${IMG(P.heroRoom, w)} ${w}w`).join(', ');
 
   return (
