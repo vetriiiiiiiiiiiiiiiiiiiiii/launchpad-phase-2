@@ -30,13 +30,13 @@ function sdCappedCone(px, py, pz, cx, cy, cz, h, r1, r2) {
 const STAGES = {
   // 01 — a monolith in the dark
   one: {
-    bg: 0x0c3326, fog: [0x0c3326, 6, 13], alpha: true,
-    cloth: { size: 2.5, y: 1.5, color: 0x0f4a38, sheen: 0xcfe6d8, sheenRough: .4, rough: .94, emissive: 0x06291e },
+    bg: 0x04503b, fog: [0x044a37, 5, 10], alpha: true,
+    cloth: { size: 2.5, y: 1.5, color: 0x0a6a4c, sheen: 0xbff5dc, sheenRough: .4, rough: .94, emissive: 0x053a2b },
     frame: 1.55,
     sdf: (x, y, z) => sdRoundBox(x, y, z, 0, .62, 0, .3, .62, .3, .06),
     top: 1.24,
     plinth: null,
-    floor: { color: 0x0e3b2d, rough: .9, emissive: 0x072a20 },
+    floor: { color: 0x044a37, rough: .9, emissive: 0x033a2b },
     cam: { from: v(0, 1.25, 7.2), to: v(0, 1.0, 5.6), look: v(0, .78, 0), fov: 30 },
   },
   // 02 — a low form in a white room, a sun crossing the sky
@@ -48,28 +48,28 @@ const STAGES = {
       sdRoundBox(x, y, z, 0, .2, 0, 1.0, .2, .6, .015),
       sdRoundBox(x, y, z, 0, .63, 0, .6, .23, .34, .1)),
     top: .86,
-    plinth: { hx: 1.0, hy: .2, hz: .6, color: 0xe3ebe4 },
+    plinth: { hx: 1.0, hy: .2, hz: .6, color: 0xe4efe8 },
     floor: { shadowOnly: true },
     cam: { from: v(0, 1.55, 6.6), to: v(.25, 1.35, 5.8), look: v(0, .55, 0), fov: 30 },
   },
   // 03 — the final object, under a single beam
   three: {
-    bg: 0x0f4232, fog: [0x0f4232, 6, 12], alpha: true,
-    cloth: { size: 2.3, y: 1.5, color: 0xf3f2ec, sheen: 0xffffff, sheenRough: .5, rough: .72, emissive: 0x0f4232 },
+    bg: 0x033f2f, fog: [0x033f2f, 5, 10], alpha: true,
+    cloth: { size: 2.3, y: 1.5, color: 0xf3f2ec, sheen: 0xffffff, sheenRough: .5, rough: .72, emissive: 0x04503b },
     frame: 1.5,
     sdf: (x, y, z) => Math.min(
       sdRoundBox(x, y, z, 0, .13, 0, .55, .13, .55, .02),
       sdCappedCone(x, y, z, 0, .74, 0, .48, .36, .15) - .03),
     top: 1.25,
-    plinth: { hx: .55, hy: .13, hz: .55, color: 0x1f6b4f },
-    floor: { color: 0x124a38, rough: .82, emissive: 0x0a3326 },
+    plinth: { hx: .55, hy: .13, hz: .55, color: 0x087a56 },
+    floor: { color: 0x05543e, rough: .82, emissive: 0x033f2f },
     cam: { from: v(0, 1.1, 7.6), to: v(0, 1.25, 5.4), look: v(0, .85, 0), fov: 30 },
   },
 };
 
 /* ---------- cloth ---------- */
 class Cloth {
-  constructor(n, size, y, sdf) {
+  constructor(n, size, y, sdf, ox = 0) {
     this.n = n; this.sdf = sdf;
     const count = (n + 1) * (n + 1);
     this.pos = new Float32Array(count * 3);
@@ -82,7 +82,7 @@ class Cloth {
     for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) {
       const k = (j * (n + 1) + i) * 3;
       // start as a slightly domed sheet so it falls with natural folds
-      const x = -size / 2 + i * step, z = -size / 2 + j * step;
+      const x = ox - size / 2 + i * step, z = -size / 2 + j * step;
       const yy = y + .04 * Math.cos((i - n / 2) * .9) * Math.cos((j - n / 2) * .7);
       this.pos[k] = this.prev[k] = x;
       this.pos[k + 1] = this.prev[k + 1] = yy;
@@ -190,11 +190,11 @@ function beamMaterial(color) {
 }
 
 /* ---------- a stage ---------- */
-export function mountStage(host, key, { mobile = false } = {}) {
+export function mountStage(host, key, { mobile = false, interactive = null, idle = false } = {}) {
   const S = STAGES[key];
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 1.8));
-  renderer.setClearColor(0x0c3326, 0);
+  renderer.setClearColor(0x023b2c, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1;
@@ -210,7 +210,7 @@ export function mountStage(host, key, { mobile = false } = {}) {
   // floor
   const floorGeo = new THREE.PlaneGeometry(40, 40);
   const floorMat = S.floor.shadowOnly
-    ? new THREE.ShadowMaterial({ opacity: .26, color: 0x0c3326 })
+    ? new THREE.ShadowMaterial({ opacity: .26, color: 0x023b2c })
     : new THREE.MeshStandardMaterial({ color: S.floor.color, roughness: S.floor.rough, metalness: 0, emissive: S.floor.emissive || 0x0c3326 });
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true;
@@ -246,10 +246,10 @@ export function mountStage(host, key, { mobile = false } = {}) {
     L.key.position.set(.4, 5.2, 2.2); L.key.target.position.set(0, .6, 0);
     L.rim = new THREE.SpotLight(0xd8efe2, 0, 12, .45, 1, 1.4);
     L.rim.position.set(-1.2, 3.4, -3.4); L.rim.target.position.set(0, .8, 0);
-    L.amb = new THREE.HemisphereLight(0x3fa07e, 0x0c3326, .35);
+    L.amb = new THREE.HemisphereLight(0x3fd09a, 0x023b2c, .35);
     scene.add(L.key, L.key.target, L.rim, L.rim.target, L.amb);
   } else if (key === 'two') {
-    L.hemi = new THREE.HemisphereLight(0xfbfaf6, 0xc9dccf, 1.15);
+    L.hemi = new THREE.HemisphereLight(0xfafbf8, 0xc4e2d2, 1.15);
     L.sun = new THREE.DirectionalLight(0xfffdf6, 2.6);
     L.sun.target.position.set(0, .4, 0);
     scene.add(L.hemi, L.sun, L.sun.target);
@@ -257,8 +257,8 @@ export function mountStage(host, key, { mobile = false } = {}) {
   } else {
     L.key = new THREE.SpotLight(0xffffff, 0, 16, .2, .45, 1.2);
     L.key.position.set(0, 7, .5); L.key.target.position.set(0, .6, 0);
-    L.amb = new THREE.HemisphereLight(0x8ed6ae, 0x0c3326, .28);
-    L.fill = new THREE.PointLight(0x8ed6ae, 0, 6, 2);
+    L.amb = new THREE.HemisphereLight(0x7fe0b5, 0x023b2c, .28);
+    L.fill = new THREE.PointLight(0x7fe0b5, 0, 6, 2);
     L.fill.position.set(0, .3, 1.6);
     scene.add(L.key, L.key.target, L.amb, L.fill);
     const len = 6.6;
@@ -267,6 +267,11 @@ export function mountStage(host, key, { mobile = false } = {}) {
     L.beam.material.uniforms.uLen.value = len;
     scene.add(L.beam);
   }
+  // a light hidden under the fabric: what spills out when you peek
+  L.under = new THREE.PointLight(0xd6ffec, 0, 2.6, 1.6);
+  L.under.position.set(0, .14, .2);
+  scene.add(L.under);
+
   [L.key].forEach((l) => {
     l.castShadow = true;
     l.shadow.mapSize.set(mobile ? 1024 : 2048, mobile ? 1024 : 2048);
@@ -287,6 +292,14 @@ export function mountStage(host, key, { mobile = false } = {}) {
   };
 
   let w = 1, h = 1, p = 0, running = false, raf = 0, last = 0;
+  let theta = 0, thetaV = 0, peek = 0, peekTarget = 0, dragging = false, lastX = 0, clock = 0;
+  if (interactive) {
+    const el = interactive;
+    el.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; el.setPointerCapture?.(e.pointerId); });
+    el.addEventListener('pointermove', (e) => { if (!dragging) return; const dx = e.clientX - lastX; lastX = e.clientX; thetaV = dx * .006; theta += thetaV; });
+    const end = () => { dragging = false; };
+    el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+  }
   const topV = v(0, S.top, 0);
   const onResize = () => {
     w = host.clientWidth; h = host.clientHeight;
@@ -299,10 +312,17 @@ export function mountStage(host, key, { mobile = false } = {}) {
     camera.updateProjectionMatrix();
   };
 
+  const orbit = new THREE.Vector3();
   const apply = () => {
     const cp = ease(clamp(p));
     camera.position.lerpVectors(S.cam.from, S.cam.to, cp);
+    if (theta) {
+      orbit.copy(camera.position).sub(S.cam.look);
+      orbit.applyAxisAngle(new THREE.Vector3(0, 1, 0), theta);
+      camera.position.copy(S.cam.look).add(orbit);
+    }
     camera.lookAt(S.cam.look);
+    L.under.intensity = 9 * peek;
     if (key === 'one') {
       const lit = ease(ramp(p, .22, .7));
       L.key.intensity = 38 * lit;
@@ -322,12 +342,22 @@ export function mountStage(host, key, { mobile = false } = {}) {
       L.fill.intensity = 1.2 * ease(ramp(p, .7, .9));
       cloth.lift = .55 * ease(ramp(p, .8, 1));
     }
+    if (peek > 0) cloth.lift = Math.max(cloth.lift, 1.25 * peek);
+    else if (key !== 'three') cloth.lift = 0;
   };
 
   const frame = (t) => {
     raf = running ? requestAnimationFrame(frame) : 0;
     if (!settle(40)) return;
     const dt = Math.min((t - last) / 1000, 1 / 30) || 1 / 60; last = t;
+    clock += dt;
+    if (idle) {
+      // the stage breathes on its own: a slow drift, and (for 02) a sun that keeps moving
+      if (!dragging) { thetaV *= .94; theta += thetaV; theta += (Math.sin(clock * .18) * .22 - theta) * .004; }
+      if (key === 'two') p = .5 + Math.sin(clock * .25) * .32;
+    }
+    theta = clamp(theta, -1.1, 1.1);
+    peek += (peekTarget - peek) * .08;
     cloth.step(Math.min(dt, 1 / 60), key === 'two' ? .25 : .35);
     geo.attributes.position.needsUpdate = true;
     geo.computeVertexNormals();
@@ -340,6 +370,7 @@ export function mountStage(host, key, { mobile = false } = {}) {
 
   return {
     setProgress(x) { p = x; },
+    setPeek(x) { peekTarget = x; },
     /* screen-space y (px from top of host) of the object's highest point */
     topY() { apply(); const q = topV.clone().project(camera); return (1 - (q.y * .5 + .5)) * h; },
     resize: onResize,
@@ -347,5 +378,97 @@ export function mountStage(host, key, { mobile = false } = {}) {
     start() { if (!running) { running = true; last = performance.now(); raf = requestAnimationFrame(frame); } },
     stop() { running = false; cancelAnimationFrame(raf); },
     get ready() { return settled >= SETTLE; },
+  };
+}
+
+
+/* ---------- the lineup: all three, side by side ---------- */
+export function mountLineup(host, { mobile = false } = {}) {
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 1.8));
+  renderer.setClearColor(0x023b2c, 0);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.domElement.className = 'stage3d';
+  host.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0x044a37, 8, 15);
+  const camera = new THREE.PerspectiveCamera(32, 1, .1, 60);
+  const look = v(0, .7, 0);
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60),
+    new THREE.MeshStandardMaterial({ color: 0x044a37, roughness: .88, emissive: 0x033a2b }));
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+  scene.add(new THREE.HemisphereLight(0x3fd09a, 0x023b2c, .32));
+
+  const xs = { one: -2.7, two: 0, three: 2.7 };
+  const N = mobile ? 26 : 34;
+  const items = [];
+  ['one', 'two', 'three'].forEach((key, idx) => {
+    const S = STAGES[key], ox = xs[key];
+    const sdf = (x, y, z) => S.sdf(x - ox, y, z);
+    if (S.plinth) {
+      const pl = S.plinth;
+      const m = new THREE.Mesh(new THREE.BoxGeometry(pl.hx * 2, pl.hy * 2, pl.hz * 2),
+        new THREE.MeshStandardMaterial({ color: key === 'two' ? 0xe4efe8 : pl.color, roughness: .55 }));
+      m.position.set(ox, pl.hy, 0); m.castShadow = m.receiveShadow = true; scene.add(m);
+    }
+    const cloth = new Cloth(N, S.cloth.size, S.cloth.y, sdf, ox);
+    const geo = new THREE.PlaneGeometry(1, 1, N, N);
+    geo.setAttribute('position', new THREE.BufferAttribute(cloth.pos, 3));
+    const mat = new THREE.MeshPhysicalMaterial({
+      color: S.cloth.color, roughness: S.cloth.rough, sheen: 1, sheenColor: new THREE.Color(S.cloth.sheen),
+      sheenRoughness: S.cloth.sheenRough, side: THREE.DoubleSide,
+      emissive: S.cloth.emissive || 0xf7f6f0, emissiveIntensity: S.cloth.emissive ? 1 : .04,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.castShadow = mesh.receiveShadow = true; mesh.frustumCulled = false; scene.add(mesh);
+    const spot = new THREE.SpotLight(0xf4fff8, 0, 16, .26, .7, 1.3);
+    spot.position.set(ox, 6.5, 1.6); spot.target.position.set(ox, .5, 0);
+    spot.castShadow = true; spot.shadow.mapSize.set(1024, 1024); spot.shadow.bias = -.0004; spot.shadow.radius = 4;
+    scene.add(spot, spot.target);
+    items.push({ cloth, geo, spot, delay: idx * .55 });
+  });
+
+  let settled = 0, running = false, raf = 0, last = 0, clock = 0, w = 1, h = 1, mx = 0, my = 0;
+  const SETTLE = 460;
+  const settle = (budget) => {
+    const end = Math.min(SETTLE, settled + budget);
+    for (; settled < end; settled++) items.forEach((it) => it.cloth.step(1 / 60, 0));
+    return settled >= SETTLE;
+  };
+  const onResize = () => {
+    w = host.clientWidth; h = host.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    const fit = 2 * Math.atan((5.3 / 10) / camera.aspect) * 180 / Math.PI;
+    camera.fov = Math.max(30, Math.min(fit, 78));
+    // tall screens: lift the gaze so the objects sit low, above the labels
+    look.y = camera.aspect < 1 ? 2.6 : 1.45;
+    camera.updateProjectionMatrix();
+  };
+  addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
+  const frame = (t) => {
+    raf = running ? requestAnimationFrame(frame) : 0;
+    if (!settle(30)) return;
+    const dt = Math.min((t - last) / 1000, 1 / 30) || 1 / 60; last = t; clock += dt;
+    items.forEach((it) => {
+      it.cloth.step(Math.min(dt, 1 / 60), .3);
+      it.geo.attributes.position.needsUpdate = true; it.geo.computeVertexNormals();
+      it.spot.intensity = 46 * ease(clamp((clock - it.delay) / 1.6));
+    });
+    camera.position.set(Math.sin(clock * .1) * .6 + mx * 1.2, 2.1 - my * .5, 10);
+    camera.lookAt(look);
+    renderer.render(scene, camera);
+  };
+  onResize();
+  return {
+    resize: onResize,
+    warm(b = 40) { return settle(b); },
+    start() { if (!running) { running = true; last = performance.now(); raf = requestAnimationFrame(frame); } },
+    stop() { running = false; cancelAnimationFrame(raf); },
   };
 }

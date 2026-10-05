@@ -14,8 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,200..800&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..700&display=swap" rel="stylesheet">
 
   <!-- The opening photographs are needed immediately -->
-  <link rel="preload" as="image" href="https://images.unsplash.com/photo-1771942690809-49605caf6ec5?auto=format&fit=crop&w=1800&q=70">
-  <link rel="preload" as="image" imagesizes="100vw" imagesrcset="https://images.unsplash.com/photo-1770844102881-f8823e9f3c83?auto=format&fit=crop&w=900&q=70 900w, https://images.unsplash.com/photo-1770844102881-f8823e9f3c83?auto=format&fit=crop&w=1800&q=70 1800w, https://images.unsplash.com/photo-1770844102881-f8823e9f3c83?auto=format&fit=crop&w=2600&q=68 2600w">
+  <link rel="preload" as="image" imagesizes="100vw" imagesrcset="https://images.unsplash.com/photo-1695809584828-1ee251170805?auto=format&fit=crop&w=900&q=70 900w, https://images.unsplash.com/photo-1695809584828-1ee251170805?auto=format&fit=crop&w=1800&q=70 1800w, https://images.unsplash.com/photo-1695809584828-1ee251170805?auto=format&fit=crop&w=2600&q=68 2600w">
 
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -25,23 +24,6 @@
        Replace each .product-slot's contents with real product imagery when available. -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
-      <!-- duotones: photographs printed in green ink on paper — never black -->
-      <filter id="tone-e" color-interpolation-filters="sRGB">
-        <feColorMatrix type="saturate" values="0"/>
-        <feComponentTransfer>
-          <feFuncR type="table" tableValues="0.047 0.110 0.640 0.984"/>
-          <feFuncG type="table" tableValues="0.200 0.280 0.710 0.980"/>
-          <feFuncB type="table" tableValues="0.149 0.215 0.650 0.965"/>
-        </feComponentTransfer>
-      </filter>
-      <filter id="tone-g" color-interpolation-filters="sRGB">
-        <feColorMatrix type="saturate" values="0"/>
-        <feComponentTransfer>
-          <feFuncR type="table" tableValues="0.122 0.300 0.700 0.984"/>
-          <feFuncG type="table" tableValues="0.420 0.520 0.840 0.990"/>
-          <feFuncB type="table" tableValues="0.310 0.400 0.720 0.970"/>
-        </feComponentTransfer>
-      </filter>
       <filter id="fold" x="-10%" y="-10%" width="120%" height="120%">
         <feTurbulence type="fractalNoise" baseFrequency="0.012 0.005" numOctaves="2" seed="4" result="n"/>
         <feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G" result="d"/>
@@ -153,19 +135,15 @@
     <section class="hero" id="top" data-scroll>
       <div class="hero__stage">
         <div class="hero__room">
-          <img src="https://images.unsplash.com/photo-1770844102881-f8823e9f3c83?auto=format&fit=crop&w=1800&q=70"
-               srcset="https://images.unsplash.com/photo-1770844102881-f8823e9f3c83?auto=format&fit=crop&w=900&q=70 900w,
-                       https://images.unsplash.com/photo-1770844102881-f8823e9f3c83?auto=format&fit=crop&w=1800&q=70 1800w,
-                       https://images.unsplash.com/photo-1770844102881-f8823e9f3c83?auto=format&fit=crop&w=2600&q=68 2600w"
-               sizes="100vw" alt="An empty auditorium, rows of seats receding into darkness, moments before the doors open." fetchpriority="high">
+          <img src="https://images.unsplash.com/photo-1695809584828-1ee251170805?auto=format&fit=crop&w=1800&q=70"
+               srcset="https://images.unsplash.com/photo-1695809584828-1ee251170805?auto=format&fit=crop&w=900&q=70 900w,
+                       https://images.unsplash.com/photo-1695809584828-1ee251170805?auto=format&fit=crop&w=1800&q=70 1800w,
+                       https://images.unsplash.com/photo-1695809584828-1ee251170805?auto=format&fit=crop&w=2600&q=68 2600w"
+               sizes="100vw" alt="A hall of empty chairs under green light, moments before the doors open." fetchpriority="high">
         </div>
         <div class="hero__beam" aria-hidden="true"></div>
-        <div class="hero__curtain hero__curtain--l" aria-hidden="true">
-          <img src="https://images.unsplash.com/photo-1771942690809-49605caf6ec5?auto=format&fit=crop&w=1800&q=70" alt="">
-        </div>
-        <div class="hero__curtain hero__curtain--r" aria-hidden="true">
-          <img src="https://images.unsplash.com/photo-1771942690809-49605caf6ec5?auto=format&fit=crop&w=1800&q=70" alt="">
-        </div>
+        <div class="hero__curtain hero__curtain--l" aria-hidden="true"></div>
+        <div class="hero__curtain hero__curtain--r" aria-hidden="true"></div>
         <div class="hero__shade" aria-hidden="true"></div>
       </div>
 
@@ -210,9 +188,9 @@
 
         <figure class="statement__plate">
           <div class="crop">
-            <img data-u="photo-1758520145147-c30bc656f314" data-w="1800" alt="A founder working late, alone at a desk lit by a single lamp." loading="lazy">
+            <img data-u="photo-1774016591286-f75a8d2e6a24" data-w="1800" alt="A figure caught in a single beam of light, waiting to begin." loading="lazy">
           </div>
-          <figcaption>Pl. i — Late, still building.</figcaption>
+          <figcaption>Pl. i — Before the room fills.</figcaption>
         </figure>
 
         <div class="statement__after">
@@ -237,12 +215,12 @@
         </h2>
       </header>
       <ol class="index">
-        <li data-reveal><a href="#the-talks" data-img="photo-1581968529998-97309a14e14a" data-cursor="View"><span class="index__n">01</span><span class="index__t">The Talks</span><span class="index__d">Expert voices, unfiltered.</span><i aria-hidden="true">→</i></a></li>
-        <li data-reveal><a href="#the-workshop" data-img="photo-1755053757912-a63da9d6e0e2" data-cursor="View"><span class="index__n">02</span><span class="index__t">The Workshop</span><span class="index__d">Hands-on problem solving.</span><i aria-hidden="true">→</i></a></li>
-        <li data-reveal><a href="#the-pitch" data-img="photo-1764874299006-bf4266427ec9" data-cursor="View"><span class="index__n">03</span><span class="index__t">The Pitch</span><span class="index__d">Ideas, said out loud.</span><i aria-hidden="true">→</i></a></li>
-        <li data-reveal><a href="#the-launches" data-img="photo-1774967550635-182fb37cf31f" data-cursor="View"><span class="index__n">04</span><span class="index__t">The Launches</span><span class="index__d">Three reveals.</span><i aria-hidden="true">→</i></a></li>
-        <li data-reveal><a href="#the-exhibition" data-img="photo-1760662400269-e7161cb48edf" data-cursor="View"><span class="index__n">05</span><span class="index__t">The Exhibition</span><span class="index__d">What's being built.</span><i aria-hidden="true">→</i></a></li>
-        <li data-reveal><a href="#the-room" data-img="photo-1775163560631-6ff15eb2fa1f" data-cursor="View"><span class="index__n">06</span><span class="index__t">The Room</span><span class="index__d">The people you meet.</span><i aria-hidden="true">→</i></a></li>
+        <li data-reveal><a href="#the-talks" data-img="photo-1630395822831-3e8205c2f8e8" data-cursor="View"><span class="index__n">01</span><span class="index__t">The Talks</span><span class="index__d">Expert voices, unfiltered.</span><i aria-hidden="true">→</i></a></li>
+        <li data-reveal><a href="#the-workshop" data-img="photo-1758685848754-0aa566b4ddf4" data-cursor="View"><span class="index__n">02</span><span class="index__t">The Workshop</span><span class="index__d">Hands-on problem solving.</span><i aria-hidden="true">→</i></a></li>
+        <li data-reveal><a href="#the-pitch" data-img="photo-1765020553499-1ec9aeb21298" data-cursor="View"><span class="index__n">03</span><span class="index__t">The Pitch</span><span class="index__d">Ideas, said out loud.</span><i aria-hidden="true">→</i></a></li>
+        <li data-reveal><a href="launches.html" data-img="photo-1625479610681-f789345a8157" data-cursor="View"><span class="index__n">04</span><span class="index__t">The Launches</span><span class="index__d">Three reveals.</span><i aria-hidden="true">→</i></a></li>
+        <li data-reveal><a href="#the-exhibition" data-img="photo-1767862638863-302e3cd54ce6" data-cursor="View"><span class="index__n">05</span><span class="index__t">The Exhibition</span><span class="index__d">What's being built.</span><i aria-hidden="true">→</i></a></li>
+        <li data-reveal><a href="#the-room" data-img="photo-1758939561091-d29215cfcd76" data-cursor="View"><span class="index__n">06</span><span class="index__t">The Room</span><span class="index__d">The people you meet.</span><i aria-hidden="true">→</i></a></li>
       </ol>
     </section>
 
@@ -259,17 +237,17 @@
       <div class="day__body">
         <div class="day__media" aria-hidden="true">
           <div class="day__frame">
-            <img data-u="photo-1770844102881-f8823e9f3c83" data-w="1400" alt="" class="is-active">
-            <img data-u="photo-1784542471035-5793a167ee63" data-w="1400" alt="">
-            <img data-u="photo-1581968529998-97309a14e14a" data-w="1400" alt="">
-            <img data-u="photo-1755053757912-a63da9d6e0e2" data-w="1400" alt="">
-            <img data-u="photo-1764874299006-bf4266427ec9" data-w="1400" alt="">
-            <img data-u="photo-1743119844808-fefd446de533" data-w="1400" alt="">
+            <img data-u="photo-1695809584828-1ee251170805" data-w="1400" alt="" class="is-active">
+            <img data-u="photo-1786237948716-a57d5bcd92cc" data-w="1400" alt="">
+            <img data-u="photo-1630395822831-3e8205c2f8e8" data-w="1400" alt="">
+            <img data-u="photo-1758685848754-0aa566b4ddf4" data-w="1400" alt="">
+            <img data-u="photo-1765020553499-1ec9aeb21298" data-w="1400" alt="">
+            <img data-u="photo-1693323588976-bff2c5bd9e22" data-w="1400" alt="">
             <div class="day__veil day__veil--dark"></div>
             <div class="day__veil day__veil--light"></div>
             <div class="day__veil day__veil--spot"></div>
-            <img data-u="photo-1775163560631-6ff15eb2fa1f" data-w="1400" alt="">
-            <img data-u="photo-1760662347435-1c0a11fea640" data-w="1400" alt="">
+            <img data-u="photo-1758939561091-d29215cfcd76" data-w="1400" alt="">
+            <img data-u="photo-1749299475177-c1c6c52c62e0" data-w="1400" alt="">
           </div>
           <p class="day__counter"><span class="day__now">I</span><span>/ XI</span></p>
         </div>
@@ -278,32 +256,32 @@
           <li class="moment" data-i="0" data-act="Arrive">
             <span class="moment__num">I</span>
             <div><p class="moment__time">Morning</p><h3>Arrival</h3><p>People enter. The room begins to fill.</p></div>
-            <img class="moment__m" data-u="photo-1770844102881-f8823e9f3c83" data-w="900" alt="Empty rows of seats before the audience arrives." loading="lazy">
+            <img class="moment__m" data-u="photo-1695809584828-1ee251170805" data-w="900" alt="A green-lit hall of empty chairs before the audience arrives." loading="lazy">
           </li>
           <li class="moment" data-i="1" data-act="Arrive">
             <span class="moment__num">II</span>
             <div><p class="moment__time">Then</p><h3>Opening</h3><p>The stage comes alive.</p></div>
-            <img class="moment__m" data-u="photo-1784542471035-5793a167ee63" data-w="900" alt="An audience silhouetted against bright stage light." loading="lazy">
+            <img class="moment__m" data-u="photo-1786237948716-a57d5bcd92cc" data-w="900" alt="Stage lights throwing green beams into the dark before the opening." loading="lazy">
           </li>
           <li class="moment" data-i="2" data-act="Discover">
             <span class="moment__num">III</span>
             <div><p class="moment__time">Expert talks</p><h3>The Talks</h3><p>People who've done it take the stage.</p></div>
-            <img class="moment__m" data-u="photo-1581968529998-97309a14e14a" data-w="900" alt="A speaker alone on a vast stage." loading="lazy">
+            <img class="moment__m" data-u="photo-1630395822831-3e8205c2f8e8" data-w="900" alt="An audience facing a stage flooded with green light." loading="lazy">
           </li>
           <li class="moment" data-i="3" data-act="Discover">
             <span class="moment__num">IV</span>
             <div><p class="moment__time">Hands-on</p><h3>The Workshop</h3><p>Real problems, solved together.</p></div>
-            <img class="moment__m" data-u="photo-1755053757912-a63da9d6e0e2" data-w="900" alt="Participants building at a workbench." loading="lazy">
+            <img class="moment__m" data-u="photo-1758685848754-0aa566b4ddf4" data-w="900" alt="A teacher working through a problem on a green chalkboard." loading="lazy">
           </li>
           <li class="moment" data-i="4" data-act="Discover">
             <span class="moment__num">V</span>
             <div><p class="moment__time">Pitching</p><h3>The Pitch</h3><p>Ideas, said out loud.</p></div>
-            <img class="moment__m" data-u="photo-1764874299006-bf4266427ec9" data-w="900" alt="An empty podium on a lit stage." loading="lazy">
+            <img class="moment__m" data-u="photo-1765020553499-1ec9aeb21298" data-w="900" alt="A student pitching from a podium." loading="lazy">
           </li>
           <li class="moment" data-i="5" data-act="Discover">
             <span class="moment__num">VI</span>
             <div><p class="moment__time">Exhibition</p><h3>Discovery</h3><p>Ideas, products and people meet.</p></div>
-            <img class="moment__m" data-u="photo-1743119844808-fefd446de533" data-w="900" alt="Visitors moving through an exhibition hall." loading="lazy">
+            <img class="moment__m" data-u="photo-1693323588976-bff2c5bd9e22" data-w="900" alt="Inside a glasshouse full of green." loading="lazy">
           </li>
           <li class="moment moment--launch" data-i="6" data-act="Launch">
             <span class="moment__num">VII</span>
@@ -323,12 +301,12 @@
           <li class="moment" data-i="9" data-act="Connect">
             <span class="moment__num">X</span>
             <div><p class="moment__time">After</p><h3>Connection</h3><p>People meet.</p></div>
-            <img class="moment__m" data-u="photo-1775163560631-6ff15eb2fa1f" data-w="900" alt="People mingling in warm evening light." loading="lazy">
+            <img class="moment__m" data-u="photo-1758939561091-d29215cfcd76" data-w="900" alt="People talking in a café under a large indoor tree." loading="lazy">
           </li>
           <li class="moment" data-i="10" data-act="Leave different">
             <span class="moment__num">XI</span>
             <div><p class="moment__time">Evening</p><h3>Closing</h3><p>The room leaves with something new.</p></div>
-            <img class="moment__m" data-u="photo-1760662347435-1c0a11fea640" data-w="900" alt="Silhouettes walking out through a dim gallery toward the light." loading="lazy">
+            <img class="moment__m" data-u="photo-1749299475177-c1c6c52c62e0" data-w="900" alt="A library opening onto a forest." loading="lazy">
           </li>
         </ol>
       </div>
@@ -338,7 +316,7 @@
     <section class="talks" id="the-talks" data-scroll data-folio="The Talks">
       <div class="talks__sticky">
         <div class="talks__slit">
-          <img data-u="photo-1581968529998-97309a14e14a" data-w="2200" alt="A speaker alone on a vast stage before a glowing screen.">
+          <img data-u="photo-1630395822831-3e8205c2f8e8" data-w="2200" alt="An audience facing a stage flooded with green light.">
         </div>
         <div class="talks__copy">
           <p class="eyebrow">Expert Talks</p>
@@ -353,8 +331,8 @@
     <section class="talks-more is-light" data-tone="light" data-folio="The Talks">
       <div class="talks-more__grid">
         <p class="talks-more__body" data-reveal>Expert talks from people who have built, scaled, stumbled and started again — the lessons that rarely make it into a textbook, told by the people who learned them.</p>
-        <figure class="ph talks-more__a" data-reveal><img data-u="photo-1679579664878-2c025e3f87b0" data-w="1100" alt="A speaker on stage, microphone in hand." loading="lazy"><figcaption><b>i</b> On stage</figcaption></figure>
-        <figure class="ph talks-more__b" data-reveal><img data-u="photo-1544531585-b3fadf704c02" data-w="900" alt="An audience member asking a question into a microphone." loading="lazy"><figcaption><b>ii</b> The question</figcaption></figure>
+        <figure class="ph talks-more__a" data-reveal><img data-u="photo-1773828977866-baed2942b424" data-w="1100" alt="A speaker at the microphone, notes in hand." loading="lazy"><figcaption><b>i</b> On stage</figcaption></figure>
+        <figure class="ph talks-more__b" data-reveal><img data-u="photo-1774094453087-0207a0cd2309" data-w="900" alt="A panel in conversation on stage." loading="lazy"><figcaption><b>ii</b> The question</figcaption></figure>
       </div>
       <div class="lineup" data-reveal>
         <p class="lineup__label">The lineup</p>
@@ -386,9 +364,9 @@
           <li data-reveal><span>iv.</span><h3>Test it on the room.</h3><p>Real feedback, from real people.</p></li>
         </ol>
         <div class="prints">
-          <figure class="print print--1" data-reveal><img data-u="photo-1755053757912-a63da9d6e0e2" data-w="1100" alt="Participants building a prototype together at a workbench." loading="lazy"><figcaption>Fig. 1 — Building</figcaption></figure>
-          <figure class="print print--2" data-reveal><img data-u="photo-1598520106830-8c45c2035460" data-w="900" alt="A hand sketching a system diagram on glass." loading="lazy"><figcaption>Fig. 2 — Thinking out loud</figcaption></figure>
-          <figure class="print print--3" data-reveal><img data-u="photo-1501516069922-a9982bd6f3bd" data-w="900" alt="Drafting tools laid out on a desk." loading="lazy"><figcaption>Fig. 3 — The tools</figcaption></figure>
+          <figure class="print print--1" data-reveal><img data-u="photo-1758685848754-0aa566b4ddf4" data-w="1100" alt="A teacher working through a problem on a green chalkboard." loading="lazy"><figcaption>Fig. 1 — Learning by doing</figcaption></figure>
+          <figure class="print print--2" data-reveal><img data-u="photo-1758685848261-16a5a9e68811" data-w="900" alt="Two students solving a problem together at the board." loading="lazy"><figcaption>Fig. 2 — Solving it together</figcaption></figure>
+          <figure class="print print--3" data-reveal><img data-u="photo-1573871014706-263f4dfec410" data-w="900" alt="A green chalkboard covered in working notes." loading="lazy"><figcaption>Fig. 3 — The working</figcaption></figure>
         </div>
       </div>
     </section>
@@ -396,7 +374,7 @@
     <!-- ============ THE PITCH ============ -->
     <section class="pitch" id="the-pitch" data-scroll data-folio="The Pitch">
       <div class="pitch__sticky">
-        <div class="pitch__bg" aria-hidden="true"><img data-u="photo-1764874299006-bf4266427ec9" data-w="2000" alt=""></div>
+        <div class="pitch__bg" aria-hidden="true"><img data-u="photo-1765020553499-1ec9aeb21298" data-w="2000" alt=""></div>
         <div class="pitch__copy">
           <p class="eyebrow">Pitching</p>
           <h2 class="pitch__title"><span>Stand up.</span> <span>Speak up.</span> <span><em>Be heard.</em></span></h2>
@@ -424,6 +402,7 @@
         </h2>
         <p class="launches-intro__body" data-reveal>Three products. Three reveals. Each kept under wraps until its moment on stage — and each moment shared by everyone in the room.</p>
         <p class="launches-intro__seq" data-reveal aria-label="Idea, creation, launch"><span>Idea</span><i></i><span>Creation</span><i></i><span>Launch</span></p>
+        <p class="launches-intro__more" data-reveal><a class="btn btn--light magnetic" href="launches.html"><span>Inside the launches</span><i aria-hidden="true">→</i></a></p>
       </div>
       <div class="thread thread--intro" aria-hidden="true"><span></span></div>
     </section>
@@ -543,35 +522,35 @@
 
       <div class="spread" data-tiltzone>
         <figure class="ph ph--a" data-tilt="1">
-          <img data-u="photo-1758560572645-0f7fa62ab59f" data-w="1200" alt="Portrait of a young founder in a denim jacket, looking off-frame." loading="lazy">
+          <img data-u="photo-1564980295992-288a2237a55c" data-w="1200" alt="Portrait of a young founder in front of a wall of leaves." loading="lazy">
           <figcaption><b>01</b> Founders</figcaption>
         </figure>
         <figure class="ph ph--b" data-tilt="-1.4">
-          <img data-u="photo-1659930087003-2d64e33181f7" data-w="900" alt="Hands marking a line on a wooden board with a pencil." loading="lazy">
-          <figcaption><b>02</b> Building</figcaption>
+          <img data-u="photo-1758524057756-7dc8ce53d88c" data-w="900" alt="Two people reviewing work together in a greenhouse." loading="lazy">
+          <figcaption><b>02</b> Reviewing</figcaption>
         </figure>
         <figure class="ph ph--c" data-tilt="0.8">
-          <img data-u="photo-1686624386665-4cd01b96d0f6" data-w="1200" alt="Students working through an idea together at a table." loading="lazy">
-          <figcaption><b>03</b> Discussing ideas</figcaption>
+          <img data-u="photo-1758691737212-3eebbc8f84ed" data-w="1200" alt="A team working through an idea together." loading="lazy">
+          <figcaption><b>03</b> Teams</figcaption>
         </figure>
         <blockquote class="spread__quote" data-reveal>
           <p>Every room has a stage. This one is built around the people <em>in the seats</em>, too.</p>
         </blockquote>
         <figure class="ph ph--d" data-tilt="-0.8">
-          <img data-u="photo-1498075702571-ecb018f3752d" data-w="900" alt="A hand drawing letterforms on tracing paper with a mechanical pencil." loading="lazy">
-          <figcaption><b>04</b> Creators</figcaption>
+          <img data-u="photo-1758685848691-3933bc2aa3ce" data-w="900" alt="A hand writing formulas on a chalkboard." loading="lazy">
+          <figcaption><b>04</b> Working it out</figcaption>
         </figure>
         <figure class="ph ph--e" data-tilt="1.2">
-          <img data-u="photo-1758873269013-d914addd5d3b" data-w="1200" alt="Someone presenting ideas at a whiteboard to colleagues." loading="lazy">
-          <figcaption><b>05</b> Presenting</figcaption>
+          <img data-u="photo-1681949103006-70066fb25dfe" data-w="1200" alt="A group gathered around a table, planning." loading="lazy">
+          <figcaption><b>05</b> Planning</figcaption>
         </figure>
         <figure class="ph ph--f" data-tilt="-1">
-          <img data-u="photo-1654609160632-7324716196fb" data-w="900" alt="A woman in the audience, listening and applauding." loading="lazy">
-          <figcaption><b>06</b> Listening</figcaption>
+          <img data-u="photo-1520702935840-b40e3d15c234" data-w="900" alt="A lone figure standing in a vast green room." loading="lazy">
+          <figcaption><b>06</b> Imagining</figcaption>
         </figure>
         <figure class="ph ph--g" data-tilt="0.6">
-          <img data-u="photo-1503796627019-324e68809dc3" data-w="900" alt="Hands working on a prototype with a small screwdriver." loading="lazy">
-          <figcaption><b>07</b> Innovators</figcaption>
+          <img data-u="photo-1746344509848-e43929b8e66b" data-w="900" alt="Someone exploring a lush glasshouse." loading="lazy">
+          <figcaption><b>07</b> Exploring</figcaption>
         </figure>
       </div>
     </section>
@@ -581,7 +560,7 @@
       <div class="talk__grid">
         <figure class="talk__plate">
           <div class="crop">
-            <img data-u="photo-1604881988758-f76ad2f7aac1" data-w="1600" alt="Two people across a table, mugs in hand, mid-conversation." loading="lazy">
+            <img data-u="photo-1561221820-5ed0595bcb4c" data-w="1600" alt="Friends deep in conversation in a green-walled café." loading="lazy">
           </div>
         </figure>
         <div class="talk__text">
@@ -593,13 +572,13 @@
           </h2>
           <p class="talk__body" data-reveal>Intimate, unscripted founder conversations. Close enough to hear the hesitation before the honest answer.</p>
           <ul class="inventory" data-reveal aria-label="In the room">
-            <li data-img="photo-1546795708-c962dc089798"><em>i.</em> Two chairs</li>
-            <li data-img="photo-1604881988758-f76ad2f7aac1"><em>ii.</em> A table</li>
-            <li data-img="photo-1498075702571-ecb018f3752d"><em>iii.</em> A notebook</li>
-            <li data-img="photo-1503796627019-324e68809dc3"><em>iv.</em> A prototype</li>
-            <li data-img="photo-1470047721614-35220c146849"><em>v.</em> Coffee</li>
-            <li data-img="photo-1570862687479-cb2debfcb186"><em>vi.</em> A microphone</li>
-            <li data-img="photo-1774967550635-182fb37cf31f"><em>vii.</em> Stage light</li>
+            <li data-img="photo-1755325541565-aca7a68f6e66"><em>i.</em> Two chairs</li>
+            <li data-img="photo-1561221820-5ed0595bcb4c"><em>ii.</em> A table</li>
+            <li data-img="photo-1758685848691-3933bc2aa3ce"><em>iii.</em> A notebook</li>
+            <li data-img="photo-1746344509848-e43929b8e66b"><em>iv.</em> A prototype</li>
+            <li data-img="photo-1758939561091-d29215cfcd76"><em>v.</em> Coffee</li>
+            <li data-img="photo-1773828977866-baed2942b424"><em>vi.</em> A microphone</li>
+            <li data-img="photo-1625479610681-f789345a8157"><em>vii.</em> Stage light</li>
           </ul>
         </div>
       </div>
@@ -615,23 +594,23 @@
         </header>
         <div class="expo__track">
           <figure class="work work--tall">
-            <img data-u="photo-1760662400269-e7161cb48edf" data-w="1100" alt="A visitor's silhouette against a softly lit gallery wall." loading="lazy">
+            <img data-u="photo-1767862638863-302e3cd54ce6" data-w="1100" alt="A circular library, shelves rising on every side." loading="lazy">
             <figcaption><span>Hall</span> Visitors moving through the space.</figcaption>
           </figure>
           <figure class="work work--sq">
-            <img data-u="photo-1768353078780-dcb46cd7271c" data-w="1100" alt="A sculptural object lit against a pale wall." loading="lazy">
+            <img data-u="photo-1712588501747-5b7f9f715fca" data-w="1100" alt="A wall of green glass blocks." loading="lazy">
             <figcaption><span>Object</span> Products displayed like art.</figcaption>
           </figure>
           <figure class="work work--wide">
-            <img data-u="photo-1771567967255-d770c21a26be" data-w="1400" alt="A visitor walking past works on a white gallery wall." loading="lazy">
+            <img data-u="photo-1693323588976-bff2c5bd9e22" data-w="1400" alt="Inside a glasshouse full of green." loading="lazy">
             <figcaption><span>Booth</span> Minimal. Considered. Room to look.</figcaption>
           </figure>
           <figure class="work work--tall">
-            <img data-u="photo-1521194263619-39ecc5b55c61" data-w="1100" alt="Light and shadow falling across a concrete wall." loading="lazy">
+            <img data-u="photo-1761255241065-6f58ffa1cc8a" data-w="1100" alt="Green tiles laid in a herringbone pattern." loading="lazy">
             <figcaption><span>Light</span> Every object, properly lit.</figcaption>
           </figure>
           <figure class="work work--wide">
-            <img data-u="photo-1743119844808-fefd446de533" data-w="1400" alt="A busy, modern exhibition hall full of visitors." loading="lazy">
+            <img data-u="photo-1693323588976-bff2c5bd9e22" data-w="1400" alt="Inside a glasshouse full of green." loading="lazy">
             <figcaption><span>Floor</span> Ideas, products and people meet.</figcaption>
           </figure>
           <div class="work work--end">
@@ -649,9 +628,9 @@
           <span class="rv"><span>you meet</span></span>
           <span class="rv"><span><em>matter.</em></span></span>
         </h2>
-        <figure class="meet__ph meet__ph--1"><img data-u="photo-1775163560631-6ff15eb2fa1f" data-w="1300" alt="People talking in warm light at an indoor gathering." loading="lazy"></figure>
-        <figure class="meet__ph meet__ph--2"><img data-u="photo-1517457373958-b7bdd4587205" data-w="900" alt="People laughing together mid-conversation." loading="lazy"></figure>
-        <figure class="meet__ph meet__ph--3"><img data-u="photo-1722385037149-491a8cfaadc1" data-w="900" alt="A small group standing close, deep in discussion." loading="lazy"></figure>
+        <figure class="meet__ph meet__ph--1"><img data-u="photo-1758939561091-d29215cfcd76" data-w="1300" alt="People talking in a café under a large indoor tree." loading="lazy"></figure>
+        <figure class="meet__ph meet__ph--2"><img data-u="photo-1784462293906-c74acc4f768d" data-w="900" alt="People gathered in a café full of plants." loading="lazy"></figure>
+        <figure class="meet__ph meet__ph--3"><img data-u="photo-1773051427980-e6a8d74cc24f" data-w="900" alt="People meeting over coffee among green chairs." loading="lazy"></figure>
         <p class="meet__body" data-reveal>Founders and investors. Students and operators. Builders who've done it and builders about to. The conversations that start here rarely end here.</p>
       </div>
     </section>

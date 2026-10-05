@@ -6,20 +6,21 @@
    ========================================================================== */
 
 :root {
-  /* Green and white. Paper is the default; deep forest green is the ink,
-     and the colour of the few immersive rooms. Never black. */
-  --forest: #0c3326;     /* deepest green: ink on paper, background of dark rooms */
-  --deep: #0f4232;
-  --emerald: #1f6b4f;
-  --emerald-2: #2f8a63;  /* the thread */
-  --mint: #8ed6ae;       /* the spark, on green */
-  --sage: #9db5a8;
-  --sage-l: #d5e2d9;
-  --pale: #e9f0ea;
-  --paper: #fbfaf6;
-  --off: #f3f2ec;
-  --ink-2: #3d5c4f;
-  --ink-3: #5e7a6d;
+  /* Emerald and white. Paper is the default; deep emerald is the ink,
+     and the colour of the immersive rooms. Never black. */
+  --forest: #023b2c;     /* deepest emerald: ink on paper */
+  --deep: #04503b;       /* emerald rooms */
+  --emerald: #087a56;    /* the brand emerald */
+  --emerald-2: #10a273;  /* the thread */
+  --mint: #7fe0b5;       /* the spark, on emerald */
+  --sage: #93b8a6;
+  --sage-l: #cfe5d9;
+  --pale: #e6f4ec;
+  --paper: #fafbf8;
+  --off: #f0f4ef;
+  --ink-2: #2e5747;
+  --ink-3: #5a7d6d;
+  --room: radial-gradient(130% 90% at 50% 0%, #076a4f 0%, #04503b 45%, #023b2c 100%);
 
   /* role tokens (dark rooms by default; light rooms remap them) */
   --black: var(--forest);
@@ -41,8 +42,8 @@
   --ease: cubic-bezier(.2, .7, .1, 1);
   --ease-io: cubic-bezier(.7, 0, .2, 1);
 
-  /* photographs printed as green-ink duotones */
-  --tone: url(#tone-e);
+  /* photographs keep their own colour; a light, even grade ties them together */
+  --tone: saturate(.94) contrast(1.04);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -539,10 +540,10 @@ body.is-loading .nav { opacity: 0; transform: translateY(-12px); }
 .launch--three .rv + .rv > span { transform: translateY(calc((1 - clamp(0, calc((var(--p, 0) - .64) / .14), 1)) * 105%)); }
 .launch--three .launch__kind, .launch--three .launch__status { opacity: clamp(0, calc((var(--p, 0) - .72) / .12), 1); }
 .mask {
-  background: linear-gradient(rgba(251,250,246,.5), rgba(251,250,246,.5)), url("https://images.unsplash.com/photo-1761998535969-11ca31e89f78?auto=format&fit=crop&w=1600&q=60") center / cover, #d5e2d9;
+  background: linear-gradient(rgba(250,251,248,.15), rgba(250,251,248,.15)), url("https://images.unsplash.com/photo-1767131545090-e13ae86c8e13?auto=format&fit=crop&w=1600&q=60") center / cover, #d5e2d9;
   -webkit-background-clip: text; background-clip: text; color: transparent;
   font-style: italic; text-transform: none;
-  filter: url(#tone-g) brightness(1.4);
+  filter: saturate(1.1) brightness(1.25);
 }
 
 /* ==========================================================================
@@ -558,7 +559,7 @@ body.is-loading .nav { opacity: 0; transform: translateY(-12px); }
 .spread { --mx: 0; --my: 0; display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: minmax(8vw, auto); gap: clamp(12px, 1.6vw, 28px); }
 .ph { position: relative; overflow: hidden; }
 .ph img { width: 100%; height: 100%; object-fit: cover; transform: translate(calc(var(--mx) * var(--t, 1) * -10px), calc(var(--my) * var(--t, 1) * -10px)) scale(1.06); transition: transform 1.2s var(--ease), filter 1.6s var(--ease), opacity 1.2s var(--ease) !important; }
-.ph:hover img.is-dev { filter: url(#tone-g); }
+.ph:hover img.is-dev { filter: saturate(1.08) contrast(1.05); }
 .ph figcaption { position: absolute; left: 14px; bottom: 12px; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; font-stretch: 112%; color: var(--white); mix-blend-mode: difference; }
 .ph figcaption b { font-family: var(--serif); font-weight: 400; font-style: italic; letter-spacing: 0; margin-right: 8px; font-size: 13px; }
 .ph--a { grid-column: 1 / span 5; grid-row: span 6; }
@@ -976,7 +977,7 @@ body.is-loading .folio { opacity: 0; }
 .pitch { position: relative; height: 440vh; background: var(--black); }
 .pitch__sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
 .pitch__bg { position: absolute; inset: 0; }
-.pitch__bg img { width: 100%; height: 100%; object-fit: cover; opacity: .38 !important; transform: scale(calc(1.12 - var(--p, 0) * .12)); }
+.pitch__bg img { width: 100%; height: 100%; object-fit: cover; opacity: .72 !important; transform: scale(calc(1.12 - var(--p, 0) * .12)); }
 .pitch__bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(12,51,38,.92) 0%, rgba(12,51,38,.55) 45%, rgba(12,51,38,.2) 100%); }
 .pitch__copy { position: absolute; z-index: 2; left: var(--gutter); top: 50%; transform: translateY(-50%); max-width: 40vw; }
 .pitch__copy .eyebrow { margin-bottom: 28px; }
@@ -1100,8 +1101,9 @@ html.lenis, html.lenis body { height: auto; }
 
 
 /* ---------- colour rhythm: paper by default, forest green for the immersive rooms ---------- */
-.hero, .talks, .pitch, .launch--one, .launch--three, .finale, .foot, .launches-intro.is-dark { background: var(--forest); }
-.launch--three { background: var(--deep); }
+.hero, .talks, .pitch, .launch--one, .launch--three, .finale { background: var(--room); }
+.foot { background: var(--forest); }
+.launch--three { background: radial-gradient(120% 80% at 50% 0%, #065c45 0%, #033f2f 55%, #022e22 100%); }
 
 /* light rooms: the role tokens flip, so "white" type becomes forest ink */
 .is-light {
@@ -1191,7 +1193,7 @@ body.menu-open .nav .nav__mark { color: var(--paper); }
 
 /* overlays on the green photo rooms */
 .talks__slit::after { background: linear-gradient(90deg, rgba(12,51,38,.85), rgba(12,51,38,.15) 60%, rgba(12,51,38,.4)); }
-.pitch__bg::after { background: linear-gradient(90deg, rgba(12,51,38,.94) 0%, rgba(12,51,38,.55) 45%, rgba(12,51,38,.2) 100%); }
+.pitch__bg::after { background: linear-gradient(90deg, rgba(2,59,44,.9) 0%, rgba(2,59,44,.45) 42%, rgba(2,59,44,0) 75%); }
 
 /* decorative type is never selectable */
 .l3__word, .roll, .launch__num, .l3__hush, .count { -webkit-user-select: none; user-select: none; }
@@ -1200,3 +1202,30 @@ body.menu-open .nav .nav__mark { color: var(--paper); }
 .nav__mark { padding: 12px 0; border-radius: 999px; transition: color .5s, background .5s, padding .5s var(--ease); }
 .nav.is-quiet .nav__mark { padding: 12px 16px; background: rgba(12,51,38,.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: 1; }
 .nav.is-quiet.on-light .nav__mark { background: rgba(251,250,246,.7); }
+
+
+/* ---------- the hero curtain: emerald velvet, drawn rather than photographed ---------- */
+.hero__curtain {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.07) 0%, transparent 22%, transparent 70%, rgba(2,46,34,.55) 100%),
+    repeating-linear-gradient(90deg,
+      #023b2c 0px, #04563f 14px, #0a7a58 26px, #0d8a63 31px, #076a4e 40px, #03442f 54px, #023b2c 64px);
+  box-shadow: inset 0 0 120px rgba(2,46,34,.6);
+}
+.hero__curtain--l { box-shadow: inset -40px 0 80px rgba(2,46,34,.5), inset 0 0 120px rgba(2,46,34,.5); }
+.hero__curtain--r { box-shadow: inset 40px 0 80px rgba(2,46,34,.5), inset 0 0 120px rgba(2,46,34,.5); }
+.hero__curtain::after { content: ""; position: absolute; inset: 0; opacity: .35; mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='v'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.02 .6' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23v)'/%3E%3C/svg%3E"); }
+.hero__curtain { opacity: 0; transition: transform 3.2s var(--ease-io), opacity 1.8s var(--ease); }
+.hero.is-develop .hero__curtain { opacity: 1; }
+.hero__room img { filter: var(--tone) brightness(.88); }
+.hero__beam { background: radial-gradient(50% 60% at 50% 40%, rgba(200,255,228,.22), transparent 70%); }
+
+/* photos stay true; type on photographs gets a soft emerald scrim for legibility */
+.moment::after { background: linear-gradient(180deg, rgba(2,59,44,.15), transparent 40%, rgba(2,59,44,.85)) !important; }
+.moment--light::after { background: linear-gradient(180deg, transparent 40%, rgba(240,244,239,.92)) !important; }
+.launches-intro__more { margin-top: 48px; }
+
+/* main-page stages: sky meets the floor's fog colour */
+.launch--one .launch__sticky { background: linear-gradient(180deg, #076a4f 0%, #05553f 30%, #044a37 52%, #044a37 100%); }
+.launch--three .launch__sticky { background: linear-gradient(180deg, #065c45 0%, #043f30 40%, #033f2f 52%, #033f2f 100%); }
