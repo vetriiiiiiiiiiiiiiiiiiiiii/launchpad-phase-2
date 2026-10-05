@@ -30,13 +30,13 @@ function sdCappedCone(px, py, pz, cx, cy, cz, h, r1, r2) {
 const STAGES = {
   // 01 — a monolith in the dark
   one: {
-    bg: 0x0a0908, fog: [0x0a0908, 6, 13], alpha: true,
-    cloth: { size: 2.5, y: 1.5, color: 0x0d0b09, sheen: 0x6e604f, sheenRough: .38, rough: .94 },
+    bg: 0x052a21, fog: [0x052a21, 6, 13], alpha: true,
+    cloth: { size: 2.5, y: 1.5, color: 0x0e4535, sheen: 0xc9a45c, sheenRough: .38, rough: .94, emissive: 0x03271e },
     frame: 1.55,
     sdf: (x, y, z) => sdRoundBox(x, y, z, 0, .62, 0, .3, .62, .3, .06),
     top: 1.24,
     plinth: null,
-    floor: { color: 0x15120f, rough: .9 },
+    floor: { color: 0x0a3a2d, rough: .9, emissive: 0x032a20 },
     cam: { from: v(0, 1.25, 7.2), to: v(0, 1.0, 5.6), look: v(0, .78, 0), fov: 30 },
   },
   // 02 — a low form in a white room, a sun crossing the sky
@@ -54,15 +54,15 @@ const STAGES = {
   },
   // 03 — the final object, under a single beam
   three: {
-    bg: 0x0a0908, fog: [0x0a0908, 6, 12], alpha: true,
-    cloth: { size: 2.3, y: 1.5, color: 0x15120f, sheen: 0x9a8670, sheenRough: .34, rough: .92 },
+    bg: 0x0a1f3d, fog: [0x0a1f3d, 6, 12], alpha: true,
+    cloth: { size: 2.3, y: 1.5, color: 0x173460, sheen: 0xe0c27e, sheenRough: .34, rough: .92, emissive: 0x081d3c },
     frame: 1.5,
     sdf: (x, y, z) => Math.min(
       sdRoundBox(x, y, z, 0, .13, 0, .55, .13, .55, .02),
       sdCappedCone(x, y, z, 0, .74, 0, .48, .36, .15) - .03),
     top: 1.25,
-    plinth: { hx: .55, hy: .13, hz: .55, color: 0x2a2520 },
-    floor: { color: 0x13110f, rough: .82 },
+    plinth: { hx: .55, hy: .13, hz: .55, color: 0x1d3d6b },
+    floor: { color: 0x0f2a52, rough: .82, emissive: 0x08203f },
     cam: { from: v(0, 1.1, 7.6), to: v(0, 1.25, 5.4), look: v(0, .85, 0), fov: 30 },
   },
 };
@@ -194,7 +194,7 @@ export function mountStage(host, key, { mobile = false } = {}) {
   const S = STAGES[key];
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 1.8));
-  renderer.setClearColor(0x000000, 0);
+  renderer.setClearColor(0x052a21, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1;
@@ -210,8 +210,8 @@ export function mountStage(host, key, { mobile = false } = {}) {
   // floor
   const floorGeo = new THREE.PlaneGeometry(40, 40);
   const floorMat = S.floor.shadowOnly
-    ? new THREE.ShadowMaterial({ opacity: .26, color: 0x2a2219 })
-    : new THREE.MeshStandardMaterial({ color: S.floor.color, roughness: S.floor.rough, metalness: 0 });
+    ? new THREE.ShadowMaterial({ opacity: .26, color: 0x0b3a2e })
+    : new THREE.MeshStandardMaterial({ color: S.floor.color, roughness: S.floor.rough, metalness: 0, emissive: S.floor.emissive || 0x052a21 });
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true;
   scene.add(floor);
@@ -233,7 +233,7 @@ export function mountStage(host, key, { mobile = false } = {}) {
   const mat = new THREE.MeshPhysicalMaterial({
     color: S.cloth.color, roughness: S.cloth.rough, metalness: 0,
     sheen: 1, sheenColor: new THREE.Color(S.cloth.sheen), sheenRoughness: S.cloth.sheenRough,
-    side: THREE.DoubleSide,
+    emissive: S.cloth.emissive || 0xf1ebe0, emissiveIntensity: S.cloth.emissive ? 1 : .04, side: THREE.DoubleSide,
   });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
@@ -246,7 +246,7 @@ export function mountStage(host, key, { mobile = false } = {}) {
     L.key.position.set(.4, 5.2, 2.2); L.key.target.position.set(0, .6, 0);
     L.rim = new THREE.SpotLight(0xc9a27a, 0, 12, .45, 1, 1.4);
     L.rim.position.set(-1.2, 3.4, -3.4); L.rim.target.position.set(0, .8, 0);
-    L.amb = new THREE.AmbientLight(0xffffff, .015);
+    L.amb = new THREE.HemisphereLight(0x3fa07e, 0x0a1f3d, .35);
     scene.add(L.key, L.key.target, L.rim, L.rim.target, L.amb);
   } else if (key === 'two') {
     L.hemi = new THREE.HemisphereLight(0xfffaf1, 0xc9c0b2, 1.15);
@@ -257,12 +257,12 @@ export function mountStage(host, key, { mobile = false } = {}) {
   } else {
     L.key = new THREE.SpotLight(0xfff1dc, 0, 16, .2, .45, 1.2);
     L.key.position.set(0, 7, .5); L.key.target.position.set(0, .6, 0);
-    L.amb = new THREE.AmbientLight(0xffffff, .01);
-    L.fill = new THREE.PointLight(0xc9824c, 0, 6, 2);
+    L.amb = new THREE.HemisphereLight(0x4a78b8, 0x052a21, .32);
+    L.fill = new THREE.PointLight(0xc9a45c, 0, 6, 2);
     L.fill.position.set(0, .3, 1.6);
     scene.add(L.key, L.key.target, L.amb, L.fill);
     const len = 6.6;
-    L.beam = new THREE.Mesh(new THREE.CylinderGeometry(.05, 1.35, len, 48, 1, true), beamMaterial(0xfff0d8));
+    L.beam = new THREE.Mesh(new THREE.CylinderGeometry(.05, 1.35, len, 48, 1, true), beamMaterial(0xf3dcaa));
     L.beam.position.set(0, 7 - len / 2, .35);
     L.beam.material.uniforms.uLen.value = len;
     scene.add(L.beam);
@@ -307,7 +307,7 @@ export function mountStage(host, key, { mobile = false } = {}) {
       const lit = ease(ramp(p, .22, .7));
       L.key.intensity = 38 * lit;
       L.rim.intensity = 30 * ease(ramp(p, .35, .8));
-      L.amb.intensity = .015 + .03 * lit;
+      L.amb.intensity = .35 + .15 * lit;
     } else if (key === 'two') {
       // the sun crosses from left to right; the shadow swings with it
       const a = -1.15 + p * 2.3;

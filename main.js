@@ -299,29 +299,40 @@
   /* ---------- pointer craft (fine pointers only) ---------- */
   if (!fine || reduce) return;
 
-  // cursor
+  // cursor: the Launchpad rocket steers in the direction you move
   doc.classList.add('has-cursor');
-  const cur = $('.cursor'), ring = $('.cursor__ring', cur), dot = $('.cursor__dot', cur), label = $('b', ring);
-  let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
+  const cur = $('.cursor'), rocket = $('.cursor__rocket', cur), label = $('.cursor__label', cur);
+  const lightSel = '.statement, .launch--two, .expo, .marks, .shop';
+  let mx = -100, my = -100, pmx = mx, pmy = my, ang = -28, speed = 0, boost = 0;
   addEventListener('pointermove', (e) => {
     mx = e.clientX; my = e.clientY;
-    dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
     const t = e.target.closest ? e.target : null;
     const lab = t && t.closest('[data-cursor]');
     const link = t && t.closest('a, button');
     const txt = lab ? lab.dataset.cursor : '';
     if (label.textContent !== txt) label.textContent = txt;
     cur.classList.toggle('has-label', !!txt);
-    cur.classList.toggle('is-link', !!link && !txt);
+    cur.classList.toggle('is-link', !!link);
+    cur.classList.toggle('on-light', !!(t && t.closest(lightSel)) && !body.classList.contains('menu-open'));
   }, { passive: true });
-  addEventListener('pointerdown', () => cur.classList.add('is-down'));
+  addEventListener('pointerdown', () => { cur.classList.add('is-down'); boost = 1; });
   addEventListener('pointerup', () => cur.classList.remove('is-down'));
-  const follow = () => {
-    rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
-    ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
-    requestAnimationFrame(follow);
+  const steer = () => {
+    const vx = mx - pmx, vy = my - pmy;
+    pmx = mx; pmy = my;
+    const v = Math.hypot(vx, vy);
+    speed += (v - speed) * 0.2;
+    // point along the motion; at rest, settle into a classic pointer tilt
+    const want = speed > 1.2 ? Math.atan2(vy, vx) * 180 / Math.PI + 90 : -28;
+    let d = ((want - ang + 540) % 360) - 180;
+    ang += d * (speed > 1.2 ? 0.2 : 0.06);
+    boost *= 0.9;
+    rocket.style.transform = `translate(${mx}px, ${my}px) rotate(${ang.toFixed(2)}deg)`;
+    rocket.style.setProperty('--flame', Math.min(1.5, 0.25 + speed / 22 + boost).toFixed(3));
+    label.style.left = `${mx}px`; label.style.top = `${my}px`;
+    requestAnimationFrame(steer);
   };
-  follow();
+  steer();
   doc.addEventListener('pointerleave', () => { cur.style.opacity = 0; });
   doc.addEventListener('pointerenter', () => { cur.style.opacity = 1; });
 
@@ -387,7 +398,7 @@
     const idle = performance.now() - lastDraw;
     if (idle > 900) {
       ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillStyle = 'rgba(0,0,0,0.03)';
+      ctx.fillStyle = 'rgba(251,248,242,0.03)'; // only alpha matters when erasing
       ctx.fillRect(0, 0, cv.width, cv.height);
       ctx.globalCompositeOperation = 'source-over';
     }
@@ -398,11 +409,11 @@
     const x = e.clientX - r.left, y = e.clientY - r.top;
     if (lx !== null) {
       const speed = Math.hypot(x - lx, y - ly);
-      ctx.strokeStyle = 'rgba(38,34,30,0.55)';
+      ctx.strokeStyle = 'rgba(11,74,58,0.6)';
       ctx.lineWidth = Math.max(0.6, 1.8 - speed * 0.02);
       ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(x, y); ctx.stroke();
       // graphite grain: a second, broken stroke
-      ctx.strokeStyle = 'rgba(38,34,30,0.18)';
+      ctx.strokeStyle = 'rgba(47,93,154,0.22)';
       ctx.lineWidth = 0.6;
       ctx.beginPath(); ctx.moveTo(lx + (Math.random() - 0.5) * 1.6, ly + (Math.random() - 0.5) * 1.6); ctx.lineTo(x + (Math.random() - 0.5) * 1.6, y + (Math.random() - 0.5) * 1.6); ctx.stroke();
     }

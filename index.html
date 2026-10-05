@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Launchpad — 26 October 2026</title>
   <meta name="description" content="Launchpad. One day. Three launches. A room full of possibility. 26 October 2026.">
-  <meta name="theme-color" content="#0A0908">
-  <link rel="icon" href="assets/logos/launchpad.png">
+  <meta name="theme-color" content="#052a21">
+  <link rel="icon" href="assets/logos/favicon.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,6 +25,31 @@
        Replace each .product-slot's contents with real product imagery when available. -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
+      <!-- duotones: photographs printed in emerald, navy or gold — never black -->
+      <filter id="tone-e" color-interpolation-filters="sRGB">
+        <feColorMatrix type="saturate" values="0"/>
+        <feComponentTransfer>
+          <feFuncR type="table" tableValues="0.020 0.090 0.560 0.975"/>
+          <feFuncG type="table" tableValues="0.165 0.250 0.640 0.955"/>
+          <feFuncB type="table" tableValues="0.130 0.200 0.560 0.905"/>
+        </feComponentTransfer>
+      </filter>
+      <filter id="tone-n" color-interpolation-filters="sRGB">
+        <feColorMatrix type="saturate" values="0"/>
+        <feComponentTransfer>
+          <feFuncR type="table" tableValues="0.040 0.100 0.540 0.975"/>
+          <feFuncG type="table" tableValues="0.122 0.200 0.600 0.955"/>
+          <feFuncB type="table" tableValues="0.240 0.360 0.700 0.905"/>
+        </feComponentTransfer>
+      </filter>
+      <filter id="tone-g" color-interpolation-filters="sRGB">
+        <feColorMatrix type="saturate" values="0"/>
+        <feComponentTransfer>
+          <feFuncR type="table" tableValues="0.030 0.300 0.800 0.985"/>
+          <feFuncG type="table" tableValues="0.200 0.330 0.680 0.950"/>
+          <feFuncB type="table" tableValues="0.160 0.230 0.420 0.840"/>
+        </feComponentTransfer>
+      </filter>
       <filter id="fold" x="-10%" y="-10%" width="120%" height="120%">
         <feTurbulence type="fractalNoise" baseFrequency="0.012 0.005" numOctaves="2" seed="4" result="n"/>
         <feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G" result="d"/>
@@ -34,15 +59,15 @@
       <filter id="softer"><feGaussianBlur stdDeviation="7"/></filter>
 
       <linearGradient id="ridge" x1="0" x2="1" y1="0" y2="0">
-        <stop offset="0" stop-color="#000" stop-opacity=".42"/>
+        <stop offset="0" stop-color="#032019" stop-opacity=".42"/>
         <stop offset=".55" stop-color="#fff" stop-opacity=".2"/>
         <stop offset=".75" stop-color="#fff" stop-opacity=".06"/>
-        <stop offset="1" stop-color="#000" stop-opacity=".3"/>
+        <stop offset="1" stop-color="#032019" stop-opacity=".3"/>
       </linearGradient>
       <linearGradient id="ridgeLight" x1="0" x2="1" y1="0" y2="0">
-        <stop offset="0" stop-color="#5e564b" stop-opacity=".3"/>
+        <stop offset="0" stop-color="#3d5a50" stop-opacity=".3"/>
         <stop offset=".5" stop-color="#fff" stop-opacity=".7"/>
-        <stop offset="1" stop-color="#5e564b" stop-opacity=".22"/>
+        <stop offset="1" stop-color="#3d5a50" stop-opacity=".22"/>
       </linearGradient>
       <g id="folds"><path d="M37.00,0 L39.00,0 Q17.25,55 2.70,104 L-5.90,104 Q11.95,55 37.00,0Z" fill="url(#ridge)"/><path d="M39.00,0 L41.00,0 Q23.15,55 11.30,104 L2.70,104 Q17.85,55 39.00,0Z" fill="url(#ridge)"/><path d="M41.00,0 L43.00,0 Q29.05,55 19.90,104 L11.30,104 Q23.75,55 41.00,0Z" fill="url(#ridge)"/><path d="M43.00,0 L45.00,0 Q34.95,55 28.50,104 L19.90,104 Q29.65,55 43.00,0Z" fill="url(#ridge)"/><path d="M45.00,0 L47.00,0 Q40.85,55 37.10,104 L28.50,104 Q35.55,55 45.00,0Z" fill="url(#ridge)"/><path d="M47.00,0 L49.00,0 Q46.75,55 45.70,104 L37.10,104 Q41.45,55 47.00,0Z" fill="url(#ridge)"/><path d="M49.00,0 L51.00,0 Q52.65,55 54.30,104 L45.70,104 Q47.35,55 49.00,0Z" fill="url(#ridge)"/><path d="M51.00,0 L53.00,0 Q58.55,55 62.90,104 L54.30,104 Q53.25,55 51.00,0Z" fill="url(#ridge)"/><path d="M53.00,0 L55.00,0 Q64.45,55 71.50,104 L62.90,104 Q59.15,55 53.00,0Z" fill="url(#ridge)"/><path d="M55.00,0 L57.00,0 Q70.35,55 80.10,104 L71.50,104 Q65.05,55 55.00,0Z" fill="url(#ridge)"/><path d="M57.00,0 L59.00,0 Q76.25,55 88.70,104 L80.10,104 Q70.95,55 57.00,0Z" fill="url(#ridge)"/><path d="M59.00,0 L61.00,0 Q82.15,55 97.30,104 L88.70,104 Q76.85,55 59.00,0Z" fill="url(#ridge)"/><path d="M61.00,0 L63.00,0 Q88.05,55 105.90,104 L97.30,104 Q82.75,55 61.00,0Z" fill="url(#ridge)"/></g>
       <g id="foldsLight"><path d="M37.00,0 L39.00,0 Q17.25,55 2.70,104 L-5.90,104 Q11.95,55 37.00,0Z" fill="url(#ridgeLight)"/><path d="M39.00,0 L41.00,0 Q23.15,55 11.30,104 L2.70,104 Q17.85,55 39.00,0Z" fill="url(#ridgeLight)"/><path d="M41.00,0 L43.00,0 Q29.05,55 19.90,104 L11.30,104 Q23.75,55 41.00,0Z" fill="url(#ridgeLight)"/><path d="M43.00,0 L45.00,0 Q34.95,55 28.50,104 L19.90,104 Q29.65,55 43.00,0Z" fill="url(#ridgeLight)"/><path d="M45.00,0 L47.00,0 Q40.85,55 37.10,104 L28.50,104 Q35.55,55 45.00,0Z" fill="url(#ridgeLight)"/><path d="M47.00,0 L49.00,0 Q46.75,55 45.70,104 L37.10,104 Q41.45,55 47.00,0Z" fill="url(#ridgeLight)"/><path d="M49.00,0 L51.00,0 Q52.65,55 54.30,104 L45.70,104 Q47.35,55 49.00,0Z" fill="url(#ridgeLight)"/><path d="M51.00,0 L53.00,0 Q58.55,55 62.90,104 L54.30,104 Q53.25,55 51.00,0Z" fill="url(#ridgeLight)"/><path d="M53.00,0 L55.00,0 Q64.45,55 71.50,104 L62.90,104 Q59.15,55 53.00,0Z" fill="url(#ridgeLight)"/><path d="M55.00,0 L57.00,0 Q70.35,55 80.10,104 L71.50,104 Q65.05,55 55.00,0Z" fill="url(#ridgeLight)"/><path d="M57.00,0 L59.00,0 Q76.25,55 88.70,104 L80.10,104 Q70.95,55 57.00,0Z" fill="url(#ridgeLight)"/><path d="M59.00,0 L61.00,0 Q82.15,55 97.30,104 L88.70,104 Q76.85,55 59.00,0Z" fill="url(#ridgeLight)"/><path d="M61.00,0 L63.00,0 Q88.05,55 105.90,104 L97.30,104 Q82.75,55 61.00,0Z" fill="url(#ridgeLight)"/></g>
@@ -56,9 +81,9 @@
       <clipPath id="clip-peak"><use href="#shape-peak"/></clipPath>
 
       <radialGradient id="litTop" cx="0.55" cy="0.08" r="0.9">
-        <stop offset="0" stop-color="#8d8172"/>
-        <stop offset="0.35" stop-color="#2b2723"/>
-        <stop offset="1" stop-color="#050504"/>
+        <stop offset="0" stop-color="#4f9c7f"/>
+        <stop offset="0.35" stop-color="#0d4535"/>
+        <stop offset="1" stop-color="#052a21"/>
       </radialGradient>
       <radialGradient id="litIvory" cx="0.35" cy="0.15" r="1">
         <stop offset="0" stop-color="#fbf8f2"/>
@@ -66,24 +91,39 @@
         <stop offset="1" stop-color="#b9b0a2"/>
       </radialGradient>
       <radialGradient id="litSpot" cx="0.5" cy="0.02" r="0.85">
-        <stop offset="0" stop-color="#d9cdbb"/>
-        <stop offset="0.25" stop-color="#5a5148"/>
-        <stop offset="0.7" stop-color="#151311"/>
-        <stop offset="1" stop-color="#040403"/>
+        <stop offset="0" stop-color="#ead8a6"/>
+        <stop offset="0.25" stop-color="#2b4f86"/>
+        <stop offset="0.7" stop-color="#0f2a52"/>
+        <stop offset="1" stop-color="#0a1f3d"/>
       </radialGradient>
     </defs>
   </svg>
 
   <div class="grain" aria-hidden="true"></div>
-  <div class="cursor" aria-hidden="true"><span class="cursor__ring"><b></b></span><span class="cursor__dot"></span></div>
+  <div class="cursor" aria-hidden="true">
+    <div class="cursor__rocket">
+      <!-- the Launchpad rocket, steering with you -->
+      <svg viewBox="0 0 40 66" width="24" height="40">
+        <g class="r-flame">
+          <path d="M14.5 50 Q20 70 25.5 50 Q20 55 14.5 50Z" fill="#e8c886"/>
+          <path d="M17.5 50 Q20 61 22.5 50Z" fill="#fbf8f2"/>
+        </g>
+        <path class="r-fin" d="M11.5 31 L4 43 L4 50 L11.5 45.5Z"/>
+        <path class="r-fin" d="M28.5 31 L36 43 L36 50 L28.5 45.5Z"/>
+        <path class="r-body" d="M20 2 C28.5 11.5 30.5 26 28.8 45 L11.2 45 C9.5 26 11.5 11.5 20 2Z"/>
+        <circle class="r-window" cx="20" cy="20" r="4"/>
+        <path class="r-line" d="M15.5 33 h9 M16.5 37.5 h7"/>
+      </svg>
+    </div>
+    <span class="cursor__label"></span>
+  </div>
   <div class="folio" aria-hidden="true"><span>Launchpad</span><i></i><span class="folio__now">26.10.2026</span></div>
 
   <!-- ============ NAVIGATION ============ -->
   <header class="nav" id="nav">
     <a class="nav__mark" href="#top" aria-label="Launchpad — back to the beginning">
       <img class="nav__mark-d" src="assets/logos/launchpad-mark.png" alt="Launchpad 2026" width="916" height="516">
-      <img class="nav__mark-l" src="assets/logos/launchpad.png" alt="" width="916" height="516">
-    </a>
+          </a>
     <nav class="nav__links" aria-label="Primary">
       <a href="#the-day">The Day</a>
       <a href="#the-launches">The Launches</a>
@@ -408,7 +448,7 @@
             <use href="#shape-tall" fill="url(#litTop)"/>
             <g clip-path="url(#clip-tall)">
               <use href="#folds" transform="translate(20 44) scale(3.6 4.3)" filter="url(#fold)"/>
-              <ellipse cx="200" cy="480" rx="220" ry="60" fill="#000" opacity=".55" filter="url(#soft)"/>
+              <ellipse cx="200" cy="480" rx="220" ry="60" fill="#032019" opacity=".55" filter="url(#soft)"/>
             </g>
             <use href="#shape-tall" fill="none" stroke="#cbbfae" stroke-opacity=".22" stroke-width="1"/>
           </svg>
@@ -437,7 +477,7 @@
 
         <div class="product-slot l2__object" data-product="02" role="img" aria-label="Product two — to be revealed on 26 October 2026">
           <svg viewBox="0 0 600 360" class="l2__shadow" aria-hidden="true">
-            <use href="#shape-wide" fill="#2a251f" filter="url(#softer)"/>
+            <use href="#shape-wide" fill="#0b3a2e" filter="url(#softer)"/>
           </svg>
           <!-- REPLACE: <img src="assets/products/launch-02.avif" alt="…"> -->
           <svg viewBox="0 0 600 360" class="veil">
@@ -478,7 +518,7 @@
             <use href="#shape-peak" fill="url(#litSpot)"/>
             <g clip-path="url(#clip-peak)">
               <use href="#folds" transform="translate(20 24) scale(3.8 3.9)" filter="url(#fold)"/>
-              <ellipse cx="210" cy="440" rx="230" ry="50" fill="#000" opacity=".6" filter="url(#soft)"/>
+              <ellipse cx="210" cy="440" rx="230" ry="50" fill="#032019" opacity=".6" filter="url(#soft)"/>
             </g>
             <use href="#shape-peak" fill="none" stroke="#e8dccb" stroke-opacity=".28" stroke-width="1"/>
           </svg>
@@ -628,7 +668,7 @@
       <p class="marks__cap" data-reveal>An experience built with purpose.</p>
       <div class="marks__row">
         <figure class="mark mark--primary" data-reveal>
-          <img src="assets/logos/launchpad.png" alt="Launchpad 2026" width="916" height="516" loading="lazy">
+          <img src="assets/logos/launchpad-mark.png" alt="Launchpad 2026" width="916" height="516" loading="lazy">
           <figcaption>Launchpad</figcaption>
         </figure>
         <figure class="mark" data-reveal>
