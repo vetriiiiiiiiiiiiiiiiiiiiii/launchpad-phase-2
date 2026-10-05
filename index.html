@@ -15,7 +15,7 @@
 
   <!-- The opening photographs are needed immediately -->
   <link rel="preload" as="image" href="https://images.unsplash.com/photo-1771942690809-49605caf6ec5?auto=format&fit=crop&w=1800&q=70">
-  <link rel="preload" as="image" href="https://images.unsplash.com/photo-1770844102881-f8823e9f3c83?auto=format&fit=crop&w=1800&q=70">
+  <link rel="preload" as="image" imagesizes="100vw" imagesrcset="https://images.unsplash.com/photo-1770844102881-f8823e9f3c83?auto=format&fit=crop&w=900&q=70 900w, https://images.unsplash.com/photo-1770844102881-f8823e9f3c83?auto=format&fit=crop&w=1800&q=70 1800w, https://images.unsplash.com/photo-1770844102881-f8823e9f3c83?auto=format&fit=crop&w=2600&q=68 2600w">
 
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -75,6 +75,8 @@
   </svg>
 
   <div class="grain" aria-hidden="true"></div>
+  <div class="cursor" aria-hidden="true"><span class="cursor__ring"><b></b></span><span class="cursor__dot"></span></div>
+  <div class="folio" aria-hidden="true"><span>Launchpad</span><i></i><span class="folio__now">26.10.2026</span></div>
 
   <!-- ============ NAVIGATION ============ -->
   <header class="nav" id="nav">
@@ -144,6 +146,8 @@
           <span class="rv"><span>Launchpad</span></span>
           <span class="hero__rule" aria-hidden="true"></span>
           <span class="rv"><span>26 October 2026</span></span>
+          <span class="hero__rule" aria-hidden="true"></span>
+          <span class="rv"><span class="tminus">T–<b data-cd="d">00</b> days</span></span>
         </p>
         <p class="hero__count">
           <span class="rv"><span>One day.</span></span>
@@ -163,12 +167,12 @@
     </section>
 
     <!-- ============ THE STATEMENT ============ -->
-    <section class="statement" id="about" data-scroll>
+    <section class="statement" id="about" data-scroll data-folio="Not another event">
       <div class="statement__inner">
         <p class="eyebrow" data-reveal>Launchpad · 26.10.2026</p>
         <h2 class="statement__big" data-reveal>
-          <span class="rv"><span>Not another</span></span>
-          <span class="rv"><span>event.</span></span>
+          <span class="rv"><span data-weight>Not another</span></span>
+          <span class="rv"><span data-weight>event.</span></span>
         </h2>
 
         <figure class="statement__plate">
@@ -190,8 +194,27 @@
       </div>
     </section>
 
+    <!-- ============ INSIDE THE DAY ============ -->
+    <section class="inside" id="the-experience" data-folio="Inside the day">
+      <header class="inside__head">
+        <p class="eyebrow" data-reveal>What happens in the room</p>
+        <h2 class="inside__title" data-reveal>
+          <span class="rv"><span>Everything,</span></span>
+          <span class="rv"><span><em>in one day.</em></span></span>
+        </h2>
+      </header>
+      <ol class="index">
+        <li data-reveal><a href="#the-talks" data-img="photo-1581968529998-97309a14e14a" data-cursor="View"><span class="index__n">01</span><span class="index__t">The Talks</span><span class="index__d">Expert voices, unfiltered.</span><i aria-hidden="true">→</i></a></li>
+        <li data-reveal><a href="#the-workshop" data-img="photo-1755053757912-a63da9d6e0e2" data-cursor="View"><span class="index__n">02</span><span class="index__t">The Workshop</span><span class="index__d">Hands-on problem solving.</span><i aria-hidden="true">→</i></a></li>
+        <li data-reveal><a href="#the-pitch" data-img="photo-1764874299006-bf4266427ec9" data-cursor="View"><span class="index__n">03</span><span class="index__t">The Pitch</span><span class="index__d">Ideas, said out loud.</span><i aria-hidden="true">→</i></a></li>
+        <li data-reveal><a href="#the-launches" data-img="photo-1774967550635-182fb37cf31f" data-cursor="View"><span class="index__n">04</span><span class="index__t">The Launches</span><span class="index__d">Three reveals.</span><i aria-hidden="true">→</i></a></li>
+        <li data-reveal><a href="#the-exhibition" data-img="photo-1760662400269-e7161cb48edf" data-cursor="View"><span class="index__n">05</span><span class="index__t">The Exhibition</span><span class="index__d">What's being built.</span><i aria-hidden="true">→</i></a></li>
+        <li data-reveal><a href="#the-room" data-img="photo-1775163560631-6ff15eb2fa1f" data-cursor="View"><span class="index__n">06</span><span class="index__t">The Room</span><span class="index__d">The people you meet.</span><i aria-hidden="true">→</i></a></li>
+      </ol>
+    </section>
+
     <!-- ============ THE DAY ============ -->
-    <section class="day" id="the-day">
+    <section class="day" id="the-day" data-folio="The Day">
       <header class="day__head">
         <p class="eyebrow" data-reveal>A single, continuous day</p>
         <h2 class="day__title" data-reveal><span class="rv"><span>The Day</span></span></h2>
@@ -205,7 +228,9 @@
           <div class="day__frame">
             <img data-u="photo-1770844102881-f8823e9f3c83" data-w="1400" alt="" class="is-active">
             <img data-u="photo-1784542471035-5793a167ee63" data-w="1400" alt="">
-            <img data-u="photo-1507537362848-9c7e70b7b5c1" data-w="1400" alt="">
+            <img data-u="photo-1581968529998-97309a14e14a" data-w="1400" alt="">
+            <img data-u="photo-1755053757912-a63da9d6e0e2" data-w="1400" alt="">
+            <img data-u="photo-1764874299006-bf4266427ec9" data-w="1400" alt="">
             <img data-u="photo-1743119844808-fefd446de533" data-w="1400" alt="">
             <div class="day__veil day__veil--dark"></div>
             <div class="day__veil day__veil--light"></div>
@@ -213,97 +238,151 @@
             <img data-u="photo-1775163560631-6ff15eb2fa1f" data-w="1400" alt="">
             <img data-u="photo-1760662347435-1c0a11fea640" data-w="1400" alt="">
           </div>
-          <p class="day__counter"><span class="day__now">I</span><span>/ IX</span></p>
+          <p class="day__counter"><span class="day__now">I</span><span>/ XI</span></p>
         </div>
 
         <ol class="day__list">
           <li class="moment" data-i="0" data-act="Arrive">
             <span class="moment__num">I</span>
-            <div>
-              <p class="moment__time">Morning</p>
-              <h3>Arrival</h3>
-              <p>People enter. The room begins to fill.</p>
-            </div>
+            <div><p class="moment__time">Morning</p><h3>Arrival</h3><p>People enter. The room begins to fill.</p></div>
             <img class="moment__m" data-u="photo-1770844102881-f8823e9f3c83" data-w="900" alt="Empty rows of seats before the audience arrives." loading="lazy">
           </li>
           <li class="moment" data-i="1" data-act="Arrive">
             <span class="moment__num">II</span>
-            <div>
-              <p class="moment__time">Then</p>
-              <h3>Opening</h3>
-              <p>The stage comes alive.</p>
-            </div>
+            <div><p class="moment__time">Then</p><h3>Opening</h3><p>The stage comes alive.</p></div>
             <img class="moment__m" data-u="photo-1784542471035-5793a167ee63" data-w="900" alt="An audience silhouetted against bright stage light." loading="lazy">
           </li>
           <li class="moment" data-i="2" data-act="Discover">
             <span class="moment__num">III</span>
-            <div>
-              <p class="moment__time">Then</p>
-              <h3>Founders</h3>
-              <p>Conversations begin.</p>
-            </div>
-            <img class="moment__m" data-u="photo-1507537362848-9c7e70b7b5c1" data-w="900" alt="Two people deep in conversation." loading="lazy">
+            <div><p class="moment__time">Expert talks</p><h3>The Talks</h3><p>People who've done it take the stage.</p></div>
+            <img class="moment__m" data-u="photo-1581968529998-97309a14e14a" data-w="900" alt="A speaker alone on a vast stage." loading="lazy">
           </li>
           <li class="moment" data-i="3" data-act="Discover">
             <span class="moment__num">IV</span>
-            <div>
-              <p class="moment__time">Then</p>
-              <h3>Discovery</h3>
-              <p>Ideas, products and people meet.</p>
-            </div>
-            <img class="moment__m" data-u="photo-1743119844808-fefd446de533" data-w="900" alt="Visitors moving through an exhibition hall." loading="lazy">
+            <div><p class="moment__time">Hands-on</p><h3>The Workshop</h3><p>Real problems, solved together.</p></div>
+            <img class="moment__m" data-u="photo-1755053757912-a63da9d6e0e2" data-w="900" alt="Participants building at a workbench." loading="lazy">
           </li>
-          <li class="moment moment--launch" data-i="4" data-act="Launch">
+          <li class="moment" data-i="4" data-act="Discover">
             <span class="moment__num">V</span>
-            <div>
-              <p class="moment__time">The first launch</p>
-              <h3>Product One</h3>
-              <p>Under wraps until the moment.</p>
-            </div>
-            <div class="moment__m moment__m--dark" aria-hidden="true"></div>
+            <div><p class="moment__time">Pitching</p><h3>The Pitch</h3><p>Ideas, said out loud.</p></div>
+            <img class="moment__m" data-u="photo-1764874299006-bf4266427ec9" data-w="900" alt="An empty podium on a lit stage." loading="lazy">
           </li>
-          <li class="moment moment--launch" data-i="5" data-act="Launch">
+          <li class="moment" data-i="5" data-act="Discover">
             <span class="moment__num">VI</span>
-            <div>
-              <p class="moment__time">The second launch</p>
-              <h3>Product Two</h3>
-              <p>Under wraps until the moment.</p>
-            </div>
-            <div class="moment__m moment__m--light" aria-hidden="true"></div>
+            <div><p class="moment__time">Exhibition</p><h3>Discovery</h3><p>Ideas, products and people meet.</p></div>
+            <img class="moment__m" data-u="photo-1743119844808-fefd446de533" data-w="900" alt="Visitors moving through an exhibition hall." loading="lazy">
           </li>
           <li class="moment moment--launch" data-i="6" data-act="Launch">
             <span class="moment__num">VII</span>
-            <div>
-              <p class="moment__time">The third launch</p>
-              <h3>Product Three</h3>
-              <p>Under wraps until the moment.</p>
-            </div>
+            <div><p class="moment__time">The first launch</p><h3>Product One</h3><p>Under wraps until the moment.</p></div>
+            <div class="moment__m moment__m--dark" aria-hidden="true"></div>
+          </li>
+          <li class="moment moment--launch moment--light" data-i="7" data-act="Launch">
+            <span class="moment__num">VIII</span>
+            <div><p class="moment__time">The second launch</p><h3>Product Two</h3><p>Under wraps until the moment.</p></div>
+            <div class="moment__m moment__m--light" aria-hidden="true"></div>
+          </li>
+          <li class="moment moment--launch" data-i="8" data-act="Launch">
+            <span class="moment__num">IX</span>
+            <div><p class="moment__time">The third launch</p><h3>Product Three</h3><p>Under wraps until the moment.</p></div>
             <div class="moment__m moment__m--spot" aria-hidden="true"></div>
           </li>
-          <li class="moment" data-i="7" data-act="Connect">
-            <span class="moment__num">VIII</span>
-            <div>
-              <p class="moment__time">After</p>
-              <h3>Connection</h3>
-              <p>People meet.</p>
-            </div>
+          <li class="moment" data-i="9" data-act="Connect">
+            <span class="moment__num">X</span>
+            <div><p class="moment__time">After</p><h3>Connection</h3><p>People meet.</p></div>
             <img class="moment__m" data-u="photo-1775163560631-6ff15eb2fa1f" data-w="900" alt="People mingling in warm evening light." loading="lazy">
           </li>
-          <li class="moment" data-i="8" data-act="Leave different">
-            <span class="moment__num">IX</span>
-            <div>
-              <p class="moment__time">Evening</p>
-              <h3>Closing</h3>
-              <p>The room leaves with something new.</p>
-            </div>
+          <li class="moment" data-i="10" data-act="Leave different">
+            <span class="moment__num">XI</span>
+            <div><p class="moment__time">Evening</p><h3>Closing</h3><p>The room leaves with something new.</p></div>
             <img class="moment__m" data-u="photo-1760662347435-1c0a11fea640" data-w="900" alt="Silhouettes walking out through a dim gallery toward the light." loading="lazy">
           </li>
         </ol>
       </div>
     </section>
 
+    <!-- ============ THE TALKS ============ -->
+    <section class="talks" id="the-talks" data-scroll data-folio="The Talks">
+      <div class="talks__sticky">
+        <div class="talks__slit">
+          <img data-u="photo-1581968529998-97309a14e14a" data-w="2200" alt="A speaker alone on a vast stage before a glowing screen.">
+        </div>
+        <div class="talks__copy">
+          <p class="eyebrow">Expert Talks</p>
+          <h2 class="talks__title">
+            <span class="rv"><span>Learn from</span></span>
+            <span class="rv"><span>those who've</span></span>
+            <span class="rv"><span><em>done it.</em></span></span>
+          </h2>
+        </div>
+      </div>
+    </section>
+    <section class="talks-more" data-folio="The Talks">
+      <div class="talks-more__grid">
+        <p class="talks-more__body" data-reveal>Expert talks from people who have built, scaled, stumbled and started again — the lessons that rarely make it into a textbook, told by the people who learned them.</p>
+        <figure class="ph talks-more__a" data-reveal><img data-u="photo-1679579664878-2c025e3f87b0" data-w="1100" alt="A speaker on stage, microphone in hand." loading="lazy"><figcaption><b>i</b> On stage</figcaption></figure>
+        <figure class="ph talks-more__b" data-reveal><img data-u="photo-1544531585-b3fadf704c02" data-w="900" alt="An audience member asking a question into a microphone." loading="lazy"><figcaption><b>ii</b> The question</figcaption></figure>
+      </div>
+      <div class="lineup" data-reveal>
+        <p class="lineup__label">The lineup</p>
+        <p class="lineup__status">Revealed <em>soon.</em></p>
+      </div>
+      <div class="roll" aria-hidden="true">
+        <div class="roll__track"><span>Founders <i>·</i> Operators <i>·</i> Investors <i>·</i> Makers <i>·</i> Experts <i>·</i>&nbsp;</span><span>Founders <i>·</i> Operators <i>·</i> Investors <i>·</i> Makers <i>·</i> Experts <i>·</i>&nbsp;</span></div>
+      </div>
+    </section>
+
+    <!-- ============ THE WORKSHOP ============ -->
+    <section class="shop" id="the-workshop" data-folio="The Workshop" data-cursor="Draw">
+      <canvas class="shop__pencil" aria-hidden="true"></canvas>
+      <div class="shop__inner">
+        <header class="shop__head">
+          <p class="eyebrow" data-reveal>Hands-on problem solving</p>
+          <h2 class="shop__title" data-reveal>
+            <span class="rv"><span>Don't just</span></span>
+            <span class="rv"><span>listen.</span></span>
+            <span class="rv"><span><em>Solve.</em></span></span>
+          </h2>
+          <p class="shop__body" data-reveal>Hands-on sessions where you learn by working through real problems — with guidance, with tools, and with the people beside you.</p>
+          <p class="shop__note" aria-hidden="true">go on — sketch on the page ↗</p>
+        </header>
+        <ol class="steps">
+          <li data-reveal><span>i.</span><h3>Find the real problem.</h3><p>Not the symptom. The thing underneath it.</p></li>
+          <li data-reveal><span>ii.</span><h3>Break it apart.</h3><p>Smaller pieces. Clearer questions.</p></li>
+          <li data-reveal><span>iii.</span><h3>Build something rough.</h3><p>Paper, code, cardboard — whatever moves it forward.</p></li>
+          <li data-reveal><span>iv.</span><h3>Test it on the room.</h3><p>Real feedback, from real people.</p></li>
+        </ol>
+        <div class="prints">
+          <figure class="print print--1" data-reveal><img data-u="photo-1755053757912-a63da9d6e0e2" data-w="1100" alt="Participants building a prototype together at a workbench." loading="lazy"><figcaption>Fig. 1 — Building</figcaption></figure>
+          <figure class="print print--2" data-reveal><img data-u="photo-1598520106830-8c45c2035460" data-w="900" alt="A hand sketching a system diagram on glass." loading="lazy"><figcaption>Fig. 2 — Thinking out loud</figcaption></figure>
+          <figure class="print print--3" data-reveal><img data-u="photo-1501516069922-a9982bd6f3bd" data-w="900" alt="Drafting tools laid out on a desk." loading="lazy"><figcaption>Fig. 3 — The tools</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ THE PITCH ============ -->
+    <section class="pitch" id="the-pitch" data-scroll data-folio="The Pitch">
+      <div class="pitch__sticky">
+        <div class="pitch__bg" aria-hidden="true"><img data-u="photo-1764874299006-bf4266427ec9" data-w="2000" alt=""></div>
+        <div class="pitch__copy">
+          <p class="eyebrow">Pitching</p>
+          <h2 class="pitch__title"><span>Stand up.</span> <span>Speak up.</span> <span><em>Be heard.</em></span></h2>
+          <p class="pitch__body">Founders and student builders take the stage to pitch their ideas to the room — and to the people in it who can help those ideas happen.</p>
+        </div>
+        <div class="deck" aria-label="Anatomy of a pitch">
+          <article class="card"><p class="card__n">01</p><h3>The problem.</h3><p>Something is broken. Say what.</p><span class="card__f">Launchpad · The Pitch</span></article>
+          <article class="card"><p class="card__n">02</p><h3>The insight.</h3><p>What you see that others don't.</p><span class="card__f">Launchpad · The Pitch</span></article>
+          <article class="card"><p class="card__n">03</p><h3>The solution.</h3><p>What you built. Show it.</p><span class="card__f">Launchpad · The Pitch</span></article>
+          <article class="card"><p class="card__n">04</p><h3>Why now.</h3><p>Why this, why you, why today.</p><span class="card__f">Launchpad · The Pitch</span></article>
+          <article class="card"><p class="card__n">05</p><h3>The ask.</h3><p>What you need from the room.</p><span class="card__f">Launchpad · The Pitch</span></article>
+          <article class="card card--end"><h3>The room is <em>listening.</em></h3><span class="card__f">26 October 2026</span></article>
+        </div>
+        <p class="pitch__progress"><span class="pitch__count">01</span> / 06</p>
+      </div>
+    </section>
+
     <!-- ============ THE LAUNCHES ============ -->
-    <section class="launches-intro" id="the-launches" data-scroll>
+    <section class="launches-intro" id="the-launches" data-scroll data-folio="The Launches">
       <div class="launches-intro__inner">
         <p class="eyebrow" data-reveal>The centrepiece</p>
         <h2 class="launches-intro__title" data-reveal>
@@ -317,8 +396,9 @@
     </section>
 
     <!-- LAUNCH 01 — from darkness -->
-    <section class="launch launch--one" id="launch-1" data-scroll aria-labelledby="l1-title">
+    <section class="launch launch--one" id="launch-1" data-scroll data-folio="The First Reveal" aria-labelledby="l1-title">
       <div class="launch__sticky">
+        <div class="stage-host" aria-hidden="true"></div>
         <div class="l1__cone" aria-hidden="true"></div>
         <div class="thread thread--drop" aria-hidden="true"><span></span><b class="spark"></b></div>
 
@@ -346,8 +426,9 @@
     </section>
 
     <!-- LAUNCH 02 — the white room -->
-    <section class="launch launch--two" id="launch-2" data-scroll aria-labelledby="l2-title">
+    <section class="launch launch--two" id="launch-2" data-scroll data-folio="The Second Reveal" aria-labelledby="l2-title">
       <div class="launch__sticky">
+        <div class="stage-host" aria-hidden="true"></div>
         <div class="l2__room" aria-hidden="true">
           <img data-u="photo-1567201864585-6baec9110dac" data-w="1800" alt="">
         </div>
@@ -380,8 +461,9 @@
     </section>
 
     <!-- LAUNCH 03 — the final reveal -->
-    <section class="launch launch--three" id="launch-3" data-scroll aria-labelledby="l3-title">
+    <section class="launch launch--three" id="launch-3" data-scroll data-folio="The Final Reveal" aria-labelledby="l3-title">
       <div class="launch__sticky">
+        <div class="stage-host" aria-hidden="true"></div>
         <p class="l3__hush" aria-hidden="true">And then the room goes quiet.</p>
 
         <div class="l3__word" aria-hidden="true">
@@ -416,7 +498,7 @@
     </section>
 
     <!-- ============ FOR THE ONES WHO BUILD ============ -->
-    <section class="builders" id="the-experience" data-scroll>
+    <section class="builders" data-scroll data-folio="For the ones who build">
       <header class="builders__head">
         <p class="eyebrow" data-reveal>The protagonist</p>
         <h2 class="builders__title" data-reveal>
@@ -462,7 +544,7 @@
     </section>
 
     <!-- ============ THE CONVERSATION ============ -->
-    <section class="talk" data-scroll>
+    <section class="talk" data-scroll data-folio="The Conversation">
       <div class="talk__grid">
         <figure class="talk__plate">
           <div class="crop">
@@ -492,7 +574,7 @@
     </section>
 
     <!-- ============ THE EXHIBITION ============ -->
-    <section class="expo" data-scroll data-hscroll>
+    <section class="expo" id="the-exhibition" data-scroll data-hscroll data-folio="The Exhibition">
       <div class="expo__sticky">
         <header class="expo__head">
           <p class="eyebrow">The Exhibition</p>
@@ -527,7 +609,7 @@
     </section>
 
     <!-- ============ CONNECTION ============ -->
-    <section class="meet" data-scroll>
+    <section class="meet" id="the-room" data-scroll data-folio="The Room">
       <div class="meet__inner">
         <h2 class="meet__title" data-reveal>
           <span class="rv"><span>The people</span></span>
@@ -542,7 +624,7 @@
     </section>
 
     <!-- ============ INSTITUTIONAL IDENTITY ============ -->
-    <section class="marks">
+    <section class="marks" data-folio="With purpose">
       <p class="marks__cap" data-reveal>An experience built with purpose.</p>
       <div class="marks__row">
         <figure class="mark mark--primary" data-reveal>
@@ -561,11 +643,17 @@
     </section>
 
     <!-- ============ FINAL ============ -->
-    <section class="finale" id="be-in-the-room" data-scroll>
+    <section class="finale" id="be-in-the-room" data-scroll data-folio="What's next">
       <div class="finale__sticky">
         <p class="finale__line finale__line--1">You came<br><em>for the launch.</em></p>
         <p class="finale__line finale__line--2">You leave<br><em>with what's next.</em></p>
         <div class="finale__end">
+          <div class="count" role="timer" aria-label="Time until 26 October 2026">
+            <div><b data-cd="d">00</b><span>Days</span></div>
+            <div><b data-cd="h">00</b><span>Hours</span></div>
+            <div><b data-cd="m">00</b><span>Minutes</span></div>
+            <div><b data-cd="s">00</b><span>Seconds</span></div>
+          </div>
           <p class="finale__date">26 October 2026</p>
           <img class="finale__mark" src="assets/logos/launchpad-mark.png" alt="Launchpad 2026" width="916" height="516" loading="lazy">
           <!-- REPLACE href with the registration link -->
@@ -581,6 +669,7 @@
     <a href="#top">Back to the beginning ↑</a>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
   <script src="main.js" defer></script>
 </body>
 </html>

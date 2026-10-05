@@ -31,7 +31,8 @@ const STAGES = {
   // 01 — a monolith in the dark
   one: {
     bg: 0x0a0908, fog: [0x0a0908, 6, 13], alpha: true,
-    cloth: { size: 2.5, y: 1.5, color: 0x14110e, sheen: 0x9c8a74, sheenRough: .42, rough: .92 },
+    cloth: { size: 2.5, y: 1.5, color: 0x0d0b09, sheen: 0x6e604f, sheenRough: .38, rough: .94 },
+    frame: 1.55,
     sdf: (x, y, z) => sdRoundBox(x, y, z, 0, .62, 0, .3, .62, .3, .06),
     top: 1.24,
     plinth: null,
@@ -41,24 +42,25 @@ const STAGES = {
   // 02 — a low form in a white room, a sun crossing the sky
   two: {
     bg: null, alpha: true,
-    cloth: { size: 2.9, y: 1.35, color: 0xf1ebe0, sheen: 0xffffff, sheenRough: .7, rough: .86 },
+    cloth: { size: 3.3, y: 1.35, color: 0xf1ebe0, sheen: 0xffffff, sheenRough: .7, rough: .86 },
+    frame: 1.9,
     sdf: (x, y, z) => Math.min(
       sdRoundBox(x, y, z, 0, .2, 0, 1.0, .2, .6, .015),
       sdRoundBox(x, y, z, 0, .63, 0, .6, .23, .34, .1)),
     top: .86,
-    plinth: { hx: 1.0, hy: .2, hz: .6, color: 0xf6f2ea },
+    plinth: { hx: 1.0, hy: .2, hz: .6, color: 0xe2dbce },
     floor: { shadowOnly: true },
     cam: { from: v(0, 1.55, 6.6), to: v(.25, 1.35, 5.8), look: v(0, .55, 0), fov: 30 },
   },
   // 03 — the final object, under a single beam
   three: {
     bg: 0x0a0908, fog: [0x0a0908, 6, 12], alpha: true,
-    cloth: { size: 2.3, y: 1.75, color: 0x1e1a16, sheen: 0xd8c3a2, sheenRough: .36, rough: .9 },
+    cloth: { size: 2.3, y: 1.5, color: 0x15120f, sheen: 0x9a8670, sheenRough: .34, rough: .92 },
+    frame: 1.5,
     sdf: (x, y, z) => Math.min(
       sdRoundBox(x, y, z, 0, .13, 0, .55, .13, .55, .02),
-      sdCappedCone(x, y, z, 0, .74, 0, .48, .36, .1),
-      sdRoundBox(x, y, z, 0, 1.24, 0, .1, .04, .1, .04)),
-    top: 1.3,
+      sdCappedCone(x, y, z, 0, .74, 0, .48, .36, .15) - .03),
+    top: 1.25,
     plinth: { hx: .55, hy: .13, hz: .55, color: 0x2a2520 },
     floor: { color: 0x13110f, rough: .82 },
     cam: { from: v(0, 1.1, 7.6), to: v(0, 1.25, 5.4), look: v(0, .85, 0), fov: 30 },
@@ -73,12 +75,15 @@ class Cloth {
     this.pos = new Float32Array(count * 3);
     this.prev = new Float32Array(count * 3);
     this.contact = new Uint8Array(count);
+    // static friction: fabric resting on a top surface stays where it landed
+    this.anchor = new Float32Array(count * 2);
+    this.held = new Uint8Array(count);
     const step = size / n;
     for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) {
       const k = (j * (n + 1) + i) * 3;
       // start as a slightly domed sheet so it falls with natural folds
       const x = -size / 2 + i * step, z = -size / 2 + j * step;
-      const yy = y + .04 * Math.sin(i * .9) * Math.cos(j * .7);
+      const yy = y + .04 * Math.cos((i - n / 2) * .9) * Math.cos((j - n / 2) * .7);
       this.pos[k] = this.prev[k] = x;
       this.pos[k + 1] = this.prev[k + 1] = yy;
       this.pos[k + 2] = this.prev[k + 2] = z;
@@ -100,7 +105,7 @@ class Cloth {
     this.lift = 0; this.time = 0;
   }
   step(dt, wind = 0) {
-    const { pos, prev, cons, contact, sdf } = this;
+    const { pos, prev, cons, contact, sdf, anchor, held } = this;
     const g = -9.8 * dt * dt, damp = .988, n3 = pos.length;
     this.time += dt;
     const t = this.time, n = this.n;
@@ -114,7 +119,7 @@ class Cloth {
       const az = wind * dt * dt * .6 * Math.cos(t * .5 + x * 1.7);
       if (this.lift > 0) {
         const j = Math.floor(p / (n + 1));
-        const front = clamp((j / n - .78) / .22);
+        const front = clamp((j / n - .86) / .14);
         ay += this.lift * front * front * dt * dt * 14;
       }
       pos[k] = x + vx + ax; pos[k + 1] = y + vy + ay; pos[k + 2] = z + vz + az;
@@ -142,7 +147,11 @@ class Cloth {
           nx /= l; ny /= l; nz /= l;
           pos[k] -= nx * d; pos[k + 1] -= ny * d; pos[k + 2] -= nz * d;
           contact[p] = 1;
-        }
+          if (ny > .2 && d > -.03 && pos[k + 1] > .05) {
+            if (!held[p]) { held[p] = 1; anchor[p * 2] = pos[k]; anchor[p * 2 + 1] = pos[k + 2]; }
+            pos[k] = anchor[p * 2]; pos[k + 2] = anchor[p * 2 + 1];
+          }
+        } else if (d > .04) held[p] = 0;
         if (pos[k + 1] < .004) { pos[k + 1] = .004; contact[p] = 1; }
       }
     }
@@ -217,7 +226,7 @@ export function mountStage(host, key, { mobile = false } = {}) {
   }
 
   // cloth
-  const N = mobile ? 34 : 46;
+  const N = mobile ? 38 : 54;
   const cloth = new Cloth(N, S.cloth.size, S.cloth.y, S.sdf);
   const geo = new THREE.PlaneGeometry(1, 1, N, N);
   geo.setAttribute('position', new THREE.BufferAttribute(cloth.pos, 3));
@@ -283,8 +292,10 @@ export function mountStage(host, key, { mobile = false } = {}) {
     w = host.clientWidth; h = host.clientHeight;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    // keep the object comfortably framed on tall phones
-    camera.fov = S.cam.fov * (camera.aspect < .75 ? 1.55 : camera.aspect < 1.1 ? 1.25 : 1);
+    // keep the object's full width in frame on tall screens
+    const dist = S.cam.to.distanceTo(S.cam.look);
+    const fit = 2 * Math.atan((S.frame / dist) / camera.aspect) * 180 / Math.PI;
+    camera.fov = Math.max(S.cam.fov, Math.min(fit, 62));
     camera.updateProjectionMatrix();
   };
 
@@ -294,8 +305,8 @@ export function mountStage(host, key, { mobile = false } = {}) {
     camera.lookAt(S.cam.look);
     if (key === 'one') {
       const lit = ease(ramp(p, .22, .7));
-      L.key.intensity = 70 * lit;
-      L.rim.intensity = 26 * ease(ramp(p, .35, .8));
+      L.key.intensity = 38 * lit;
+      L.rim.intensity = 30 * ease(ramp(p, .35, .8));
       L.amb.intensity = .015 + .03 * lit;
     } else if (key === 'two') {
       // the sun crosses from left to right; the shadow swings with it
@@ -304,12 +315,12 @@ export function mountStage(host, key, { mobile = false } = {}) {
       L.sun.intensity = 2.1 + .8 * Math.cos(a);
     } else {
       const lit = ease(ramp(p, .34, .5));
-      L.key.intensity = 140 * lit;
+      L.key.intensity = 70 * lit;
       L.key.angle = .12 + .1 * ease(ramp(p, .34, .66));
       L.beam.material.uniforms.uStrength.value = lit;
       L.beam.scale.set(.6 + .45 * ease(ramp(p, .34, .66)), 1, .6 + .45 * ease(ramp(p, .34, .66)));
       L.fill.intensity = 1.2 * ease(ramp(p, .7, .9));
-      cloth.lift = 1.15 * ease(ramp(p, .78, 1));
+      cloth.lift = .55 * ease(ramp(p, .8, 1));
     }
   };
 
