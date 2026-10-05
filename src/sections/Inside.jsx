@@ -9,7 +9,7 @@ const ROWS = [
   { n: '03', t: 'The Pitch', d: 'Ideas, said out loud.', href: '#the-pitch', img: P.podium },
   { n: '04', t: 'The Launches', d: 'Three reveals.', to: '/launches', img: P.emeraldGlass },
   { n: '05', t: 'The Exhibition', d: "What's being built.", href: '#the-exhibition', img: P.roundLibrary },
-  { n: '06', t: 'The Room', d: 'The people you meet.', href: '#the-room', img: P.cafeTree },
+  { n: '06', t: 'The Room', d: 'The people you meet.', href: '#the-room', img: P.cafeMonstera },
 ];
 
 function Row({ row }) {

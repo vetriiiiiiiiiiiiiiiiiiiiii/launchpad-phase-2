@@ -45,7 +45,7 @@ export default function Statement() {
           <Rv><Weighted text="event." letters={letters} /></Rv>
         </h2>
         <figure className="statement__plate">
-          <Crop><Photo id={P.spotlight} w={1800} alt="A figure caught in a single beam of emerald light, waiting to begin." /></Crop>
+          <Crop><Photo id={P.greenRoom} w={1800} alt="A lone figure standing in a vast green room, before anyone else arrives." /></Crop>
           <figcaption>Pl. i — Before the room fills.</figcaption>
         </figure>
         <div className="statement__after">

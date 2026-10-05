@@ -24,3 +24,86 @@ main.lp { display: block; }
 }
 @keyframes sheen { to { background-position: -220% 0; } }
 @media (prefers-reduced-motion: reduce) { .mask { animation: none; } }
+
+/* ==========================================================================
+   Refinement pass
+   ========================================================================== */
+
+/* the statement never breaks a word: each line holds together and is sized to fit */
+.statement__big { font-size: clamp(56px, 12.4vw, 250px); }
+.statement__big .rv { white-space: nowrap; }
+
+/* the hero hall, nudged from lime toward emerald (a grade, not an overlay) */
+.hero__room img { filter: saturate(.8) hue-rotate(14deg) brightness(.92) !important; }
+.hero__shade {
+  background:
+    linear-gradient(180deg, rgba(2,59,44,.55) 0%, rgba(2,59,44,.05) 26%, rgba(2,59,44,.1) 44%, rgba(2,59,44,.94) 100%),
+    linear-gradient(90deg, rgba(2,59,44,.55) 0%, rgba(2,59,44,0) 55%) !important;
+}
+.hero__rule { background: rgba(250,251,248,.35); }
+
+/* nav, once quiet: a clean pill on either kind of room — never a muddy grey */
+.nav.is-quiet .nav__cta { background: rgba(2,59,44,.55); border-color: rgba(250,251,248,.18); color: var(--paper); }
+.nav.is-quiet.on-light .nav__cta { background: rgba(250,251,248,.82); border-color: rgba(2,59,44,.16); color: var(--forest); }
+.nav.is-quiet .nav__cta:hover { background: var(--paper); color: var(--forest); }
+.nav.is-quiet.on-light .nav__cta:hover { background: var(--forest); color: var(--paper); }
+.nav.is-quiet .nav__mark { background: rgba(2,59,44,.55); }
+.nav.is-quiet.on-light .nav__mark { background: rgba(250,251,248,.82); }
+
+/* talks: the paragraph stays with you while the photographs pass */
+@media (min-width: 861px) {
+  .talks-more__body { position: sticky; top: 18vh; }
+}
+.hero__room img { filter: saturate(.72) hue-rotate(24deg) brightness(.9) !important; }
+.tminus { color: var(--paper) !important; }
+.tminus b { color: var(--mint); font-weight: 600; }
+
+/* rail: only visible through the launches */
+.fuse { transition: opacity .6s var(--ease); }
+
+/* Connection, recomposed: one large plate, two smaller ones, the words between them */
+@media (min-width: 861px) {
+  .meet__inner { min-height: 128vh; }
+  .meet__title { position: relative; z-index: 3; mix-blend-mode: normal !important; }
+  .meet__ph { box-shadow: 0 30px 60px -30px rgba(2,59,44,.35); }
+  .meet__ph--1 { right: 0; top: 14vh; width: 44vw; height: 64vh; }
+  .meet__ph--2 { left: 0; top: 64vh; width: 28vw; height: 38vh; }
+  .meet__ph--3 { left: 31vw; top: 84vh; width: 21vw; height: 34vh; }
+  .meet__body { right: 0; bottom: auto; top: 90vh; max-width: 24em; }
+}
+
+/* RS mark: trim the stray edge from the supplied image */
+.mark img[src*="rs-foundation"] { clip-path: inset(2% 2% 6% 5%) !important; }
+
+/* product page hero: the headline on two lines, clear of the lineup */
+.lp-hero__copy { max-width: min(980px, 70vw); }
+.lp-hero__title { font-size: clamp(54px, 7.2vw, 132px); }
+.lp-hero__title .rv { white-space: nowrap; }
+@media (max-width: 860px) { .lp-hero__copy { max-width: none; } .lp-hero__title { font-size: 13.5vw; } }
+@media (min-width: 861px) {
+  .lp-hero__labels { bottom: auto; top: 54vh; }
+  .lp-hero__labels em { font-size: 17px; }
+}
+
+@media (max-width: 860px) {
+  .statement__big { font-size: 12.4vw; }
+}
+
+/* pitch deck: a card stays solid until it is almost gone, and leaves the frame entirely */
+.card {
+  opacity: calc((1 - clamp(0, calc((var(--t) - .6) / .4), 1)) * (1 - var(--d) * .12)) !important;
+  transform:
+    translate3d(calc(var(--t) * 26vw), calc(var(--t) * -95vh + var(--d) * 12px), 0)
+    rotate(calc(var(--t) * 11deg + var(--d) * 1.4deg))
+    scale(calc(1 - var(--d) * .035)) !important;
+}
+@media (max-width: 860px) {
+  .card {
+    transform:
+      translate3d(calc(var(--t) * -115vw), calc(var(--t) * -6vh + var(--d) * 10px), 0)
+      rotate(calc(var(--t) * -12deg + var(--d) * 1.2deg))
+      scale(calc(1 - var(--d) * .035)) !important;
+  }
+}
+/* cards waiting underneath show only their paper edge, not their words */
+.card > * { opacity: calc(1 - clamp(0, calc((var(--d) - .05) / .35), 1)); transition: none; }

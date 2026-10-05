@@ -9,11 +9,11 @@ export default function Fuse() {
   const measure = () => {
     const abs = (el) => el.getBoundingClientRect().top + scrollY;
     const launches = document.getElementById('the-launches');
-    const fin = document.getElementById('be-in-the-room');
+    const fin = document.getElementById('launch-3');
     if (!launches || !fin || !ref.current) return;
     const vh = innerHeight;
     m.current.start = abs(launches) - vh * 0.5;
-    m.current.end = abs(fin) + fin.offsetHeight - vh;
+    m.current.end = abs(fin) + fin.offsetHeight - vh * 0.6;
     m.current.nodes = [...ref.current.querySelectorAll('.fuse__node')].map((n) => {
       const t = document.getElementById(n.dataset.node);
       const y = abs(t) + t.offsetHeight * 0.3;

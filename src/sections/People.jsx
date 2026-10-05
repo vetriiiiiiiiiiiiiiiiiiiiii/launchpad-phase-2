@@ -15,7 +15,7 @@ const SPREAD = [
   ['c', P.teamOffice, 1200, '03', 'Teams', 'A team working through an idea together.', 0.8],
   ['d', P.chalkHand, 900, '04', 'Working it out', 'A hand writing formulas on a chalkboard.', -0.8],
   ['e', P.planningTable, 1200, '05', 'Planning', 'A group gathered around a table, planning.', 1.2],
-  ['f', P.greenRoom, 900, '06', 'Imagining', 'A lone figure standing in a vast green room.', -1],
+  ['f', P.greenFabric, 900, '06', 'Imagining', 'A builder sitting against a sweep of green fabric, looking ahead.', -1],
   ['g', P.glasshouseWalk, 900, '07', 'Exploring', 'Someone exploring a lush glasshouse.', 0.6],
 ];
 
@@ -50,7 +50,7 @@ export function Builders() {
 
 /* ---------- The Conversation ---------- */
 const INVENTORY = [
-  ['i.', 'Two chairs', P.velvetSofa], ['ii.', 'A table', P.cafeGreenWall], ['iii.', 'A notebook', P.chalkHand],
+  ['i.', 'Two chairs', P.velvetSofa], ['ii.', 'A table', P.cafeMonstera], ['iii.', 'A notebook', P.chalkHand],
   ['iv.', 'A prototype', P.emeraldGlass], ['v.', 'Coffee', P.cafeTree], ['vi.', 'A microphone', P.speaker], ['vii.', 'Stage light', P.talksStage],
 ];
 function Item({ n, label, img }) {
@@ -62,7 +62,7 @@ export function Conversation() {
     <section className="talk is-light" data-tone="light" data-folio="The Conversation">
       <div className="talk__grid">
         <figure className="talk__plate">
-          <Crop><Photo id={P.cafeGreenWall} w={1600} sizes="(max-width: 860px) 86vw, 50vw" alt="Friends deep in conversation in a green-walled café." /></Crop>
+          <Crop><Photo id={P.greenhouseTalk} w={1600} sizes="(max-width: 860px) 86vw, 50vw" alt="Two people mid-conversation in a greenhouse, a plant between them." /></Crop>
         </figure>
         <div className="talk__text">
           <p className="eyebrow" data-reveal>The Conversation</p>
@@ -126,7 +126,7 @@ export function Connection() {
     <section className="meet is-light" data-tone="light" id="the-room" ref={ref} data-folio="The Room">
       <div className="meet__inner">
         <h2 className="meet__title" data-reveal><Rv>The people</Rv><Rv>you meet</Rv><Rv><em>matter.</em></Rv></h2>
-        <figure className="meet__ph meet__ph--1"><Photo id={P.cafeTree} w={1300} sizes="(max-width: 860px) 100vw, 40vw" alt="People talking in a café under a large indoor tree." /></figure>
+        <figure className="meet__ph meet__ph--1"><Photo id={P.cafeMonstera} w={1400} sizes="(max-width: 860px) 100vw, 45vw" alt="A crowded café under hanging lights, everyone mid-conversation." /></figure>
         <figure className="meet__ph meet__ph--2"><Photo id={P.cafePlants} w={900} alt="People gathered in a café full of plants." /></figure>
         <figure className="meet__ph meet__ph--3"><Photo id={P.cafeChairs} w={900} alt="People meeting over coffee among green chairs." /></figure>
         <p className="meet__body" data-reveal>Founders and investors. Students and operators. Builders who've done it and builders about to. The conversations that start here rarely end here.</p>

@@ -10,7 +10,6 @@ import { LaunchesIntro, LaunchOne, LaunchTwo, LaunchThree } from '../sections/La
 import { Builders, Conversation, Exhibition, Connection } from '../sections/People.jsx';
 import { Marks, Finale } from '../sections/Closing.jsx';
 import Fuse from '../components/Fuse.jsx';
-import Folio from '../components/Folio.jsx';
 import SvgDefs from '../components/SvgDefs.jsx';
 import { useReveal } from '../hooks/useReveal.js';
 import { useArrive } from '../hooks/useArrive.js';
@@ -22,7 +21,6 @@ export default function Home() {
   return (
     <>
       <SvgDefs />
-      <Folio />
       <Fuse />
       <main>
         <Hero />

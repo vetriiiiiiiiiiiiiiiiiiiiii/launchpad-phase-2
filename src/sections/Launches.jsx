@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Rv from '../components/Rv.jsx';
 import Btn from '../components/Btn.jsx';
 import Photo from '../components/Photo.jsx';
 import StageCanvas from '../components/StageCanvas.jsx';
 import { useScrollVars } from '../hooks/useScroll.js';
-import { clamp } from '../lib/scroll.js';
+import { clamp, requestFrame } from '../lib/scroll.js';
 import { P } from '../lib/images.js';
 
 export function LaunchesIntro() {
@@ -38,6 +38,8 @@ function useLaunch() {
       if (y != null) ref.current.style.setProperty('--drop3d', `${Math.max(0, y - 3).toFixed(1)}px`);
     }
   });
+  // once the cloth has settled, re-run a frame so the thread finds its peak immediately
+  useEffect(() => { if (ready) requestAnimationFrame(() => requestFrame(true)); }, [ready]);
   return { ref, stage, ready, onReady: () => setReady(true) };
 }
 

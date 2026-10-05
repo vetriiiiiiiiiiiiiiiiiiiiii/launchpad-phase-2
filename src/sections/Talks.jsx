@@ -24,8 +24,8 @@ export default function Talks() {
       <section className="talks-more is-light" data-tone="light" data-folio="The Talks">
         <div className="talks-more__grid">
           <p className="talks-more__body" data-reveal>Expert talks from people who have built, scaled, stumbled and started again — the lessons that rarely make it into a textbook, told by the people who learned them.</p>
-          <figure className="ph talks-more__a" data-reveal><Photo id={P.speaker} w={1100} sizes="(max-width: 860px) 50vw, 35vw" alt="A speaker at the microphone, notes in hand." /><figcaption><b>i</b> On stage</figcaption></figure>
-          <figure className="ph talks-more__b" data-reveal><Photo id={P.panel} w={900} alt="A panel in conversation on stage." /><figcaption><b>ii</b> The panel</figcaption></figure>
+          <figure className="ph talks-more__a" data-reveal><Photo id={P.lectern} w={1100} sizes="(max-width: 860px) 50vw, 35vw" alt="A speaker at the lectern, mid-sentence." /><figcaption><b>i</b> On stage</figcaption></figure>
+          <figure className="ph talks-more__b" data-reveal><Photo id={P.greenSeats} w={900} alt="Rows of green seats, waiting." /><figcaption><b>ii</b> The room</figcaption></figure>
         </div>
         <div className="lineup" data-reveal>
           <p className="lineup__label">The lineup</p>

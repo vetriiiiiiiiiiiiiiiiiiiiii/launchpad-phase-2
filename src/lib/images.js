@@ -6,11 +6,12 @@ export const srcSet = (id, max = 1400) =>
 
 export const P = {
   heroRoom: 'photo-1695809584828-1ee251170805',     // green-lit hall of empty chairs
-  spotlight: 'photo-1774016591286-f75a8d2e6a24',    // figure in an emerald spotlight
-  openingLights: 'photo-1786237948716-a57d5bcd92cc',
+  tealHall: 'photo-1785458034214-a61b21ddeda1',        // teal auditorium, empty
+  lectern: 'photo-1770097286213-6d6fc60f4cdf',         // a speaker at the lectern
+  greenSeats: 'photo-1650962863647-8a131e1bf2c6',
+  greenFabric: 'photo-1728927585857-28e7c14955b2',     // a builder against green fabric
   talksStage: 'photo-1630395822831-3e8205c2f8e8',   // audience facing a green stage
   speaker: 'photo-1773828977866-baed2942b424',
-  panel: 'photo-1774094453087-0207a0cd2309',
   chalkTeacher: 'photo-1758685848754-0aa566b4ddf4',
   chalkStudents: 'photo-1758685848261-16a5a9e68811',
   chalkNotes: 'photo-1573871014706-263f4dfec410',
@@ -18,6 +19,9 @@ export const P = {
   podium: 'photo-1765020553499-1ec9aeb21298',
   glasshouse: 'photo-1693323588976-bff2c5bd9e22',
   cafeTree: 'photo-1758939561091-d29215cfcd76',
+  greenhouseTalk: 'photo-1758524055465-3693209f6b9e',  // two people mid-conversation in a greenhouse
+  cafeMonstera: 'photo-1763124320262-60c7aa066999',    // a crowded café under hanging lights
+  teamArt: 'photo-1681949098487-2f3a62d52fe8',
   cafePlants: 'photo-1784462293906-c74acc4f768d',
   cafeChairs: 'photo-1773051427980-e6a8d74cc24f',
   cafeGreenWall: 'photo-1561221820-5ed0595bcb4c',

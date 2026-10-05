@@ -31,7 +31,7 @@ const STAGES = {
   // 01 — a monolith in the dark
   one: {
     bg: 0x04503b, fog: [0x044a37, 5, 10], alpha: true,
-    cloth: { size: 2.5, y: 1.5, color: 0x0a6a4c, sheen: 0xbff5dc, sheenRough: .4, rough: .94, emissive: 0x053a2b },
+    cloth: { size: 2.5, y: 1.3, color: 0x0a6a4c, sheen: 0xbff5dc, sheenRough: .4, rough: .94, emissive: 0x053a2b },
     frame: 1.55,
     sdf: (x, y, z) => sdRoundBox(x, y, z, 0, .62, 0, .3, .62, .3, .06),
     top: 1.24,
@@ -42,20 +42,18 @@ const STAGES = {
   // 02 — a low form in a white room, a sun crossing the sky
   two: {
     bg: null, alpha: true,
-    cloth: { size: 3.3, y: 1.35, color: 0xf7f6f0, sheen: 0xffffff, sheenRough: .7, rough: .86 },
+    cloth: { size: 3.0, y: .74, color: 0xf7f6f0, sheen: 0xffffff, sheenRough: .7, rough: .86 },
     frame: 1.9,
-    sdf: (x, y, z) => Math.min(
-      sdRoundBox(x, y, z, 0, .2, 0, 1.0, .2, .6, .015),
-      sdRoundBox(x, y, z, 0, .63, 0, .6, .23, .34, .1)),
-    top: .86,
-    plinth: { hx: 1.0, hy: .2, hz: .6, color: 0xe4efe8 },
+    sdf: (x, y, z) => sdRoundBox(x, y, z, 0, .34, 0, .78, .34, .44, .1),
+    top: .68,
+    plinth: null,
     floor: { shadowOnly: true },
-    cam: { from: v(0, 1.55, 6.6), to: v(.25, 1.35, 5.8), look: v(0, .55, 0), fov: 30 },
+    cam: { from: v(0, 1.6, 7.2), to: v(.3, 1.4, 6.4), look: v(0, .4, 0), fov: 30 },
   },
   // 03 — the final object, under a single beam
   three: {
     bg: 0x033f2f, fog: [0x033f2f, 5, 10], alpha: true,
-    cloth: { size: 2.3, y: 1.5, color: 0xf3f2ec, sheen: 0xffffff, sheenRough: .5, rough: .72, emissive: 0x04503b },
+    cloth: { size: 2.3, y: 1.32, color: 0xf3f2ec, sheen: 0xffffff, sheenRough: .5, rough: .8, emissive: 0x7f9f90, emissiveIntensity: .32 },
     frame: 1.5,
     sdf: (x, y, z) => Math.min(
       sdRoundBox(x, y, z, 0, .13, 0, .55, .13, .55, .02),
@@ -104,6 +102,26 @@ class Cloth {
     this.cons = new Float32Array(c);
     this.lift = 0; this.time = 0;
   }
+  /* Render a softened copy of the fabric: two Laplacian passes smooth out
+     grid creases without changing how the cloth moves. */
+  smoothInto(out, iters = 4) {
+    const n = this.n, w = n + 1;
+    if (!this._tmp) this._tmp = new Float32Array(this.pos.length);
+    // ping-pong between a scratch buffer and `out`, ending in `out`
+    let src = this.pos;
+    for (let it = 0; it < iters; it++) {
+      const dst = (iters - it) % 2 === 1 ? out : this._tmp;
+      for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) {
+        const k = (j * w + i) * 3;
+        if (i === 0 || j === 0 || i === n || j === n) { dst[k] = src[k]; dst[k + 1] = src[k + 1]; dst[k + 2] = src[k + 2]; continue; }
+        const l = k - 3, r = k + 3, u = k - w * 3, d = k + w * 3;
+        for (let c = 0; c < 3; c++) dst[k + c] = src[k + c] * .5 + (src[l + c] + src[r + c] + src[u + c] + src[d + c]) * .125;
+      }
+      src = dst;
+    }
+    return out;
+  }
+
   step(dt, wind = 0) {
     const { pos, prev, cons, contact, sdf, anchor, held } = this;
     const g = -9.8 * dt * dt, damp = .988, n3 = pos.length;
@@ -151,7 +169,12 @@ class Cloth {
             if (!held[p]) { held[p] = 1; anchor[p * 2] = pos[k]; anchor[p * 2 + 1] = pos[k + 2]; }
             pos[k] = anchor[p * 2]; pos[k + 2] = anchor[p * 2 + 1];
           }
-        } else if (d > .04) held[p] = 0;
+        }
+        // hold on until the fabric is properly lifted away (hysteresis keeps it from creeping off)
+        if (held[p]) {
+          if (d > .15) held[p] = 0;
+          else { pos[k] = anchor[p * 2]; pos[k + 2] = anchor[p * 2 + 1]; }
+        }
         if (pos[k + 1] < .004) { pos[k + 1] = .004; contact[p] = 1; }
       }
     }
@@ -229,11 +252,12 @@ export function mountStage(host, key, { mobile = false, interactive = null, idle
   const N = mobile ? 38 : 54;
   const cloth = new Cloth(N, S.cloth.size, S.cloth.y, S.sdf);
   const geo = new THREE.PlaneGeometry(1, 1, N, N);
-  geo.setAttribute('position', new THREE.BufferAttribute(cloth.pos, 3));
+  const shown = new Float32Array(cloth.pos.length);
+  geo.setAttribute('position', new THREE.BufferAttribute(shown, 3));
   const mat = new THREE.MeshPhysicalMaterial({
     color: S.cloth.color, roughness: S.cloth.rough, metalness: 0,
     sheen: 1, sheenColor: new THREE.Color(S.cloth.sheen), sheenRoughness: S.cloth.sheenRough,
-    emissive: S.cloth.emissive || 0xf7f6f0, emissiveIntensity: S.cloth.emissive ? 1 : .04, side: THREE.DoubleSide,
+    emissive: S.cloth.emissive || 0xf7f6f0, emissiveIntensity: S.cloth.emissiveIntensity ?? (S.cloth.emissive ? 1 : .04), side: THREE.DoubleSide,
   });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.castShadow = true; mesh.receiveShadow = true; mesh.frustumCulled = false;
@@ -287,7 +311,7 @@ export function mountStage(host, key, { mobile = false, interactive = null, idle
   const settle = (budget) => {
     const end = Math.min(SETTLE, settled + budget);
     for (; settled < end; settled++) cloth.step(1 / 60, 0);
-    if (settled >= SETTLE) { geo.attributes.position.needsUpdate = true; geo.computeVertexNormals(); }
+    if (settled >= SETTLE) { cloth.smoothInto(shown); geo.attributes.position.needsUpdate = true; geo.computeVertexNormals(); }
     return settled >= SETTLE;
   };
 
@@ -359,6 +383,7 @@ export function mountStage(host, key, { mobile = false, interactive = null, idle
     theta = clamp(theta, -1.1, 1.1);
     peek += (peekTarget - peek) * .08;
     cloth.step(Math.min(dt, 1 / 60), key === 'two' ? .25 : .35);
+    cloth.smoothInto(shown);
     geo.attributes.position.needsUpdate = true;
     geo.computeVertexNormals();
     apply();
@@ -423,11 +448,12 @@ export function mountLineup(host, { mobile = false } = {}) {
     }
     const cloth = new Cloth(N, S.cloth.size, S.cloth.y, sdf, ox);
     const geo = new THREE.PlaneGeometry(1, 1, N, N);
-    geo.setAttribute('position', new THREE.BufferAttribute(cloth.pos, 3));
+    const shown = new Float32Array(cloth.pos.length);
+    geo.setAttribute('position', new THREE.BufferAttribute(shown, 3));
     const mat = new THREE.MeshPhysicalMaterial({
       color: S.cloth.color, roughness: S.cloth.rough, sheen: 1, sheenColor: new THREE.Color(S.cloth.sheen),
       sheenRoughness: S.cloth.sheenRough, side: THREE.DoubleSide,
-      emissive: S.cloth.emissive || 0xf7f6f0, emissiveIntensity: S.cloth.emissive ? 1 : .04,
+      emissive: S.cloth.emissive || 0xf7f6f0, emissiveIntensity: S.cloth.emissiveIntensity ?? (S.cloth.emissive ? 1 : .04),
     });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.castShadow = mesh.receiveShadow = true; mesh.frustumCulled = false; scene.add(mesh);
@@ -435,7 +461,7 @@ export function mountLineup(host, { mobile = false } = {}) {
     spot.position.set(ox, 6.5, 1.6); spot.target.position.set(ox, .5, 0);
     spot.castShadow = true; spot.shadow.mapSize.set(1024, 1024); spot.shadow.bias = -.0004; spot.shadow.radius = 4;
     scene.add(spot, spot.target);
-    items.push({ cloth, geo, spot, delay: idx * .55 });
+    items.push({ cloth, geo, shown, spot, delay: idx * .55 });
   });
 
   let settled = 0, running = false, raf = 0, last = 0, clock = 0, w = 1, h = 1, mx = 0, my = 0;
@@ -452,7 +478,7 @@ export function mountLineup(host, { mobile = false } = {}) {
     const fit = 2 * Math.atan((5.3 / 10) / camera.aspect) * 180 / Math.PI;
     camera.fov = Math.max(30, Math.min(fit, 78));
     // tall screens: lift the gaze so the objects sit low, above the labels
-    look.y = camera.aspect < 1 ? 2.6 : 1.45;
+    look.y = camera.aspect < 1 ? 2.6 : 2.05;
     camera.updateProjectionMatrix();
   };
   addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
@@ -462,6 +488,7 @@ export function mountLineup(host, { mobile = false } = {}) {
     const dt = Math.min((t - last) / 1000, 1 / 30) || 1 / 60; last = t; clock += dt;
     items.forEach((it) => {
       it.cloth.step(Math.min(dt, 1 / 60), .3);
+      it.cloth.smoothInto(it.shown);
       it.geo.attributes.position.needsUpdate = true; it.geo.computeVertexNormals();
       it.spot.intensity = 46 * ease(clamp((clock - it.delay) / 1.6));
     });
