@@ -3,7 +3,7 @@ import Rv from '../components/Rv.jsx';
 import Btn from '../components/Btn.jsx';
 import { useScrollVars } from '../hooks/useScroll.js';
 import { useCountdown } from '../hooks/useCountdown.js';
-import { reduceMotion } from '../hooks/env.js';
+import { hasWebGL, isMobile, reduceMotion } from '../hooks/env.js';
 import { loaderDone, onLoaderDone } from '../lib/loader.js';
 import { IMG, P } from '../lib/images.js';
 
@@ -25,6 +25,26 @@ export default function Hero() {
   useEffect(() => onLoaderDone(() => setReady(true)), []);
   const { d } = useCountdown();
   useScrollVars(ref);
+
+  /* the velvet curtain: a real cloth simulation when WebGL is available */
+  const curtainHost = useRef(null), curtain = useRef(null);
+  const [curtain3d, setCurtain3d] = useState(false);
+  useEffect(() => {
+    const announce = () => { window.__curtainReady = true; window.dispatchEvent(new Event('lp:curtain')); };
+    if (!hasWebGL || reduceMotion) { announce(); return undefined; }
+    let cancelled = false, io = null;
+    import('../lib/curtain3d.js').then(({ mountCurtain }) => {
+      if (cancelled || !curtainHost.current) return;
+      const c = mountCurtain(curtainHost.current, { mobile: isMobile(), startOpen: skipNow });
+      curtain.current = c;
+      setCurtain3d(true);
+      io = new IntersectionObserver((e) => (e[0].isIntersecting ? c.start() : c.stop()));
+      io.observe(ref.current);
+      announce();
+    }).catch(announce);
+    return () => { cancelled = true; io?.disconnect(); curtain.current?.dispose(); curtain.current = null; };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (phase >= 3) curtain.current?.open(2.6); }, [phase, curtain3d]);
 
   useEffect(() => {
     if (phase >= 4) {
@@ -48,7 +68,7 @@ export default function Hero() {
     return () => ['wheel', 'touchstart', 'keydown'].forEach((t) => removeEventListener(t, impatient));
   }, []);
 
-  const cls = ['hero', handoff && phase < 2 && 'from-loader', ...PHASES.slice(1, phase + 1)].filter(Boolean).join(' ');
+  const cls = ['hero', handoff && phase < 2 && 'from-loader', curtain3d && 'has-curtain3d', ...PHASES.slice(1, phase + 1)].filter(Boolean).join(' ');
   const set = [900, 1800, 2600].map((w) => `${IMG(P.heroRoom, w)} ${w}w`).join(', ');
 
   return (
@@ -59,6 +79,7 @@ export default function Hero() {
             alt="A hall of empty chairs under green light, moments before the doors open." />
         </div>
         <div className="hero__beam" aria-hidden="true" />
+        <div className="hero__curtain3d" ref={curtainHost} aria-hidden="true" />
         <div className="hero__curtain hero__curtain--l" aria-hidden="true" />
         <div className="hero__curtain hero__curtain--r" aria-hidden="true" />
         <div className="hero__shade" aria-hidden="true" />

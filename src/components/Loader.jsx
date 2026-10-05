@@ -19,8 +19,8 @@ const MAX_MS = 7000;                          // a slow network never holds the 
 function useLoadProgress() {
   const [target, setTarget] = useState(0);
   useEffect(() => {
-    const parts = { fonts: 0, hero: 0, page: 0 };
-    const weights = { fonts: 35, hero: 45, page: 20 };
+    const parts = { fonts: 0, hero: 0, page: 0, stage: 0 };
+    const weights = { fonts: 25, hero: 35, page: 10, stage: 30 };
     const update = () => setTarget(Object.keys(parts).reduce((s, k) => s + parts[k] * weights[k], 0));
     const finish = (k) => { parts[k] = 1; update(); };
 
@@ -30,6 +30,9 @@ function useLoadProgress() {
       img.onload = img.onerror = () => finish('hero');
       img.src = IMG(P.heroRoom, 1800);
     } else finish('hero');
+    // on the home page, the velvet curtain has to be hung before the doors open
+    if (location.pathname === '/' && !window.__curtainReady) addEventListener('lp:curtain', () => finish('stage'), { once: true });
+    else finish('stage');
     if (document.readyState === 'complete') finish('page');
     else addEventListener('load', () => finish('page'), { once: true });
     const cap = setTimeout(() => { Object.keys(parts).forEach((k) => { parts[k] = 1; }); update(); }, MAX_MS);
