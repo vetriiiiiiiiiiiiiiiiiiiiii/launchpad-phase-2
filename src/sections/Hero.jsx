@@ -58,14 +58,30 @@ export default function Hero() {
     setPhase(1);
   };
 
-  /* the room leans with you: a few pixels of parallax, like a camera on a slider */
+  /* the room leans with you (a few pixels of parallax, like a camera on a slider),
+     and the cursor is a follow spot: it lights the dark hall wherever it points.
+     Without a cursor, the spot drifts slowly on its own. */
   const roomRef = useRef(null);
   useEffect(() => {
     if (reduceMotion) return undefined;
     let tx = 0, ty = 0, x = 0, y = 0, raf = 0;
-    const move = (e) => { tx = (e.clientX / innerWidth - 0.5) * -22; ty = (e.clientY / innerHeight - 0.5) * -12; };
-    const loop = () => {
+    let sx = innerWidth * 0.62, sy = innerHeight * 0.48, stx = sx, sty = sy, lastMove = -1e9;
+    const move = (e) => {
+      tx = (e.clientX / innerWidth - 0.5) * -22; ty = (e.clientY / innerHeight - 0.5) * -12;
+      stx = e.clientX; sty = e.clientY; lastMove = performance.now();
+    };
+    const loop = (now = 0) => {
       x += (tx - x) * 0.05; y += (ty - y) * 0.05;
+      if (now - lastMove > 2500) {          // nobody steering: the operator drifts it slowly
+        const t = now / 1000;
+        stx = innerWidth * (0.5 + 0.26 * Math.sin(t * 0.23)); sty = innerHeight * (0.5 + 0.12 * Math.sin(t * 0.31 + 1));
+      }
+      sx += (stx - sx) * 0.07; sy += (sty - sy) * 0.07;   // a heavy lamp: it lags, then lands
+      const el = ref.current;
+      if (el) {
+        el.style.setProperty('--sx', `${sx.toFixed(1)}px`);
+        el.style.setProperty('--sy', `${sy.toFixed(1)}px`);
+      }
       roomRef.current?.style.setProperty('--px', `${x.toFixed(2)}px`);
       roomRef.current?.style.setProperty('--py', `${y.toFixed(2)}px`);
       raf = requestAnimationFrame(loop);
@@ -120,6 +136,7 @@ export default function Hero() {
           <img src={IMG(P.heroRoom, 1800)} srcSet={set} sizes="100vw" fetchpriority="high"
             alt="A hall of empty chairs under green light, moments before the doors open." />
         </div>
+        <div className="hero__spot" aria-hidden="true"><i /></div>
         <div className="hero__light" aria-hidden="true">
           <div className="hero__cone" />
           <div className="hero__haze" />

@@ -49,9 +49,19 @@ export default function Day() {
     return () => io.disconnect();
   }, []);
   const act = MOMENTS[active].act;
+  // the sun crosses the day as the moments pass; the room's light follows it
+  const tDay = active / (MOMENTS.length - 1);
+  const ang = Math.PI * (1 - tDay);
+  const sunX = 150 + 128 * Math.cos(ang), sunY = 118 - 100 * Math.sin(ang);
+  const sky = (() => {
+    const stops = [[238, 246, 239], [250, 251, 248], [222, 233, 225]];
+    const k = tDay < 0.5 ? tDay * 2 : (tDay - 0.5) * 2, [a, b2] = tDay < 0.5 ? [stops[0], stops[1]] : [stops[1], stops[2]];
+    return `rgb(${a.map((v, i) => Math.round(v + (b2[i] - v) * k)).join(',')})`;
+  })();
+  const clock = ['Morning', 'Morning', 'Late morning', 'Midday', 'Midday', 'Afternoon', 'Afternoon', 'Late afternoon', 'Early evening', 'Evening', 'Evening'][active];
 
   return (
-    <section className="day is-light" data-tone="light" id="the-day" data-folio="The Day">
+    <section className="day is-light" data-tone="light" id="the-day" data-folio="The Day" style={{ background: sky }}>
       <header className="day__head">
         <p className="eyebrow" data-reveal>A single, continuous day</p>
         <h2 className="day__title" data-reveal><Rv>The Day</Rv></h2>
@@ -61,12 +71,22 @@ export default function Day() {
       </header>
       <div className="day__body">
         <div className="day__media" aria-hidden="true">
+          <div className="day__sun">
+            <svg viewBox="0 0 300 130">
+              <path d="M22 118 A128 100 0 0 1 278 118" className="day__arc" />
+              <path d="M22 118 A128 100 0 0 1 278 118" className="day__arc day__arc--done" pathLength="1" style={{ strokeDasharray: `${tDay} 1` }} />
+              <line x1="10" y1="118" x2="290" y2="118" className="day__horizon" />
+              <g style={{ transform: `translate(${sunX.toFixed(1)}px, ${sunY.toFixed(1)}px)` }} className="day__sundot">
+                <circle r="14" className="day__halo" /><circle r="5.5" />
+              </g>
+            </svg>
+            <p className="day__clock"><span>{clock}</span><em>{NUM[active]} / XI</em></p>
+          </div>
           <div className="day__frame">
             {MOMENTS.map((m, i) => (m.veil
               ? <div key={i} className={`day__veil day__veil--${m.veil}${i === active ? ' is-active' : ''}`}><Veil kind={m.veil} /></div>
               : <Photo key={i} id={m.img} w={1400} sizes="(max-width: 860px) 100vw, 55vw" className={i === active ? 'is-active' : undefined} eager={i < 2} />))}
           </div>
-          <p className="day__counter"><span className="day__now">{NUM[active]}</span><span>/ XI</span></p>
         </div>
         <ol className="day__list">
           {MOMENTS.map((m, i) => (

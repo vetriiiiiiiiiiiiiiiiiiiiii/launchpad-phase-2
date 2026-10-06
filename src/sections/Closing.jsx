@@ -1,7 +1,8 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import Btn from '../components/Btn.jsx';
 import { useScrollVars } from '../hooks/useScroll.js';
 import { useCountdown } from '../hooks/useCountdown.js';
+import { hasWebGL, isMobile, reduceMotion } from '../hooks/env.js';
 
 export function Marks() {
   return (
@@ -29,10 +30,33 @@ export function Marks() {
 export function Finale() {
   const ref = useRef(null);
   const { d, h, m, s } = useCountdown();
-  useScrollVars(ref);
+  /* the curtain call: the same velvet that opened the site closes it */
+  const host = useRef(null), curtain = useRef(null);
+  useScrollVars(ref, ({ p }) => {
+    // open while the first line plays; draws closed through "you leave with what's next"
+    curtain.current?.setTarget(1 - Math.min(1, Math.max(0, (p - 0.36) / 0.26)));
+  });
+  useEffect(() => {
+    if (!hasWebGL || reduceMotion) return undefined;
+    let c = null, vio = null, cancelled = false;
+    const near = new IntersectionObserver(async (en) => {
+      if (!en[0].isIntersecting) return;
+      near.disconnect();
+      const { mountCurtain } = await import('../lib/curtain3d.js');
+      if (cancelled) return;
+      c = mountCurtain(host.current, { mobile: isMobile(), startOpen: true });
+      curtain.current = c;
+      ref.current.classList.add('has-curtain');
+      vio = new IntersectionObserver((e) => (e[0].isIntersecting ? c.start() : c.stop()));
+      vio.observe(ref.current);
+    }, { rootMargin: '150% 0px' });
+    near.observe(ref.current);
+    return () => { cancelled = true; near.disconnect(); vio?.disconnect(); c?.dispose(); curtain.current = null; };
+  }, []);
   return (
     <section className="finale" id="be-in-the-room" ref={ref} data-folio="What's next" data-land="end">
       <div className="finale__sticky">
+        <div className="finale__curtain" ref={host} aria-hidden="true" />
         <p className="finale__line finale__line--1">You came<br /><em>for the launch.</em></p>
         <p className="finale__line finale__line--2">You leave<br /><em>with what's next.</em></p>
         <div className="finale__end">

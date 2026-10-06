@@ -346,3 +346,45 @@ main.lp { display: block; }
 .hero.has-curtain3d .hero__mark { display: none; }
 /* the hall brightens as the fabric parts, the headline rises during the opening */
 .hero.has-curtain3d .hero__room { transition: opacity 2.2s var(--ease) .15s; }
+
+/* ---------- the follow spot ---------- */
+.hero__spot { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 1.4s var(--ease) 1.4s; }
+.hero.is-open .hero__spot { opacity: 1; }
+/* the pool: lifts the photograph beneath it (overlay), then a soft bloom (screen) */
+.hero__spot::before, .hero__spot i {
+  content: ""; position: absolute; left: var(--sx, 60%); top: var(--sy, 50%);
+  width: 46vmax; height: 30vmax; translate: -50% -50%; border-radius: 50%;
+}
+.hero__spot::before { background: radial-gradient(closest-side, rgba(225,255,240,.75), rgba(127,224,181,.25) 55%, transparent); mix-blend-mode: overlay; }
+.hero__spot i { width: 30vmax; height: 19vmax; background: radial-gradient(closest-side, rgba(200,255,228,.22), transparent 70%); mix-blend-mode: screen; }
+@media (max-width: 860px) {
+  .hero__spot::before { width: 90vmin; height: 70vmin; }
+  .hero__spot i { width: 60vmin; height: 45vmin; }
+}
+
+/* ---------- curtain call ---------- */
+.finale__curtain { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.finale__curtain .curtain3d { opacity: 1; }
+.finale__sticky > :not(.finale__curtain) { position: relative; z-index: 1; }
+/* once the curtain is closed, a soft pool keeps the invitation legible on the velvet */
+.finale.has-curtain .finale__end::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 120vmin; height: 80vmin; translate: -50% -50%; z-index: -1;
+  background: radial-gradient(closest-side, rgba(2,46,34,.72), rgba(2,46,34,.35) 60%, transparent);
+}
+.finale.has-curtain .finale__end { position: relative; }
+
+/* ---------- The Day: the sun crosses as the moments pass ---------- */
+.day { transition: background 1.2s var(--ease); }
+.day__media { padding-top: 9vh !important; }
+.day__sun { display: flex; align-items: flex-end; gap: 22px; margin-bottom: 18px; }
+.day__sun svg { width: 230px; height: auto; overflow: visible; flex: none; }
+.day__arc { fill: none; stroke: rgba(2,59,44,.18); stroke-width: 1; stroke-dasharray: 2 4; }
+.day__arc--done { stroke: var(--emerald-2); stroke-width: 1.5; stroke-dashoffset: 0; transition: stroke-dasharray 1s var(--ease); }
+.day__horizon { stroke: rgba(2,59,44,.2); stroke-width: 1; }
+.day__sundot { transition: transform 1s var(--ease); fill: var(--emerald-2); }
+.day__halo { fill: rgba(16,162,115,.16); animation: sun-breathe 3s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+@keyframes sun-breathe { 50% { transform: scale(1.35); } }
+.day__clock { display: flex; flex-direction: column; gap: 6px; padding-bottom: 4px; }
+.day__clock span { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--forest); }
+.day__clock em { font-style: normal; font: 500 10px/1 var(--sans); font-stretch: 115%; letter-spacing: .26em; color: var(--ink-3); }
+@media (prefers-reduced-motion: reduce) { .day__halo { animation: none; } }

@@ -194,7 +194,7 @@ export function mountCurtain(host, { mobile = false, startOpen = false } = {}) {
   valMat.color = new THREE.Color(0x075a41);
 
   let W = 1, H = 1, drapes = [], meshes = [];
-  let open = startOpen ? 1 : 0, openFrom = open, openTo = open, openT0 = 0, openDur = 1;
+  let open = startOpen ? 1 : 0, openFrom = open, openTo = open, openT0 = 0, openDur = 1, target = null;
   const cols = innerWidth < innerHeight ? 16 : mobile ? 26 : 40, rows = mobile ? 34 : 46;
 
   const sync = () => {
@@ -265,6 +265,8 @@ export function mountCurtain(host, { mobile = false, startOpen = false } = {}) {
       open = openFrom + (openTo - openFrom) * easeInOut(k);
       if (k >= 1) openT0 = 0;
     }
+    // scroll-driven: ease toward a target at the pace a real curtain travels
+    else if (target !== null) open += clamp(target - open, -dt * 0.55, dt * 0.55);
     idleT += dt; if (idleT > 0.15) { brush.vx *= 0.8; brush.vy *= 0.8; if (idleT > 0.6) brush.active = false; }
     for (let sub = 0; sub < 2; sub++) drapes.forEach((d) => d.step(dt / 2, d.movable ? open : 0, t, d.movable ? brush : still));
     sync();
@@ -281,6 +283,7 @@ export function mountCurtain(host, { mobile = false, startOpen = false } = {}) {
     open(duration = 3) { openFrom = open; openTo = 1; openDur = duration * 1000; openT0 = performance.now(); },
     close(duration = 1.4) { openFrom = open; openTo = 0; openDur = duration * 1000; openT0 = performance.now(); },
     setOpen(v) { open = openFrom = openTo = v; openT0 = 0; },
+    setTarget(v) { target = clamp(v); openT0 = 0; },
     start() { if (!running) { running = true; last = performance.now(); raf = requestAnimationFrame(frame); } },
     stop() { running = false; cancelAnimationFrame(raf); },
     dispose() {
