@@ -12,6 +12,14 @@ function Lit({ text }) {
   return [...text].map((c, i) => (c === ' ' ? ' ' : <span key={i} className="lch" aria-hidden="true">{c}</span>));
 }
 
+/* what's behind the curtain: the day itself, one moment at a time */
+const SLIDES = [
+  { id: P.heroTalk, label: 'Expert talks', alt: 'A speaker addressing a full hall.' },
+  { id: P.heroPitch, label: 'Pitching', alt: 'A founder presenting a product to the room on a big screen.' },
+  { id: P.heroWork, label: 'Hands-on problem solving', alt: 'A team working through a problem at a whiteboard.' },
+  { id: P.talksStage, label: 'Three product launches', alt: 'Stage lights bursting over an audience.' },
+];
+
 const PHASES = ['', 'is-logo', 'is-develop', 'is-open', 'is-copy'];
 // arriving via a link to a section skips the intro
 const seen = () => {
@@ -137,8 +145,15 @@ export default function Hero() {
     return () => ['wheel', 'touchstart', 'keydown'].forEach((t) => removeEventListener(t, impatient));
   }, []);
 
+  const [slide, setSlide] = useState(0);
+  useEffect(() => {
+    if (phase < 4 || reduceMotion) return undefined;
+    const t = setInterval(() => setSlide((i) => (i + 1) % SLIDES.length), 4800);
+    return () => clearInterval(t);
+  }, [phase]);
+
   const cls = ['hero', handoff && phase < 2 && 'from-loader', curtain3d && 'has-curtain3d', ...PHASES.slice(1, phase + 1)].filter(Boolean).join(' ');
-  const set = [900, 1800, 2600].map((w) => `${IMG(P.heroRoom, w)} ${w}w`).join(', ');
+  const set = (id) => [900, 1800, 2600].map((w) => `${IMG(id, w)} ${w}w`).join(', ');
 
   return (
     <section className={cls} id="top" ref={ref}>
@@ -153,10 +168,22 @@ export default function Hero() {
               <feFuncB type="table" tableValues="0.135 0.15 0.22 0.46 0.9" />
             </feComponentTransfer>
           </filter>
+          <filter id="hero-grade-people" colorInterpolationFilters="sRGB">
+            <feColorMatrix type="saturate" values="0" />
+            <feComponentTransfer>
+              <feFuncR type="table" tableValues="0.008 0.02 0.12 0.46 0.86" />
+              <feFuncG type="table" tableValues="0.18 0.22 0.36 0.68 0.94" />
+              <feFuncB type="table" tableValues="0.135 0.17 0.27 0.54 0.88" />
+            </feComponentTransfer>
+          </filter>
         </svg>
         <div className="hero__room" ref={roomRef}>
-          <img src={IMG(P.heroRoom, 1800)} srcSet={set} sizes="100vw" fetchpriority="high"
-            alt="A hall of empty chairs under green light, moments before the doors open." />
+          {SLIDES.map((sl, i) => (
+            <div key={sl.id} className={`hero__slide${i === slide ? ' is-active' : ''}`}>
+              <img src={IMG(sl.id, 1800)} srcSet={set(sl.id)} sizes="100vw" alt={sl.alt}
+                fetchpriority={i === 0 ? 'high' : undefined} loading={i === 0 ? 'eager' : 'lazy'} />
+            </div>
+          ))}
         </div>
         <div className="hero__spot" aria-hidden="true"><i /></div>
         <div className="hero__light" aria-hidden="true">
@@ -177,17 +204,22 @@ export default function Hero() {
 
       <div className="hero__copy">
         <p className="hero__meta">
-          <Rv>Launchpad</Rv>
+          <Rv>Entrepreneurship &amp; Innovation Summit</Rv>
           <span className="hero__rule" aria-hidden="true" />
           <Rv>26 October 2026</Rv>
-          <span className="hero__rule" aria-hidden="true" />
-          <Rv>One day · Three launches</Rv>
         </p>
         <div className="hero__count"><FlapClock /></div>
         <h1 className="hero__title" ref={titleRef} aria-label="Where ideas become real.">
           <Rv><Lit text="Where ideas" /></Rv>
           <Rv><em><Lit text="become real." /></em></Rv>
         </h1>
+        <ul className="hero__programme" aria-label="The programme">
+          {SLIDES.map((sl, i) => (
+            <li key={sl.label} className={i === slide ? 'is-now' : undefined}>
+              <button type="button" onClick={() => setSlide(i)}>{sl.label}</button>
+            </li>
+          ))}
+        </ul>
         <div className="hero__actions">
           <Btn href="#be-in-the-room" magnetic>Enter Launchpad</Btn>
           <Btn href="#the-day" variant="ghost" icon="↓">Explore the day</Btn>

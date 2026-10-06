@@ -456,3 +456,42 @@ main.lp { display: block; }
 
 .flapclock__group { --fh: clamp(56px, 5.4vw, 84px); }
 @media (max-width: 860px) { .flapclock__group { --fh: 40px; } }
+
+/* ==========================================================================
+   HERO: the event itself behind the curtain
+   ========================================================================== */
+.hero__slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.6s var(--ease); overflow: hidden; }
+.hero__slide.is-active { opacity: 1; }
+.hero__slide img { width: 100%; height: 100%; object-fit: cover; }
+/* each moment drifts slowly while it's on screen */
+.hero__slide.is-active img { animation: kb 9s ease-out both; }
+@keyframes kb { from { scale: 1.08; } to { scale: 1; } }
+/* a lighter print grade for people: faces stay readable, shadows stay emerald */
+.hero .hero__room img { filter: url(#hero-grade-people) !important; }
+.hero__programme { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 26px; margin-top: -6px; opacity: 0; transform: translateY(10px); transition: opacity 1s var(--ease) .9s, transform 1s var(--ease) .9s; }
+.hero.is-copy .hero__programme { opacity: 1; transform: none; }
+.hero__programme li { position: relative; }
+.hero__programme button {
+  font: 500 11px/1 var(--sans); font-stretch: 115%; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--sage); padding: 8px 0; transition: color .4s;
+}
+.hero__programme li::after { content: ""; position: absolute; left: 0; bottom: 0; height: 1px; width: 100%; background: var(--mint); transform: scaleX(0); transform-origin: left; }
+.hero__programme li.is-now button { color: var(--paper); }
+.hero__programme li.is-now::after { animation: prog 4.8s linear forwards; }
+@keyframes prog { to { transform: scaleX(1); } }
+.hero__programme li + li::before { content: "·"; position: absolute; left: -16px; top: 8px; color: var(--sage); }
+.hero__copy { grid-template-areas: "meta meta" "title count" "prog prog" "actions actions" !important; }
+.hero__programme { grid-area: prog; }
+@media (max-width: 860px) {
+  .hero__copy { grid-template-areas: "meta" "count" "title" "prog" "actions" !important; }
+  .hero__programme { gap: 2px 20px; }
+  .hero__programme button { font-size: 9px; letter-spacing: .18em; }
+}
+@media (prefers-reduced-motion: reduce) { .hero__slide.is-active img { animation: none; } .hero__programme li.is-now::after { animation: none; transform: scaleX(1); } }
+/* people, not a stage effect: no beam over faces; a quiet text-side shade */
+.hero .hero__light, .hero .hero__spot { display: none; }
+.hero .hero__shade {
+  background:
+    linear-gradient(180deg, rgba(2,46,34,.6) 0%, rgba(2,46,34,.1) 22%, rgba(2,46,34,.25) 55%, rgba(2,46,34,.93) 100%),
+    linear-gradient(90deg, rgba(2,46,34,.85) 0%, rgba(2,46,34,.45) 42%, rgba(2,46,34,0) 72%) !important;
+}
