@@ -197,20 +197,6 @@ main.lp { display: block; }
 .finale__end { opacity: clamp(0, calc((var(--p, 0) - .62) / .1), 1) !important; transform: translateY(calc((1 - clamp(0, calc((var(--p, 0) - .62) / .12), 1)) * 24px)) !important; }
 
 /* ==========================================================================
-   The hall: a built 3D auditorium behind the curtain
-   ========================================================================== */
-.hero__hall { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s var(--ease) .2s; }
-.hall3d { display: block; width: 100%; height: 100%; }
-.hero.has-hall3d .hero__room { display: none; }
-.hero.has-hall3d.is-open .hero__hall { opacity: 1; }
-.hero.has-hall3d .hero__shade {
-  background:
-    linear-gradient(180deg, rgba(2,46,34,.4) 0%, rgba(2,46,34,0) 22%, rgba(2,46,34,0) 50%, rgba(2,46,34,.9) 100%),
-    linear-gradient(90deg, rgba(2,46,34,.55) 0%, rgba(2,46,34,0) 50%) !important;
-}
-.hero.has-hall3d .hero__beam { display: none; }
-
-/* ==========================================================================
    THE INVITATION — a ticket you can hold
    ========================================================================== */
 .invite { position: relative; background: var(--room); color: var(--paper); padding: clamp(120px, 20vh, 220px) var(--gutter); overflow: hidden; }
@@ -280,9 +266,55 @@ main.lp { display: block; }
 @media (prefers-reduced-motion: reduce) { .ticket { animation: none; } }
 .tminus b { font-variant-numeric: tabular-nums; letter-spacing: .12em; }
 
-/* hero copy: sits below the stage, not across it */
-.hero.has-hall3d .hero__title { font-size: clamp(52px, 7.6vw, 150px); }
-.hero.has-hall3d .hero__copy { row-gap: clamp(16px, 2.4vh, 30px); }
-@media (max-width: 860px) {
-  .hero.has-hall3d .hero__title { font-size: clamp(48px, 14vw, 80px); }
+
+/* ==========================================================================
+   HERO, restored: the dark hall, graded emerald, and one beam of light
+   ========================================================================== */
+.hero .hero__room { opacity: 0; transition: opacity 1.6s var(--ease) .2s; display: block !important; }
+.hero.is-open .hero__room { opacity: 1; }
+.hero .hero__room img {
+  filter: url(#hero-grade) contrast(1.08) !important;
+  transform: translate(var(--px, 0), var(--py, 0)) scale(1.22);
+  transition: transform 14s cubic-bezier(.12, .6, .15, 1);
+}
+.hero.is-open .hero__room img { transform: translate(var(--px, 0), var(--py, 0)) scale(1.06); }
+.hero.is-copy .hero__room img { transition: none; }
+.hero.is-copy .hero__room { transition: opacity 1.6s var(--ease); }
+
+/* the light: a spotlight from the grid, igniting after the curtain parts */
+.hero__light { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; opacity: 0; }
+.hero.is-open .hero__light { animation: ignite 2.4s steps(1, end) .9s forwards; }
+@keyframes ignite {
+  0% { opacity: 0; } 8% { opacity: .55; } 12% { opacity: .1; } 20% { opacity: .8; } 26% { opacity: .35; } 34% { opacity: 1; } 100% { opacity: 1; }
+}
+.hero__cone {
+  position: absolute; left: 50%; top: -8%; width: 70vw; height: 100%; margin-left: -35vw;
+  background: conic-gradient(from 166deg at 50% 0%, transparent 0deg, rgba(150,240,200,.14) 6deg, rgba(225,255,240,.42) 14deg, rgba(150,240,200,.14) 22deg, transparent 28deg);
+  filter: blur(10px);
+  -webkit-mask: linear-gradient(180deg, #000 0%, #000 55%, transparent 82%);
+          mask: linear-gradient(180deg, #000 0%, #000 55%, transparent 82%);
+}
+.hero__haze {
+  position: absolute; left: 50%; top: -8%; width: 70vw; height: 90%; margin-left: -35vw; opacity: .55;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.006 .012' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .8 0 0 0 0 1 0 0 0 0 .9 0 0 0 .9 -.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23h)'/%3E%3C/svg%3E");
+  background-size: 600px 600px;
+  -webkit-mask: conic-gradient(from 168deg at 50% 0%, transparent 0deg, #000 7deg, #000 17deg, transparent 24deg);
+          mask: conic-gradient(from 168deg at 50% 0%, transparent 0deg, #000 7deg, #000 17deg, transparent 24deg);
+  animation: haze 26s linear infinite;
+}
+@keyframes haze { to { background-position: 180px -600px; } }
+.hero__pool {
+  position: absolute; left: 50%; top: 52%; width: 46vw; height: 14vh; margin-left: -23vw; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(200,255,228,.45), rgba(127,224,181,.12) 60%, transparent);
+  filter: blur(6px);
+}
+/* the copy reads over the darker lower third */
+.hero .hero__shade {
+  background:
+    linear-gradient(180deg, rgba(2,46,34,.55) 0%, rgba(2,46,34,0) 25%, rgba(2,46,34,0) 50%, rgba(2,46,34,.88) 100%),
+    radial-gradient(120% 90% at 50% 38%, rgba(2,46,34,0) 40%, rgba(2,46,34,.55) 100%) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__light { opacity: 1; animation: none !important; }
+  .hero__haze { animation: none; }
 }

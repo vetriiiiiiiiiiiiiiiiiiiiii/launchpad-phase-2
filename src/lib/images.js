@@ -5,7 +5,7 @@ export const srcSet = (id, max = 1400) =>
   [480, 800, 1200, 1600, 2200].filter((w) => w <= max * 1.3).map((w) => `${IMG(id, w)} ${w}w`).join(', ');
 
 export const P = {
-  heroRoom: 'photo-1695809584828-1ee251170805',     // green-lit hall of empty chairs
+  heroRoom: 'photo-1770844102881-f8823e9f3c83',     // rows of seats receding into darkness (graded emerald)
   tealHall: 'photo-1785458034214-a61b21ddeda1',        // teal auditorium, empty
   lectern: 'photo-1770097286213-6d6fc60f4cdf',         // a speaker at the lectern
   greenSeats: 'photo-1650962863647-8a131e1bf2c6',

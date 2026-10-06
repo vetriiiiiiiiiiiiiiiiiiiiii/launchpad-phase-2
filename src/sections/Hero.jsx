@@ -24,47 +24,47 @@ export default function Hero() {
   const [ready, setReady] = useState(loaderDone());
   useEffect(() => onLoaderDone(() => setReady(true)), []);
   const { d, h, m, s: sec } = useCountdown();
-  useScrollVars(ref, ({ x }) => hall.current?.setScroll(x));
+  useScrollVars(ref);
 
   /* the velvet curtain: a real cloth simulation when WebGL is available */
   const curtainHost = useRef(null), curtain = useRef(null);
   const [curtain3d, setCurtain3d] = useState(false);
-  const hallHost = useRef(null), hall = useRef(null);
-  const [hall3d, setHall3d] = useState(false);
   useEffect(() => {
     const announce = () => { window.__curtainReady = true; window.dispatchEvent(new Event('lp:curtain')); };
     if (!hasWebGL || reduceMotion) { announce(); return undefined; }
     let cancelled = false, io = null;
-    const idle = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 60 }) : setTimeout(fn, 16));
-    Promise.all([import('../lib/curtain3d.js'), import('../lib/hall3d.js')]).then(([{ mountCurtain }, { mountHall }]) => {
+    import('../lib/curtain3d.js').then(({ mountCurtain }) => {
       if (cancelled || !curtainHost.current) return;
-      // the hall behind the curtain: built, its veiled objects settled, before the doors open
-      let h = null;
-      try { h = mountHall(hallHost.current, { mobile: isMobile() }); } catch (e) { h = null; }
-      hall.current = h;
-      if (h && skipNow) h.setOpen(1);
       const c = mountCurtain(curtainHost.current, { mobile: isMobile(), startOpen: skipNow });
       curtain.current = c;
       setCurtain3d(true);
-      io = new IntersectionObserver((e) => {
-        if (e[0].isIntersecting) { c.start(); h?.start(); } else { c.stop(); h?.stop(); }
-      });
-      const warm = () => {
-        if (cancelled) return;
-        if (h && !h.warm(30)) { idle(warm); return; }
-        if (h) { h.renderOnce(); setHall3d(true); }
-        io.observe(ref.current);
-        announce();
-      };
-      warm();
+      io = new IntersectionObserver((e) => (e[0].isIntersecting ? c.start() : c.stop()));
+      io.observe(ref.current);
+      announce();
     }).catch(announce);
     return () => {
       cancelled = true; io?.disconnect();
       curtain.current?.dispose(); curtain.current = null;
-      hall.current?.dispose(); hall.current = null;
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (phase >= 3) { curtain.current?.open(2.6); if (!skipNow) hall.current?.animateOpen(3000); } }, [phase, curtain3d]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (phase >= 3) curtain.current?.open(2.6); }, [phase, curtain3d]);
+
+  /* the room leans with you: a few pixels of parallax, like a camera on a slider */
+  const roomRef = useRef(null);
+  useEffect(() => {
+    if (reduceMotion) return undefined;
+    let tx = 0, ty = 0, x = 0, y = 0, raf = 0;
+    const move = (e) => { tx = (e.clientX / innerWidth - 0.5) * -22; ty = (e.clientY / innerHeight - 0.5) * -12; };
+    const loop = () => {
+      x += (tx - x) * 0.05; y += (ty - y) * 0.05;
+      roomRef.current?.style.setProperty('--px', `${x.toFixed(2)}px`);
+      roomRef.current?.style.setProperty('--py', `${y.toFixed(2)}px`);
+      raf = requestAnimationFrame(loop);
+    };
+    addEventListener('pointermove', move, { passive: true });
+    loop();
+    return () => { cancelAnimationFrame(raf); removeEventListener('pointermove', move); };
+  }, []);
 
   useEffect(() => {
     if (phase >= 4) {
@@ -88,18 +88,32 @@ export default function Hero() {
     return () => ['wheel', 'touchstart', 'keydown'].forEach((t) => removeEventListener(t, impatient));
   }, []);
 
-  const cls = ['hero', handoff && phase < 2 && 'from-loader', curtain3d && 'has-curtain3d', hall3d && 'has-hall3d', ...PHASES.slice(1, phase + 1)].filter(Boolean).join(' ');
+  const cls = ['hero', handoff && phase < 2 && 'from-loader', curtain3d && 'has-curtain3d', ...PHASES.slice(1, phase + 1)].filter(Boolean).join(' ');
   const set = [900, 1800, 2600].map((w) => `${IMG(P.heroRoom, w)} ${w}w`).join(', ');
 
   return (
     <section className={cls} id="top" ref={ref}>
       <div className="hero__stage">
-        <div className="hero__hall" ref={hallHost} aria-hidden="true" />
-        <div className="hero__room">
+        <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
+          {/* a print grade: shadows fall to deep emerald (never black), highlights to mint-white */}
+          <filter id="hero-grade" colorInterpolationFilters="sRGB">
+            <feColorMatrix type="saturate" values="0" />
+            <feComponentTransfer>
+              <feFuncR type="table" tableValues="0.008 0.012 0.05 0.30 0.86" />
+              <feFuncG type="table" tableValues="0.18 0.2 0.29 0.58 0.95" />
+              <feFuncB type="table" tableValues="0.135 0.15 0.22 0.46 0.9" />
+            </feComponentTransfer>
+          </filter>
+        </svg>
+        <div className="hero__room" ref={roomRef}>
           <img src={IMG(P.heroRoom, 1800)} srcSet={set} sizes="100vw" fetchpriority="high"
             alt="A hall of empty chairs under green light, moments before the doors open." />
         </div>
-        <div className="hero__beam" aria-hidden="true" />
+        <div className="hero__light" aria-hidden="true">
+          <div className="hero__cone" />
+          <div className="hero__haze" />
+          <div className="hero__pool" />
+        </div>
         <div className="hero__curtain3d" ref={curtainHost} aria-hidden="true" />
         <div className="hero__curtain hero__curtain--l" aria-hidden="true" />
         <div className="hero__curtain hero__curtain--r" aria-hidden="true" />

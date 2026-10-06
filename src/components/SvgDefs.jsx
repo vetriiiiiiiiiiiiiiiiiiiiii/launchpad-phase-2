@@ -42,10 +42,10 @@ export default function SvgDefs() {
           <stop offset="0" stopColor="#3fbf8c" /><stop offset="0.35" stopColor="#087a56" /><stop offset="1" stopColor="#023b2c" />
         </radialGradient>
         <radialGradient id="litIvory" cx="0.35" cy="0.15" r="1">
-          <stop offset="0" stopColor="#fafbf8" /><stop offset="0.55" stopColor="#e4efe8" /><stop offset="1" stopColor="#93b8a6" />
+          <stop offset="0" stopColor="#5fd3a2" /><stop offset="0.55" stopColor="#0e7655" /><stop offset="1" stopColor="#04402f" />
         </radialGradient>
         <radialGradient id="litSpot" cx="0.5" cy="0.02" r="0.85">
-          <stop offset="0" stopColor="#f0faf4" /><stop offset="0.25" stopColor="#10a273" /><stop offset="0.7" stopColor="#065c45" /><stop offset="1" stopColor="#033f2f" />
+          <stop offset="0" stopColor="#a8f0cc" /><stop offset="0.3" stopColor="#10a273" /><stop offset="0.75" stopColor="#065c45" /><stop offset="1" stopColor="#033f2f" />
         </radialGradient>
       </defs>
     </svg>

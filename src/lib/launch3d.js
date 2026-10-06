@@ -42,7 +42,7 @@ const STAGES = {
   // 02 — a low form in a white room, a sun crossing the sky
   two: {
     bg: null, alpha: true,
-    cloth: { size: 3.0, y: .74, color: 0xf7f6f0, sheen: 0xffffff, sheenRough: .7, rough: .86 },
+    cloth: { size: 3.0, y: .74, color: 0x0e7655, sheen: 0xc9ffe6, sheenRough: .38, rough: .92, emissive: 0x05402f },
     frame: 1.9,
     sdf: (x, y, z) => sdRoundBox(x, y, z, 0, .34, 0, .78, .34, .44, .1),
     top: .68,
@@ -53,7 +53,7 @@ const STAGES = {
   // 03 — the final object, under a single beam
   three: {
     bg: 0x033f2f, fog: [0x033f2f, 5, 10], alpha: true,
-    cloth: { size: 2.3, y: 1.32, color: 0xf3f2ec, sheen: 0xffffff, sheenRough: .5, rough: .8, emissive: 0x7f9f90, emissiveIntensity: .32 },
+    cloth: { size: 2.3, y: 1.32, color: 0x0b6247, sheen: 0xd6ffec, sheenRough: .3, rough: .9, emissive: 0x04382a },
     frame: 1.5,
     sdf: (x, y, z) => Math.min(
       sdRoundBox(x, y, z, 0, .13, 0, .55, .13, .55, .02),
@@ -510,4 +510,3 @@ export function mountLineup(host, { mobile = false } = {}) {
   };
 }
 
-export { Cloth, STAGES, beamMaterial };
