@@ -31,9 +31,20 @@ function decodes(blob) {
 }
 
 async function fromHeic(file) {
-  const { default: heic2any } = await import('heic2any');
-  const out = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.95 });
-  return Array.isArray(out) ? out[0] : out;   // multi-image HEIC: take the primary photo
+  // current libheif (handles recent iPhone photos: HDR/10-bit, tiled, Live Photo stills)
+  try {
+    const { heicTo } = await import('heic-to');
+    return await heicTo({ blob: file, type: 'image/jpeg', quality: 0.95 });
+  } catch (modern) {
+    // older decoder as a second opinion for unusual files
+    try {
+      const { default: heic2any } = await import('heic2any');
+      const out = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.95 });
+      return Array.isArray(out) ? out[0] : out;
+    } catch {
+      throw new Error('This HEIC photo could not be converted. On iPhone, set Settings → Camera → Formats → Most Compatible, or share the photo as JPG, then upload again.');
+    }
+  }
 }
 
 async function fromTiff(file) {

@@ -22,6 +22,7 @@
     "@prisma/client": "^6.19.3",
     "express": "^4.22.3",
     "framer-motion": "^11.18.2",
+    "heic-to": "^1.6.5",
     "heic2any": "^0.0.4",
     "lenis": "^1.1.13",
     "react": "^18.3.1",
