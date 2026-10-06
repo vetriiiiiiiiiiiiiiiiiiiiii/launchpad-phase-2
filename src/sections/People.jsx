@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import Rv from '../components/Rv.jsx';
 import Photo from '../components/Photo.jsx';
 import Crop from '../components/Crop.jsx';
-import { usePeekHandlers } from '../components/Peek.jsx';
 import { useScrollVars } from '../hooks/useScroll.js';
 import { finePointer, isMobile, reduceMotion } from '../hooks/env.js';
 import { measureAll } from '../lib/scroll.js';
@@ -50,13 +49,9 @@ export function Builders() {
 
 /* ---------- The Conversation ---------- */
 const INVENTORY = [
-  ['i.', 'Two chairs', P.velvetSofa], ['ii.', 'A table', P.invTable], ['iii.', 'A notebook', P.invNotebook],
-  ['iv.', 'A prototype', P.invPrototype], ['v.', 'Coffee', P.cafeTree], ['vi.', 'A microphone', P.speaker], ['vii.', 'Stage light', P.invStageLight],
+  ['i.', 'Two chairs'], ['ii.', 'A table'], ['iii.', 'A notebook'],
+  ['iv.', 'A prototype'], ['v.', 'Coffee'], ['vi.', 'A microphone'], ['vii.', 'Stage light'],
 ];
-function Item({ n, label, img }) {
-  const peek = usePeekHandlers(img);
-  return <li {...peek}><em>{n}</em> {label}</li>;
-}
 export function Conversation() {
   return (
     <section className="talk is-light" data-tone="light" data-folio="The Conversation">
@@ -69,7 +64,7 @@ export function Conversation() {
           <h2 className="talk__title" data-reveal><Rv>Good ideas</Rv><Rv>need good</Rv><Rv><em>conversations.</em></Rv></h2>
           <p className="talk__body" data-reveal>Intimate, unscripted founder conversations. Close enough to hear the hesitation before the honest answer.</p>
           <ul className="inventory" data-reveal aria-label="In the room">
-            {INVENTORY.map(([n, l, img]) => <Item key={n} n={n} label={l} img={img} />)}
+            {INVENTORY.map(([n, l]) => <li key={n}><em>{n}</em> {l}</li>)}
           </ul>
         </div>
       </div>

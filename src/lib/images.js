@@ -16,14 +16,12 @@ export const DEFAULT_P = {
   greenSeats: 'photo-1650962863647-8a131e1bf2c6',
   greenFabric: 'photo-1728927585857-28e7c14955b2',     // a builder against green fabric
   talksStage: 'photo-1630395822831-3e8205c2f8e8',   // audience facing a green stage
-  speaker: 'photo-1773828977866-baed2942b424',
   chalkTeacher: 'photo-1758685848754-0aa566b4ddf4',
   chalkStudents: 'photo-1758685848261-16a5a9e68811',
   chalkNotes: 'photo-1573871014706-263f4dfec410',
   chalkHand: 'photo-1758685848691-3933bc2aa3ce',
   podium: 'photo-1765020553499-1ec9aeb21298',
   glasshouse: 'photo-1693323588976-bff2c5bd9e22',
-  cafeTree: 'photo-1758939561091-d29215cfcd76',
   greenhouseTalk: 'photo-1758524055465-3693209f6b9e',  // two people mid-conversation in a greenhouse
   cafeMonstera: 'photo-1763124320262-60c7aa066999',    // a crowded café under hanging lights
   teamArt: 'photo-1681949098487-2f3a62d52fe8',
@@ -36,7 +34,6 @@ export const DEFAULT_P = {
   greenTiles: 'photo-1761255241065-6f58ffa1cc8a',
   emeraldGlass: 'photo-1625479610681-f789345a8157',
   emeraldStone: 'photo-1767131545090-e13ae86c8e13',
-  velvetSofa: 'photo-1755325541565-aca7a68f6e66',
   founderLeaves: 'photo-1564980295992-288a2237a55c',
   greenhouseDuo: 'photo-1758524057756-7dc8ce53d88c',
   teamOffice: 'photo-1758691737212-3eebbc8f84ed',
@@ -64,10 +61,6 @@ export const DERIVED = {
   idxLaunches: 'emeraldGlass',
   idxExhibition: 'roundLibrary',
   idxRoom: 'cafeMonstera',
-  invTable: 'cafeMonstera',
-  invNotebook: 'chalkHand',
-  invPrototype: 'emeraldGlass',
-  invStageLight: 'talksStage',
   expoBooth: 'glasshouse',
   expoFloor: 'forestLibrary',
   lpRoom02: 'whiteRibs',
@@ -122,14 +115,7 @@ export const IMAGE_SLOTS = [
     ['greenFabric', 'Imagining', [1, 1], 1000],
     ['glasshouseWalk', 'Exploring', [1, 1], 1000]]],
   ['Conversation', [
-    ['greenhouseTalk', 'Main photograph', [4, 5], 1600],
-    ['velvetSofa', 'Hover: two chairs', [4, 5], 800],
-    ['invTable', 'Hover: a table', [4, 5], 800],
-    ['invNotebook', 'Hover: a notebook', [4, 5], 800],
-    ['invPrototype', 'Hover: a prototype', [4, 5], 800],
-    ['cafeTree', 'Hover: coffee', [4, 5], 800],
-    ['speaker', 'Hover: a microphone', [4, 5], 800],
-    ['invStageLight', 'Hover: stage light', [4, 5], 800]]],
+    ['greenhouseTalk', 'Main photograph', [4, 5], 1600]]],
   ['Exhibition', [
     ['roundLibrary', 'Hall', [3, 4], 1400],
     ['glassBlocks', 'Object', [5, 4], 1400],
