@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/admin.css';
 import CropDialog, { fmt } from '../components/admin/CropDialog.jsx';
 import { DEFAULT_P, IMAGE_SLOTS, IMG } from '../lib/images.js';
-import { DEFAULT_SETTINGS } from '../lib/content.js';
+import { DEFAULT_SETTINGS, DEFAULT_FAQ } from '../lib/content.js';
 
 /* /asdfghjkl — change every photograph and the key event settings.
    Saved content is served by the content server and applies on next load. */
@@ -100,6 +100,7 @@ export default function Admin() {
   const [token, setToken] = useState(() => { try { return sessionStorage.getItem('lp-admin') || ''; } catch { return ''; } });
   const [images, setImages] = useState({});
   const [settings, setSettings] = useState({});
+  const [faq, setFaq] = useState(DEFAULT_FAQ);
   const [saved, setSaved] = useState('');
   const [status, setStatus] = useState('');
   const [err, setErr] = useState('');
@@ -112,17 +113,17 @@ export default function Admin() {
     return () => m.remove();
   }, []);
   useEffect(() => {
-    api('/api/content').then((c) => { setImages(c.images || {}); setSettings(c.settings || {}); setSaved(JSON.stringify({ i: c.images || {}, s: c.settings || {} })); })
+    api('/api/content').then((c) => { const f = c.faq?.length ? c.faq : DEFAULT_FAQ; setImages(c.images || {}); setSettings(c.settings || {}); setFaq(f); setSaved(JSON.stringify({ i: c.images || {}, s: c.settings || {}, f })); })
       .catch(() => setErr('Cannot reach the content server. Start it with "npm run dev".'));
   }, []);
   const keep = (t) => { setToken(t); try { sessionStorage.setItem('lp-admin', t); } catch { /* private mode */ } };
-  const dirty = useMemo(() => saved && JSON.stringify({ i: images, s: settings }) !== saved, [images, settings, saved]);
+  const dirty = useMemo(() => saved && JSON.stringify({ i: images, s: settings, f: faq }) !== saved, [images, settings, faq, saved]);
 
   const save = async () => {
     setStatus('Saving…'); setErr('');
     try {
-      await api('/api/content', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ images, settings }) }, token);
-      setSaved(JSON.stringify({ i: images, s: settings }));
+      await api('/api/content', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ images, settings, faq }) }, token);
+      setSaved(JSON.stringify({ i: images, s: settings, f: faq }));
       setStatus('Saved — reload the site to see it');
     } catch (x) {
       if (/signed in/i.test(x.message)) keep('');
@@ -168,6 +169,42 @@ export default function Admin() {
           {setting('summitLabel', 'Line above the headline', 'Shown in the hero, e.g. "Entrepreneurship & Innovation Summit"')}
           {setting('eventStart', 'Doors open (countdown target)', 'ISO date & time with offset, e.g. 2026-10-26T09:00:00+05:30')}
           {setting('registerUrl', 'Registration link', '"Enter Launchpad" and the final "Be in the room" open this link', 'url')}
+          {setting('doorsTime', 'Doors open (shown)', 'As visitors read it, e.g. 9:00 AM. Empty shows "To be announced"')}
+          {setting('venue', 'Venue', 'e.g. Main Auditorium, SRM Campus. Empty shows "To be announced"')}
+          {setting('city', 'City', 'e.g. Tiruchirappalli')}
+        </div>
+      </section>
+
+      <section className="ad-sec">
+        <h2>Contact &amp; social</h2>
+        <div className="ad-fields">
+          {setting('contactEmail', 'Contact email', 'Shown in the FAQ and footer', 'email')}
+          {setting('instagramUrl', 'Instagram link', 'https://instagram.com/…', 'url')}
+          {setting('linkedinUrl', 'LinkedIn link', 'https://linkedin.com/…', 'url')}
+        </div>
+      </section>
+
+      <section className="ad-sec">
+        <h2>Questions (FAQ)</h2>
+        <div className="ad-faq">
+          {faq.map((f, i) => (
+            <div className="ad-faq__item" key={i}>
+              <span className="ad-faq__n">{String(i + 1).padStart(2, '0')}</span>
+              <div className="ad-faq__fields">
+                <input value={f.q} placeholder="Question" onChange={(e) => setFaq((list) => list.map((x, j) => (j === i ? { ...x, q: e.target.value } : x)))} />
+                <textarea rows={3} value={f.a} placeholder="Answer" onChange={(e) => setFaq((list) => list.map((x, j) => (j === i ? { ...x, a: e.target.value } : x)))} />
+              </div>
+              <div className="ad-faq__tools">
+                <button type="button" className="ad-btn ad-btn--ghost" disabled={i === 0} onClick={() => setFaq((l) => { const n = [...l]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; return n; })} aria-label="Move up">↑</button>
+                <button type="button" className="ad-btn ad-btn--ghost" disabled={i === faq.length - 1} onClick={() => setFaq((l) => { const n = [...l]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; return n; })} aria-label="Move down">↓</button>
+                <button type="button" className="ad-btn ad-btn--ghost" onClick={() => setFaq((l) => l.filter((_, j) => j !== i))}>Remove</button>
+              </div>
+            </div>
+          ))}
+          <div className="ad-row">
+            <button type="button" className="ad-btn" disabled={faq.length >= 16} onClick={() => setFaq((l) => [...l, { q: '', a: '' }])}>Add question</button>
+            <button type="button" className="ad-btn ad-btn--ghost" onClick={() => setFaq(DEFAULT_FAQ)}>Restore defaults</button>
+          </div>
         </div>
       </section>
 

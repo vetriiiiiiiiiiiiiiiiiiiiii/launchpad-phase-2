@@ -57,10 +57,10 @@ app.post('/api/login', express.json({ limit: '4kb' }), (req, res) => {
   res.json({ token });
 });
 
-const SETTINGS = ['summitLabel', 'eventStart', 'registerUrl'];
+const SETTINGS = ['summitLabel', 'eventStart', 'registerUrl', 'doorsTime', 'venue', 'city', 'contactEmail', 'instagramUrl', 'linkedinUrl'];
 const okImage = (v) => typeof v === 'string' && v.length < 2000 && (/^photo-[\w-]+$/.test(v) || /^\/uploads\/[\w.-]+$/.test(v) || /^https:\/\/[^\s"'<>]+$/.test(v));
 
-app.put('/api/content', auth, express.json({ limit: '64kb' }), (req, res) => {
+app.put('/api/content', auth, express.json({ limit: '128kb' }), (req, res) => {
   const body = req.body || {};
   const images = {}, settings = {};
   for (const [k, v] of Object.entries(body.images || {})) {
@@ -74,9 +74,17 @@ app.put('/api/content', auth, express.json({ limit: '64kb' }), (req, res) => {
     if (typeof v !== 'string' || !v.trim()) continue;
     if (k === 'registerUrl' && !/^https?:\/\/\S+$/.test(v.trim())) return res.status(400).json({ error: 'Registration link must start with https://' });
     if (k === 'eventStart' && Number.isNaN(Date.parse(v))) return res.status(400).json({ error: 'Event start is not a valid date' });
+    if ((k === 'instagramUrl' || k === 'linkedinUrl') && !/^https:\/\/\S+$/.test(v.trim())) return res.status(400).json({ error: 'Social links must start with https://' });
+    if (k === 'contactEmail' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())) return res.status(400).json({ error: 'Contact email does not look right' });
     settings[k] = v.trim().slice(0, 300);
   }
-  write({ images, settings, updatedAt: new Date().toISOString() });
+  let faq;
+  if (Array.isArray(body.faq)) {
+    faq = body.faq.slice(0, 16)
+      .map((f) => ({ q: String(f?.q || '').trim().slice(0, 200), a: String(f?.a || '').trim().slice(0, 1200) }))
+      .filter((f) => f.q && f.a);
+  }
+  write({ images, settings, ...(faq && faq.length ? { faq } : {}), updatedAt: new Date().toISOString() });
   res.json({ ok: true });
 });
 

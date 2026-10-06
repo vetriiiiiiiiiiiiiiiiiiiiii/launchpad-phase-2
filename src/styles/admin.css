@@ -57,3 +57,11 @@
 .ad-est em { color: #b54708; font-style: normal; }
 .ad-row--end { justify-content: flex-end; }
 @media (max-width: 600px) { .ad-info { margin: 16px 16px 0; } }
+.ad textarea { width: 100%; font: 15px/1.5 var(--sans); padding: 11px 12px; border: 1px solid rgba(2,59,44,.2); border-radius: 8px; background: #fff; color: var(--forest); resize: vertical; }
+.ad textarea:focus { outline: 2px solid var(--emerald-2); outline-offset: 1px; }
+.ad-faq { display: grid; gap: 14px; max-width: 980px; }
+.ad-faq__item { display: grid; grid-template-columns: 34px 1fr auto; gap: 14px; align-items: start; padding: 14px; background: #fff; border: 1px solid rgba(2,59,44,.1); border-radius: 12px; }
+.ad-faq__n { font: 600 13px/40px var(--sans); color: var(--emerald); }
+.ad-faq__fields { display: grid; gap: 8px; }
+.ad-faq__tools { display: flex; gap: 6px; }
+@media (max-width: 700px) { .ad-faq__item { grid-template-columns: 1fr; } }

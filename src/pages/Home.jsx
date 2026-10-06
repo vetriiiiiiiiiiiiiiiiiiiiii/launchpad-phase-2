@@ -10,6 +10,9 @@ import { LaunchesIntro, LaunchOne, LaunchTwo, LaunchThree } from '../sections/La
 import { Builders, Conversation, Exhibition, Connection } from '../sections/People.jsx';
 import { Marks, Finale } from '../sections/Closing.jsx';
 import Invitation from '../sections/Invitation.jsx';
+import Facts from '../sections/Facts.jsx';
+import Faq from '../sections/Faq.jsx';
+import { useEventSeo } from '../hooks/useEventSeo.js';
 import Fuse from '../components/Fuse.jsx';
 import SvgDefs from '../components/SvgDefs.jsx';
 import { useReveal } from '../hooks/useReveal.js';
@@ -18,6 +21,7 @@ import { useArrive } from '../hooks/useArrive.js';
 export default function Home() {
   useReveal();
   useArrive();
+  useEventSeo();
   useEffect(() => { document.title = 'Launchpad — 26 October 2026'; }, []);
   return (
     <>
@@ -25,6 +29,7 @@ export default function Home() {
       <Fuse />
       <main>
         <Hero />
+        <Facts />
         <Statement />
         <Inside />
         <Day />
@@ -40,6 +45,7 @@ export default function Home() {
         <Exhibition />
         <Connection />
         <Invitation />
+        <Faq />
         <Marks />
         <Finale />
       </main>
