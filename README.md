@@ -7,17 +7,25 @@ and an admin panel.
 
 ```bash
 npm install
-cp .env.example .env   # then set ADMIN_PASSWORD
-npm run dev            # site on http://localhost:5173, content server on :8787
-npm start              # production: builds, then serves site + API on $PORT (default 8787)
+cp .env.example .env   # set DATABASE_URL and ADMIN_PASSWORD
+npm run db:dev         # create/apply the local PostgreSQL migration
+npm run dev            # site on http://localhost:5173, API on :8787
+npm start              # production: builds, migrates, then serves site + API on $PORT (default 8787)
 ```
+
+Create the PostgreSQL database named in `DATABASE_URL` before running the app.
+`npm run dev` applies committed migrations automatically; `npm run db:dev` is
+available when creating or editing migrations.
 
 ## Admin panel — `/asdfghjkl`
 
 Open `http://localhost:5173/asdfghjkl` (or `https://your-domain/asdfghjkl`). The address is
 unlisted and not linked anywhere on the site, but the password is what protects it.
 
-Sign in with `ADMIN_PASSWORD` from `.env`. You can change:
+Set `ADMIN_PASSWORD` in `.env` and restart to require sign-in. If it is unset,
+the panel is open without sign-in and displays a warning; never deploy it that way.
+
+You can change:
 
 - **Every photograph**, grouped by section: upload a file (JPG, PNG, WebP, AVIF,
   up to 40 MB, or drop it on the picture), paste an Unsplash photo link or any
@@ -42,20 +50,24 @@ pasted links are used as-is, so uploading is better.
   (doors-open date and time), and the registration link used by
   "Enter Launchpad" and the final "Be in the room".
 
-Saved content lives in `server/data/content.json`, uploads in
-`server/data/uploads/` (both gitignored). Changes appear on the next page load.
-Without the content server (pure static hosting) the site uses its built-in
-defaults and the admin panel can't save.
+Settings, image-slot choices, FAQs, and uploaded image bytes are stored in
+PostgreSQL. Existing data in `server/data/content.json` and its uploaded files are
+imported automatically the first time the new database starts. Changes appear
+on the next page load. Without the content server (pure static hosting) the site
+uses its built-in defaults and the admin panel can't save.
 
 ## Hosting
 
-Needs a Node host (Render, Railway, a VPS…) running `npm start`, with
-`ADMIN_PASSWORD` set and a persistent disk for `server/data/`.
+Needs a Node host (Render, Railway, a VPS…) running `npm start`, a reachable
+PostgreSQL database configured with `DATABASE_URL`, and `ADMIN_PASSWORD` set
+(otherwise anyone can edit the live site). Uploaded images are stored in the
+database, so no persistent application disk is required.
 
 ## Structure
 
 ```
-server/index.js        content API, admin sign-in, uploads; serves dist/ in production
+server/index.js        PostgreSQL content API, admin sign-in and database-backed uploads; serves dist/ in production
+prisma/                PostgreSQL schema and versioned migrations
 src/App.jsx            routes (/, /launches, /asdfghjkl admin), page transition, global layers
 src/pages/             Home, LaunchesPage, Admin
 src/sections/          one component per chapter of the home page

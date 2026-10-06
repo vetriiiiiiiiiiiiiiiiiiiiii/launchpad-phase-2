@@ -65,3 +65,6 @@
 .ad-faq__fields { display: grid; gap: 8px; }
 .ad-faq__tools { display: flex; gap: 6px; }
 @media (max-width: 700px) { .ad-faq__item { grid-template-columns: 1fr; } }
+.ad-warn { margin: 16px 32px 0; padding: 12px 16px; border-radius: 8px; background: #fef6e7; color: #7a4a05; font-size: 14px; }
+.ad-warn code { font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+@media (max-width: 600px) { .ad-warn { margin: 12px 16px 0; } }

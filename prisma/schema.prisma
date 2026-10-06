@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model EventSettings {
+  id            String   @id
+  values        Json     @default("{}") @db.JsonB
+  faqConfigured Boolean  @default(false)
+  updatedAt     DateTime @updatedAt
+}
+
+model ImageSlot {
+  key       String   @id @db.VarChar(40)
+  source    String   @db.VarChar(2000)
+  updatedAt DateTime @updatedAt
+}
+
+model FaqItem {
+  id        String   @id @default(cuid())
+  question  String   @db.VarChar(200)
+  answer    String   @db.VarChar(1200)
+  sortOrder Int      @unique
+  updatedAt DateTime @updatedAt
+}
+
+model MediaAsset {
+  id          String   @id @default(cuid())
+  sha256      String   @unique @db.VarChar(64)
+  contentType String   @db.VarChar(32)
+  data        Bytes
+  createdAt   DateTime @default(now())
+}

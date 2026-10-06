@@ -3,16 +3,20 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Launchpad \u2014 26 October 2026. One day. Three launches.",
+  "description": "Launchpad — 26 October 2026. One day. Three launches.",
   "scripts": {
-    "dev": "API_PORT=8787 node --env-file-if-exists=.env server/index.js & vite",
+    "dev": "prisma migrate deploy && (API_PORT=8787 node --env-file-if-exists=.env server/index.js &) && vite",
     "dev:site": "vite",
-    "server": "API_PORT=8787 node --env-file-if-exists=.env server/index.js",
+    "server": "prisma migrate deploy && API_PORT=8787 node --env-file-if-exists=.env server/index.js",
     "build": "vite build",
-    "start": "npm run build && node --env-file-if-exists=.env server/index.js",
-    "preview": "vite preview"
+    "start": "npm run build && prisma migrate deploy && node --env-file-if-exists=.env server/index.js",
+    "preview": "vite preview",
+    "db:deploy": "prisma migrate deploy",
+    "db:dev": "prisma migrate dev",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "express": "^4.22.3",
     "framer-motion": "^11.18.2",
     "lenis": "^1.1.13",
@@ -23,6 +27,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.7.0",
+    "prisma": "^6.19.3",
     "vite": "^5.4.21"
   }
 }

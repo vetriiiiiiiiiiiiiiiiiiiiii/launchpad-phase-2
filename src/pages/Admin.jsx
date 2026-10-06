@@ -98,6 +98,7 @@ function Slot({ k, label, ratio, maxW, value, onChange, token, onError }) {
 
 export default function Admin() {
   const [token, setToken] = useState(() => { try { return sessionStorage.getItem('lp-admin') || ''; } catch { return ''; } });
+  const [needsLogin, setNeedsLogin] = useState(null);   // null until the server says
   const [images, setImages] = useState({});
   const [settings, setSettings] = useState({});
   const [faq, setFaq] = useState(DEFAULT_FAQ);
@@ -112,8 +113,9 @@ export default function Admin() {
     const m = document.createElement('meta'); m.name = 'robots'; m.content = 'noindex, nofollow'; document.head.appendChild(m);
     return () => m.remove();
   }, []);
+  useEffect(() => { api('/api/auth').then((a) => setNeedsLogin(!!a.required)).catch(() => setNeedsLogin(true)); }, []);
   useEffect(() => {
-    api('/api/content').then((c) => { const f = c.faq?.length ? c.faq : DEFAULT_FAQ; setImages(c.images || {}); setSettings(c.settings || {}); setFaq(f); setSaved(JSON.stringify({ i: c.images || {}, s: c.settings || {}, f })); })
+    api('/api/content').then((c) => { const f = Array.isArray(c.faq) ? c.faq : DEFAULT_FAQ; setImages(c.images || {}); setSettings(c.settings || {}); setFaq(f); setSaved(JSON.stringify({ i: c.images || {}, s: c.settings || {}, f })); })
       .catch(() => setErr('Cannot reach the content server. Start it with "npm run dev".'));
   }, []);
   const keep = (t) => { setToken(t); try { sessionStorage.setItem('lp-admin', t); } catch { /* private mode */ } };
@@ -131,7 +133,8 @@ export default function Admin() {
     }
   };
 
-  if (!token) return <main className="ad"><Login onToken={keep} /></main>;
+  if (needsLogin === null) return <main className="ad" />;
+  if (needsLogin && !token) return <main className="ad"><Login onToken={keep} /></main>;
 
   const setting = (k, label, hint, type = 'text') => (
     <label className="ad-field" key={k}>
@@ -149,10 +152,11 @@ export default function Admin() {
           {status && <span className="ad-status">{status}</span>}
           <a className="ad-btn ad-btn--ghost" href="/" target="_blank" rel="noopener">View site ↗</a>
           <button className="ad-btn ad-btn--solid" onClick={save} disabled={!dirty}>{dirty ? 'Save changes' : 'Saved'}</button>
-          <button className="ad-btn ad-btn--ghost" onClick={() => keep('')}>Sign out</button>
+          {needsLogin && <button className="ad-btn ad-btn--ghost" onClick={() => keep('')}>Sign out</button>}
         </div>
       </header>
       {err && <p className="ad-err ad-err--bar" role="alert">{err}</p>}
+      {!needsLogin && <p className="ad-warn">No password is set — anyone who knows this address can edit the site. Set <code>ADMIN_PASSWORD</code> in <code>.env</code> before the site goes live.</p>}
       <aside className="ad-info">
         <b>Every upload is automatically fitted and compressed.</b>
         <ol>

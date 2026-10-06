@@ -33,9 +33,9 @@ export async function loadContent() {
     if (!res.ok) return;
     const data = await res.json();
     Object.entries(data.images || {}).forEach(([k, v]) => { if (k in DEFAULT_P && v) P[k] = v; });
-    Object.entries(data.settings || {}).forEach(([k, v]) => { if (k in DEFAULT_SETTINGS && v !== '') S[k] = v; });
-    if (Array.isArray(data.faq) && data.faq.length) S.faq = data.faq;
-  } catch (e) { /* no server (static hosting): defaults stand */ }
+    Object.entries(data.settings || {}).forEach(([k, v]) => { if (k in DEFAULT_SETTINGS && typeof v === 'string') S[k] = v; });
+    if (Array.isArray(data.faq)) S.faq = data.faq;
+  } catch { /* no server (static hosting): defaults stand */ }
 }
 
 /* where "Be in the room" goes: the registration link if set, else the finale */
