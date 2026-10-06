@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/admin.css';
 import CropDialog, { fmt } from '../components/admin/CropDialog.jsx';
+import { ACCEPT, decodeAny } from '../lib/decodeImage.js';
 import { DEFAULT_P, IMAGE_SLOTS, IMG } from '../lib/images.js';
 import { DEFAULT_SETTINGS, DEFAULT_FAQ, DEFAULT_PRIVACY } from '../lib/content.js';
 
@@ -50,11 +51,16 @@ function Slot({ k, label, ratio, maxW, value, onChange, token, onError }) {
   const file = useRef(null);
   const current = value || DEFAULT_P[k];
   const changed = !!value && value !== DEFAULT_P[k];
-  const pick = (f) => {
+  // any format: HEIC, TIFF etc. are converted first, then cropped and compressed
+  const pick = async (f) => {
     if (!f) return;
-    if (!/^image\/(jpeg|png|webp|avif)$/.test(f.type)) { onError('Use a JPG, PNG, WebP or AVIF photo'); return; }
-    if (f.size > 40 * 1048576) { onError('That file is over 40 MB — export a smaller version first'); return; }
-    setPending(f);
+    if (f.size > 60 * 1048576) { onError('That file is over 60 MB — export a smaller version first'); return; }
+    setBusy('Converting…');
+    try {
+      const { blob, note } = await decodeAny(f);
+      setPending({ blob, origSize: f.size, note, name: f.name });
+    } catch (x) { onError(x.message); if (file.current) file.current.value = ''; }
+    finally { setBusy(false); }
   };
   const done = async (blob, info) => {
     setPending(null); setBusy(true);
@@ -62,7 +68,7 @@ function Slot({ k, label, ratio, maxW, value, onChange, token, onError }) {
       const { url: u } = await api('/api/upload', { method: 'POST', headers: { 'Content-Type': blob.type }, body: blob }, token);
       onChange(u);
       const saved = Math.max(0, Math.round((1 - info.to.size / info.from.size) * 100));
-      setNote(`Compressed ${fmt(info.from.size)} → ${fmt(info.to.size)} (−${saved}%) · ${info.to.w}×${info.to.h} ${info.to.type}`);
+      setNote(`${info.converted ? `${info.converted} · ` : ''}Compressed ${fmt(info.from.size)} → ${fmt(info.to.size)} (−${saved}%) · ${info.to.w}×${info.to.h} ${info.to.type}`);
     } catch (x) { onError(x.message); } finally { setBusy(false); if (file.current) file.current.value = ''; }
   };
   const useUrl = () => {
@@ -76,7 +82,7 @@ function Slot({ k, label, ratio, maxW, value, onChange, token, onError }) {
       <div className="ad-thumb" style={{ aspectRatio: `${ratio[0]} / ${ratio[1]}` }}
         onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); pick(e.dataTransfer.files[0]); }}>
         <img src={IMG(current, 640)} alt="" loading="lazy" />
-        {busy && <span className="ad-busy">Uploading…</span>}
+        {busy && <span className="ad-busy">{typeof busy === 'string' ? busy : 'Uploading…'}</span>}
         {changed && <span className="ad-flag">Custom</span>}
         <span className="ad-ratio">{ratio[0]}:{ratio[1]} · {maxW}px</span>
       </div>
@@ -84,14 +90,14 @@ function Slot({ k, label, ratio, maxW, value, onChange, token, onError }) {
       {note && <p className="ad-note">{note}</p>}
       <div className="ad-row">
         <button type="button" className="ad-btn" onClick={() => file.current.click()} disabled={busy}>Upload</button>
-        <input ref={file} type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onChange={(e) => pick(e.target.files[0])} />
+        <input ref={file} type="file" accept={ACCEPT} hidden onChange={(e) => pick(e.target.files[0])} />
         {changed && <button type="button" className="ad-btn ad-btn--ghost" onClick={() => { onChange(''); setNote(''); }}>Reset</button>}
       </div>
       <div className="ad-row">
         <input className="ad-url" placeholder="…or paste Unsplash / image link" value={url} onChange={(e) => setUrl(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && useUrl()} />
         <button type="button" className="ad-btn" onClick={useUrl} disabled={!url.trim()}>Use</button>
       </div>
-      {pending && <CropDialog file={pending} ratio={ratio} maxW={maxW} label={label} onCancel={() => { setPending(null); if (file.current) file.current.value = ''; }} onDone={done} />}
+      {pending && <CropDialog file={pending.blob} origSize={pending.origSize} convertNote={pending.note} ratio={ratio} maxW={maxW} label={label} onCancel={() => { setPending(null); if (file.current) file.current.value = ''; }} onDone={done} />}
     </article>
   );
 }
@@ -102,10 +108,16 @@ function SpeakerCard({ sp, i, count, token, onError, onChange, onMove, onRemove 
   const [busy, setBusy] = useState(false);
   const file = useRef(null);
   const set = (k) => (e) => onChange({ ...sp, [k]: e.target.value });
-  const pick = (f) => {
+  // any format: HEIC, TIFF etc. are converted first, then cropped and compressed
+  const pick = async (f) => {
     if (!f) return;
-    if (!/^image\/(jpeg|png|webp|avif)$/.test(f.type)) { onError('Use a JPG, PNG, WebP or AVIF photo'); return; }
-    setPending(f);
+    if (f.size > 60 * 1048576) { onError('That file is over 60 MB — export a smaller version first'); return; }
+    setBusy('Converting…');
+    try {
+      const { blob, note } = await decodeAny(f);
+      setPending({ blob, origSize: f.size, note, name: f.name });
+    } catch (x) { onError(x.message); if (file.current) file.current.value = ''; }
+    finally { setBusy(false); }
   };
   const done = async (blob) => {
     setPending(null); setBusy(true);
@@ -116,7 +128,7 @@ function SpeakerCard({ sp, i, count, token, onError, onChange, onMove, onRemove 
     <article className="ad-speaker">
       <div className="ad-speaker__photo" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); pick(e.dataTransfer.files[0]); }}>
         {sp.photo ? <img src={IMG(sp.photo, 400)} alt="" /> : <span>No photo</span>}
-        {busy && <span className="ad-busy">Uploading…</span>}
+        {busy && <span className="ad-busy">{typeof busy === 'string' ? busy : 'Uploading…'}</span>}
         <span className="ad-ratio">4:5 · 800px</span>
       </div>
       <div className="ad-speaker__fields">
@@ -126,7 +138,7 @@ function SpeakerCard({ sp, i, count, token, onError, onChange, onMove, onRemove 
         <input value={sp.topic} placeholder="Talk topic (optional)" onChange={set('topic')} maxLength={240} />
         <div className="ad-row">
           <button type="button" className="ad-btn" onClick={() => file.current.click()} disabled={busy}>{sp.photo ? 'Change photo' : 'Upload photo'}</button>
-          <input ref={file} type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onChange={(e) => pick(e.target.files[0])} />
+          <input ref={file} type="file" accept={ACCEPT} hidden onChange={(e) => pick(e.target.files[0])} />
           {sp.photo && <button type="button" className="ad-btn ad-btn--ghost" onClick={() => onChange({ ...sp, photo: '' })}>Remove photo</button>}
         </div>
       </div>
@@ -135,7 +147,7 @@ function SpeakerCard({ sp, i, count, token, onError, onChange, onMove, onRemove 
         <button type="button" className="ad-btn ad-btn--ghost" disabled={i === count - 1} onClick={() => onMove(1)} aria-label="Move down">↓</button>
         <button type="button" className="ad-btn ad-btn--ghost" onClick={onRemove}>Remove</button>
       </div>
-      {pending && <CropDialog file={pending} ratio={[4, 5]} maxW={800} label={sp.name || 'Speaker'} onCancel={() => setPending(null)} onDone={done} />}
+      {pending && <CropDialog file={pending.blob} origSize={pending.origSize} convertNote={pending.note} ratio={[4, 5]} maxW={800} label={sp.name || 'Speaker'} onCancel={() => setPending(null)} onDone={done} />}
     </article>
   );
 }
@@ -216,8 +228,9 @@ export default function Admin() {
       {err && <p className="ad-err ad-err--bar" role="alert">{err}</p>}
       {!needsLogin && <p className="ad-warn">No password is set — anyone who knows this address can edit the site. Set <code>ADMIN_PASSWORD</code> in <code>.env</code> before the site goes live.</p>}
       <aside className="ad-info">
-        <b>Every upload is automatically fitted and compressed.</b>
+        <b>Every upload is automatically converted, fitted and compressed.</b>
         <ol>
+          <li><b>Any format</b> — upload JPG, PNG, WebP, AVIF, GIF, BMP, SVG, TIFF or <i>HEIC/HEIF straight from an iPhone</i>. Formats the browser can't open itself (HEIC, TIFF) are converted automatically first.</li>
           <li><b>Ratio fix</b> — each spot has a fixed shape (shown on its picture, e.g. <i>16:9</i>). When you upload, you drag the photo inside that frame to choose what shows; it's cropped to exactly that ratio, so nothing is stretched or awkwardly cut on the site.</li>
           <li><b>Resize</b> — it's scaled down to the size that spot needs (e.g. <i>2400px</i> wide for the hero). Photos are never enlarged; you're warned if one is too small.</li>
           <li><b>Compress</b> — it's saved as WebP at high quality, usually 85–95% smaller than a camera or phone original. You'll see the before and after size.</li>
@@ -310,7 +323,7 @@ export default function Admin() {
           </div>
         </section>
       ))}
-      <p className="ad-foot">Upload any JPG, PNG, WebP or AVIF (up to 40 MB), or drop it on a picture.</p>
+      <p className="ad-foot">Upload any image format — including HEIC from iPhones and TIFF — up to 60 MB, or drop it on a picture. Everything is saved as an optimised WebP.</p>
     </main>
   );
 }

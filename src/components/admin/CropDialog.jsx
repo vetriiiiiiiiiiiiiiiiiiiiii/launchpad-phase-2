@@ -18,7 +18,8 @@ async function compress(img, crop, outW, outH) {
   return b;
 }
 
-export default function CropDialog({ file, ratio, maxW, label, onCancel, onDone }) {
+export default function CropDialog({ file, origSize, convertNote, ratio, maxW, label, onCancel, onDone }) {
+  const original = origSize ?? file.size;
   const [img, setImg] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [off, setOff] = useState({ x: 0, y: 0 }); // image centre offset, in frame widths/heights
@@ -67,7 +68,8 @@ export default function CropDialog({ file, ratio, maxW, label, onCancel, onDone 
     setBusy(true);
     const blob = await compress(img, crop, outW, outH);
     onDone(blob, {
-      from: { size: file.size, w: img.naturalWidth, h: img.naturalHeight },
+      from: { size: original, w: img.naturalWidth, h: img.naturalHeight },
+      converted: convertNote || '',
       to: { size: blob.size, w: outW, h: outH, type: blob.type.split('/')[1].toUpperCase() },
     });
   };
@@ -93,7 +95,7 @@ export default function CropDialog({ file, ratio, maxW, label, onCancel, onDone 
             onChange={(e) => { const z = +e.target.value; setZoom(z); setOff((o) => clampOff(o, z)); }} />
         </label>
         <p className="ad-est">
-          Original {img.naturalWidth}×{img.naturalHeight}px · {fmt(file.size)} → compressed to {outW}×{outH}px WebP
+          {convertNote ? `${convertNote} · ` : ''}Original {img.naturalWidth}×{img.naturalHeight}px · {fmt(original)} → compressed to {outW}×{outH}px WebP
           {small && <em> · This photo is small for this spot and may look soft; a larger original is better.</em>}
         </p>
         <div className="ad-row ad-row--end">

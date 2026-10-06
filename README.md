@@ -55,7 +55,11 @@ You can change:
 
 ### Automatic ratio fix and compression
 
-Every upload goes through three steps in the browser before it's saved:
+Every upload goes through these steps in the browser before it's saved:
+
+0. **Any format** — JPG, PNG, WebP, AVIF, GIF, BMP, SVG, TIFF and HEIC/HEIF (iPhone)
+   are all accepted, up to 60 MB. Formats the browser can't open natively (HEIC, TIFF)
+   are converted automatically with decoders loaded only when needed.
 
 1. **Ratio fix** — each spot has a fixed shape, shown on its picture (e.g. `16:9 · 2400px`).
    A crop window opens at exactly that ratio; drag the photo to choose what shows
