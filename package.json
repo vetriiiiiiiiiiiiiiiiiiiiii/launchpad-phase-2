@@ -3,13 +3,17 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Launchpad — 26 October 2026. One day. Three launches.",
+  "description": "Launchpad \u2014 26 October 2026. One day. Three launches.",
   "scripts": {
-    "dev": "vite",
+    "dev": "API_PORT=8787 node --env-file-if-exists=.env server/index.js & vite",
+    "dev:site": "vite",
+    "server": "API_PORT=8787 node --env-file-if-exists=.env server/index.js",
     "build": "vite build",
+    "start": "npm run build && node --env-file-if-exists=.env server/index.js",
     "preview": "vite preview"
   },
   "dependencies": {
+    "express": "^4.22.3",
     "framer-motion": "^11.18.2",
     "lenis": "^1.1.13",
     "react": "^18.3.1",

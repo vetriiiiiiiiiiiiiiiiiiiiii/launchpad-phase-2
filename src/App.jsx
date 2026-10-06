@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Home from './pages/Home.jsx';
@@ -11,8 +12,11 @@ import PageTransition from './components/PageTransition.jsx';
 import { PeekProvider } from './components/Peek.jsx';
 import Loader from './components/Loader.jsx';
 
+const Admin = lazy(() => import('./pages/Admin.jsx'));
+
 export default function App() {
   const location = useLocation();
+  if (location.pathname.startsWith('/admin')) return <Suspense fallback={null}><Admin /></Suspense>;
   return (
     <PeekProvider>
       <Loader />

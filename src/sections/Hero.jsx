@@ -5,7 +5,10 @@ import FlapClock from '../components/FlapClock.jsx';
 import { useScrollVars } from '../hooks/useScroll.js';
 import { hasWebGL, isMobile, reduceMotion } from '../hooks/env.js';
 import { loaderDone, onLoaderDone } from '../lib/loader.js';
-import { IMG, P } from '../lib/images.js';
+import { IMG, P, srcSet } from '../lib/images.js';
+import { S, registerHref } from '../lib/content.js';
+
+const ext = () => (registerHref().startsWith('http') ? { target: '_blank', rel: 'noopener' } : {});
 
 /* headline letters, each lit by the follow spot */
 function Lit({ text }) {
@@ -153,7 +156,7 @@ export default function Hero() {
   }, [phase]);
 
   const cls = ['hero', handoff && phase < 2 && 'from-loader', curtain3d && 'has-curtain3d', ...PHASES.slice(1, phase + 1)].filter(Boolean).join(' ');
-  const set = (id) => [900, 1800, 2600].map((w) => `${IMG(id, w)} ${w}w`).join(', ');
+  const set = (id) => srcSet(id, 2200);
 
   return (
     <section className={cls} id="top" ref={ref}>
@@ -204,7 +207,7 @@ export default function Hero() {
 
       <div className="hero__copy">
         <p className="hero__meta">
-          <Rv>Entrepreneurship &amp; Innovation Summit</Rv>
+          <Rv>{S.summitLabel}</Rv>
           <span className="hero__rule" aria-hidden="true" />
           <Rv>26 October 2026</Rv>
         </p>
@@ -221,7 +224,7 @@ export default function Hero() {
           ))}
         </ul>
         <div className="hero__actions">
-          <Btn href="#be-in-the-room" magnetic>Enter Launchpad</Btn>
+          <Btn href={registerHref()} magnetic {...ext()}>Enter Launchpad</Btn>
           <Btn href="#the-day" variant="ghost" icon="↓">Explore the day</Btn>
         </div>
       </div>

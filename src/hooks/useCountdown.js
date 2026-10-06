@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 
-export const EVENT_START = new Date('2026-10-26T00:00:00+05:30').getTime();
+import { S } from '../lib/content.js';
+
+export const EVENT_START = new Date(S.eventStart).getTime() || new Date('2026-10-26T00:00:00+05:30').getTime();
 const pad = (n) => String(n).padStart(2, '0');
 
 export function useCountdown() {

@@ -28,7 +28,7 @@ function useLoadProgress() {
     if (location.pathname === '/') {
       const img = new Image();
       img.onload = img.onerror = () => finish('hero');
-      img.src = IMG(P.heroRoom, 1800);
+      img.src = IMG(P.heroTalk, 1800);
     } else finish('hero');
     // on the home page, the velvet curtain has to be hung before the doors open
     if (location.pathname === '/' && !window.__curtainReady) addEventListener('lp:curtain', () => finish('stage'), { once: true });
