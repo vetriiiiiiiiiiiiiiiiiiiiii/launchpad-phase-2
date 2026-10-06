@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/admin.css';
 import CropDialog, { fmt } from '../components/admin/CropDialog.jsx';
 import { ACCEPT, decodeAny } from '../lib/decodeImage.js';
-import { DEFAULT_P, IMAGE_SLOTS, IMG } from '../lib/images.js';
+import { DEFAULT_P, DERIVED, IMAGE_SLOTS, IMG } from '../lib/images.js';
 import { DEFAULT_SETTINGS, DEFAULT_FAQ, DEFAULT_PRIVACY } from '../lib/content.js';
 
 /* /asdfghjkl — change every photograph and the key event settings.
@@ -43,13 +43,13 @@ function Login({ onToken }) {
   );
 }
 
-function Slot({ k, label, ratio, maxW, value, onChange, token, onError }) {
+function Slot({ k, label, ratio, maxW, value, inherited, onChange, token, onError }) {
   const [url, setUrl] = useState('');
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState(null);   // a file waiting in the crop step
   const [note, setNote] = useState('');
   const file = useRef(null);
-  const current = value || DEFAULT_P[k];
+  const current = value || inherited || DEFAULT_P[k];
   const changed = !!value && value !== DEFAULT_P[k];
   // any format: HEIC, TIFF etc. are converted first, then cropped and compressed
   const pick = async (f) => {
@@ -317,7 +317,7 @@ export default function Admin() {
           <h2>{section}</h2>
           <div className="ad-grid">
             {slots.map(([k, label, ratio, maxW]) => (
-              <Slot key={k} k={k} label={label} ratio={ratio} maxW={maxW} value={images[k]} token={token} onError={setErr}
+              <Slot key={k} k={k} label={label} ratio={ratio} maxW={maxW} value={images[k]} inherited={DERIVED[k] ? images[DERIVED[k]] : undefined} token={token} onError={setErr}
                 onChange={(v) => { setErr(''); setStatus(''); setImages((im) => { const n = { ...im }; if (v) n[k] = v; else delete n[k]; return n; }); }} />
             ))}
           </div>

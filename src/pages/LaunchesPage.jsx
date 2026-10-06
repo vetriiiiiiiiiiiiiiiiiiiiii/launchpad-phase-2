@@ -40,7 +40,7 @@ const PRODUCTS = [
   { key: 'one', n: '01', a: 'The First', tone: 'dark', progress: 0.78, lens: [11, 16, 9, 7],
     seen: '26 October 2026 — on stage, at Launchpad',
     say: <>It's real, and it's under that cloth. On 26 October, in front of everyone in the room, <em>it won't be.</em></> },
-  { key: 'two', n: '02', a: 'The Second', tone: 'light', progress: 0.5, lens: [13, 12, 14, 6], room: P.whiteRibs,
+  { key: 'two', n: '02', a: 'The Second', tone: 'light', progress: 0.5, lens: [13, 12, 14, 6], room: P.lpRoom02,
     seen: '26 October 2026 — on stage, at Launchpad',
     say: <>You can see its shadow. You can see its shape. The rest is <em>for the room.</em></> },
   { key: 'three', n: '03', a: 'The Final', tone: 'dark', progress: 0.7, lens: [10, 15, 12, 8],

@@ -1,6 +1,6 @@
 /* Site content that the admin panel controls. Loaded once, before the app's
    modules are evaluated, so every section picks up the saved values. */
-import { P, DEFAULT_P } from './images.js';
+import { P, DEFAULT_P, DERIVED } from './images.js';
 
 export const DEFAULT_SETTINGS = {
   summitLabel: 'Entrepreneurship & Innovation Summit',
@@ -66,6 +66,8 @@ export async function loadContent() {
     if (!res.ok) return;
     const data = await res.json();
     Object.entries(data.images || {}).forEach(([k, v]) => { if (k in DEFAULT_P && v) P[k] = v; });
+    // a slot that used to share a photo follows it until it is changed on its own
+    Object.entries(DERIVED).forEach(([k, base]) => { if (!data.images?.[k] && data.images?.[base]) P[k] = data.images[base]; });
     Object.entries(data.settings || {}).forEach(([k, v]) => { if (k in DEFAULT_SETTINGS && typeof v === 'string') S[k] = v; });
     if (Array.isArray(data.faq)) S.faq = data.faq;
     if (Array.isArray(data.speakers)) S.speakers = data.speakers.filter((sp) => sp && sp.name);

@@ -50,8 +50,8 @@ export function Builders() {
 
 /* ---------- The Conversation ---------- */
 const INVENTORY = [
-  ['i.', 'Two chairs', P.velvetSofa], ['ii.', 'A table', P.cafeMonstera], ['iii.', 'A notebook', P.chalkHand],
-  ['iv.', 'A prototype', P.emeraldGlass], ['v.', 'Coffee', P.cafeTree], ['vi.', 'A microphone', P.speaker], ['vii.', 'Stage light', P.talksStage],
+  ['i.', 'Two chairs', P.velvetSofa], ['ii.', 'A table', P.invTable], ['iii.', 'A notebook', P.invNotebook],
+  ['iv.', 'A prototype', P.invPrototype], ['v.', 'Coffee', P.cafeTree], ['vi.', 'A microphone', P.speaker], ['vii.', 'Stage light', P.invStageLight],
 ];
 function Item({ n, label, img }) {
   const peek = usePeekHandlers(img);
@@ -81,9 +81,9 @@ export function Conversation() {
 const WORKS = [
   ['tall', P.roundLibrary, 1100, 'Hall', 'Visitors moving through the space.', 'A circular library, shelves rising on every side.'],
   ['sq', P.glassBlocks, 1100, 'Object', 'Products displayed like art.', 'A wall of green glass blocks.'],
-  ['wide', P.glasshouse, 1400, 'Booth', 'Minimal. Considered. Room to look.', 'Inside a glasshouse full of green.'],
+  ['wide', P.expoBooth, 1400, 'Booth', 'Minimal. Considered. Room to look.', 'Inside a glasshouse full of green.'],
   ['tall', P.greenTiles, 1100, 'Light', 'Every object, properly lit.', 'Green tiles laid in a herringbone pattern.'],
-  ['wide', P.forestLibrary, 1400, 'Floor', 'Ideas, products and people meet.', 'A reading room opening onto a forest.'],
+  ['wide', P.expoFloor, 1400, 'Floor', 'Ideas, products and people meet.', 'A reading room opening onto a forest.'],
 ];
 export function Exhibition() {
   const ref = useRef(null), track = useRef(null), span = useRef(0);

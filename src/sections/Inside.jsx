@@ -4,12 +4,12 @@ import { usePeekHandlers } from '../components/Peek.jsx';
 import { P } from '../lib/images.js';
 
 const ROWS = [
-  { n: '01', t: 'The Talks', d: 'Expert voices, unfiltered.', href: '#the-talks', img: P.talksStage },
-  { n: '02', t: 'The Workshop', d: 'Hands-on problem solving.', href: '#the-workshop', img: P.chalkTeacher },
-  { n: '03', t: 'The Pitch', d: 'Ideas, said out loud.', href: '#the-pitch', img: P.podium },
-  { n: '04', t: 'The Launches', d: 'Three reveals.', to: '/launches', img: P.emeraldGlass },
-  { n: '05', t: 'The Exhibition', d: "What's being built.", href: '#the-exhibition', img: P.roundLibrary },
-  { n: '06', t: 'The Room', d: 'The people you meet.', href: '#the-room', img: P.cafeMonstera },
+  { n: '01', t: 'The Talks', d: 'Expert voices, unfiltered.', href: '#the-talks', img: P.idxTalks },
+  { n: '02', t: 'The Workshop', d: 'Hands-on problem solving.', href: '#the-workshop', img: P.idxWorkshop },
+  { n: '03', t: 'The Pitch', d: 'Ideas, said out loud.', href: '#the-pitch', img: P.idxPitch },
+  { n: '04', t: 'The Launches', d: 'Three reveals.', to: '/launches', img: P.idxLaunches },
+  { n: '05', t: 'The Exhibition', d: "What's being built.", href: '#the-exhibition', img: P.idxExhibition },
+  { n: '06', t: 'The Room', d: 'The people you meet.', href: '#the-room', img: P.idxRoom },
 ];
 
 function Row({ row }) {

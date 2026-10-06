@@ -24,16 +24,16 @@ const ACTS = ['Arrive', 'Discover', 'Launch', 'Connect', 'Leave different'];
 const NUM = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
 const MOMENTS = [
   { act: 'Arrive', time: 'Morning', title: 'Arrival', text: 'People enter. The room begins to fill.', img: P.tealHall, alt: 'An empty auditorium of teal seats before the audience arrives.' },
-  { act: 'Arrive', time: 'Then', title: 'Opening', text: 'The stage comes alive.', img: P.talksStage, alt: 'An audience facing a stage flooded with green light.' },
-  { act: 'Discover', time: 'Expert talks', title: 'The Talks', text: "People who've done it take the stage.", img: P.lectern, alt: 'A speaker at the lectern, mid-sentence.' },
-  { act: 'Discover', time: 'Hands-on', title: 'The Workshop', text: 'Real problems, solved together.', img: P.chalkTeacher, alt: 'A teacher working through a problem on a green chalkboard.' },
-  { act: 'Discover', time: 'Pitching', title: 'The Pitch', text: 'Ideas, said out loud.', img: P.podium, alt: 'A student pitching from a podium.' },
-  { act: 'Discover', time: 'Exhibition', title: 'Discovery', text: 'Ideas, products and people meet.', img: P.glasshouse, alt: 'Inside a glasshouse full of green.' },
+  { act: 'Arrive', time: 'Then', title: 'Opening', text: 'The stage comes alive.', img: P.dayOpening, alt: 'An audience facing a stage flooded with green light.' },
+  { act: 'Discover', time: 'Expert talks', title: 'The Talks', text: "People who've done it take the stage.", img: P.dayTalks, alt: 'A speaker at the lectern, mid-sentence.' },
+  { act: 'Discover', time: 'Hands-on', title: 'The Workshop', text: 'Real problems, solved together.', img: P.dayWorkshop, alt: 'A teacher working through a problem on a green chalkboard.' },
+  { act: 'Discover', time: 'Pitching', title: 'The Pitch', text: 'Ideas, said out loud.', img: P.dayPitch, alt: 'A student pitching from a podium.' },
+  { act: 'Discover', time: 'Exhibition', title: 'Discovery', text: 'Ideas, products and people meet.', img: P.dayDiscovery, alt: 'Inside a glasshouse full of green.' },
   { act: 'Launch', time: 'The first launch', title: 'Product One', text: 'Under wraps until the moment.', veil: 'dark' },
   { act: 'Launch', time: 'The second launch', title: 'Product Two', text: 'Under wraps until the moment.', veil: 'light' },
   { act: 'Launch', time: 'The third launch', title: 'Product Three', text: 'Under wraps until the moment.', veil: 'spot' },
-  { act: 'Connect', time: 'After', title: 'Connection', text: 'People meet.', img: P.cafeMonstera, alt: 'A crowded café under hanging lights, everyone mid-conversation.' },
-  { act: 'Leave different', time: 'Evening', title: 'Closing', text: 'The room leaves with something new.', img: P.forestLibrary, alt: 'A library opening onto a forest.' },
+  { act: 'Connect', time: 'After', title: 'Connection', text: 'People meet.', img: P.dayConnection, alt: 'A crowded café under hanging lights, everyone mid-conversation.' },
+  { act: 'Leave different', time: 'Evening', title: 'Closing', text: 'The room leaves with something new.', img: P.dayClosing, alt: 'A library opening onto a forest.' },
 ];
 
 /* The day as one continuous journey: a sticky frame on the left follows the

@@ -20,7 +20,7 @@ const SLIDES = [
   { id: P.heroTalk, label: 'Expert talks', alt: 'A speaker addressing a full hall.' },
   { id: P.heroPitch, label: 'Pitching', alt: 'A founder presenting a product to the room on a big screen.' },
   { id: P.heroWork, label: 'Hands-on problem solving', alt: 'A team working through a problem at a whiteboard.' },
-  { id: P.talksStage, label: 'Three product launches', alt: 'Stage lights bursting over an audience.' },
+  { id: P.heroLaunch, label: 'Three product launches', alt: 'Stage lights bursting over an audience.' },
 ];
 
 const PHASES = ['', 'is-logo', 'is-develop', 'is-open', 'is-copy'];

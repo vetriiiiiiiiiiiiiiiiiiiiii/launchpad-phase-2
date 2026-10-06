@@ -46,6 +46,34 @@ export const DEFAULT_P = {
   whiteRibs: 'photo-1567201864585-6baec9110dac',
 };
 
+
+/* Every placement has its own slot. Slots that used to share a photo start
+   from that photo (and follow it if it was customised) until changed alone. */
+export const DERIVED = {
+  heroLaunch: 'talksStage',
+  dayOpening: 'talksStage',
+  dayTalks: 'lectern',
+  dayWorkshop: 'chalkTeacher',
+  dayPitch: 'podium',
+  dayDiscovery: 'glasshouse',
+  dayConnection: 'cafeMonstera',
+  dayClosing: 'forestLibrary',
+  idxTalks: 'talksStage',
+  idxWorkshop: 'chalkTeacher',
+  idxPitch: 'podium',
+  idxLaunches: 'emeraldGlass',
+  idxExhibition: 'roundLibrary',
+  idxRoom: 'cafeMonstera',
+  invTable: 'cafeMonstera',
+  invNotebook: 'chalkHand',
+  invPrototype: 'emeraldGlass',
+  invStageLight: 'talksStage',
+  expoBooth: 'glasshouse',
+  expoFloor: 'forestLibrary',
+  lpRoom02: 'whiteRibs',
+};
+Object.entries(DERIVED).forEach(([k, base]) => { DEFAULT_P[k] = DEFAULT_P[base]; });
+
 /* the live set: defaults, overlaid with whatever the admin has saved */
 export const P = { ...DEFAULT_P };
 
@@ -56,21 +84,35 @@ export const IMAGE_SLOTS = [
     ['heroTalk', 'Slide 1 — Expert talks', [16, 9], 2400],
     ['heroPitch', 'Slide 2 — Pitching', [16, 9], 2400],
     ['heroWork', 'Slide 3 — Hands-on problem solving', [16, 9], 2400],
-    ['talksStage', 'Slide 4 — Product launches (also Talks section)', [16, 9], 2400]]],
+    ['heroLaunch', 'Slide 4 — Product launches', [16, 9], 2400]]],
+  ['Everything, in one day (hover previews)', [
+    ['idxTalks', 'The Talks', [4, 5], 800],
+    ['idxWorkshop', 'The Workshop', [4, 5], 800],
+    ['idxPitch', 'The Pitch', [4, 5], 800],
+    ['idxLaunches', 'The Launches', [4, 5], 800],
+    ['idxExhibition', 'The Exhibition', [4, 5], 800],
+    ['idxRoom', 'The Room', [4, 5], 800]]],
   ['The Day', [
-    ['tealHall', 'Arrival', [4, 3], 1600],
-    ['lectern', 'The Talks (also Talks section)', [4, 5], 1400],
-    ['chalkTeacher', 'The Workshop (also Workshop print 1)', [4, 3], 1600],
-    ['podium', 'The Pitch (also Pitch backdrop)', [16, 9], 2400],
-    ['glasshouse', 'Discovery (also Exhibition)', [16, 10], 2000],
-    ['cafeMonstera', 'Connection (also The Room)', [1, 1], 1600],
-    ['forestLibrary', 'Closing (also Exhibition)', [16, 10], 2000]]],
-  ['Statement & Talks', [
-    ['greenRoom', 'Statement photograph', [4, 5], 1600],
-    ['greenSeats', 'Talks — the room', [3, 4], 1200]]],
+    ['tealHall', 'I — Arrival', [4, 3], 1600],
+    ['dayOpening', 'II — Opening', [4, 3], 1600],
+    ['dayTalks', 'III — The Talks', [4, 3], 1600],
+    ['dayWorkshop', 'IV — The Workshop', [4, 3], 1600],
+    ['dayPitch', 'V — The Pitch', [4, 3], 1600],
+    ['dayDiscovery', 'VI — Discovery', [4, 3], 1600],
+    ['dayConnection', 'X — Connection', [4, 3], 1600],
+    ['dayClosing', 'XI — Closing', [4, 3], 1600]]],
+  ['Statement', [
+    ['greenRoom', 'Statement photograph', [4, 5], 1600]]],
+  ['Expert talks', [
+    ['talksStage', 'Full-screen stage (opens from a slit)', [16, 9], 2400],
+    ['lectern', 'Photo i — On stage', [4, 5], 1400],
+    ['greenSeats', 'Photo ii — The room', [3, 4], 1200]]],
   ['Workshop', [
-    ['chalkStudents', 'Print 2 — solving together', [4, 3], 1200],
-    ['chalkNotes', 'Print 3 — the working', [4, 3], 1200]]],
+    ['chalkTeacher', 'Print 1 — Learning by doing', [4, 3], 1600],
+    ['chalkStudents', 'Print 2 — Solving it together', [4, 3], 1200],
+    ['chalkNotes', 'Print 3 — The working', [4, 3], 1200]]],
+  ['Pitch', [
+    ['podium', 'Pitch backdrop', [16, 9], 2400]]],
   ['For the ones who build', [
     ['founderLeaves', 'Founders (large)', [3, 4], 1400],
     ['greenhouseDuo', 'Reviewing', [1, 1], 1000],
@@ -82,16 +124,23 @@ export const IMAGE_SLOTS = [
   ['Conversation', [
     ['greenhouseTalk', 'Main photograph', [4, 5], 1600],
     ['velvetSofa', 'Hover: two chairs', [4, 5], 800],
-    ['emeraldGlass', 'Hover: prototype / launches index', [4, 5], 800],
-    ['speaker', 'Hover: microphone', [4, 5], 800],
-    ['cafeTree', 'Hover: coffee', [4, 5], 800]]],
+    ['invTable', 'Hover: a table', [4, 5], 800],
+    ['invNotebook', 'Hover: a notebook', [4, 5], 800],
+    ['invPrototype', 'Hover: a prototype', [4, 5], 800],
+    ['cafeTree', 'Hover: coffee', [4, 5], 800],
+    ['speaker', 'Hover: a microphone', [4, 5], 800],
+    ['invStageLight', 'Hover: stage light', [4, 5], 800]]],
   ['Exhibition', [
     ['roundLibrary', 'Hall', [3, 4], 1400],
     ['glassBlocks', 'Object', [5, 4], 1400],
-    ['greenTiles', 'Light', [3, 4], 1400]]],
+    ['expoBooth', 'Booth', [16, 10], 2000],
+    ['greenTiles', 'Light', [3, 4], 1400],
+    ['expoFloor', 'Floor', [16, 10], 2000]]],
   ['The Room', [
+    ['cafeMonstera', 'Main photograph', [1, 1], 1600],
     ['cafePlants', 'Second photograph', [4, 3], 1200],
     ['cafeChairs', 'Third photograph', [3, 4], 1200]]],
   ['Launches', [
-    ['whiteRibs', 'Launch 02 room backdrop', [16, 9], 2400]]],
+    ['whiteRibs', 'Home page — launch 02 room backdrop', [16, 9], 2400],
+    ['lpRoom02', 'Launches page — product 02 room backdrop', [16, 9], 2400]]],
 ];
