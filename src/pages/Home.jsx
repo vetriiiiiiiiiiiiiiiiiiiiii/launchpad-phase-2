@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import Hero from '../sections/Hero.jsx';
 import Statement from '../sections/Statement.jsx';
 import Inside from '../sections/Inside.jsx';
@@ -22,7 +21,6 @@ export default function Home() {
   useReveal();
   useArrive();
   useEventSeo();
-  useEffect(() => { document.title = 'Launchpad — 26 October 2026'; }, []);
   return (
     <>
       <SvgDefs />

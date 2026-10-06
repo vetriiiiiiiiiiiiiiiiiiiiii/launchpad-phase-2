@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import Rv from '../components/Rv.jsx';
+import { RegistrationLink } from '../components/RegistrationLink.jsx';
 import { finePointer, reduceMotion } from '../hooks/env.js';
 
 /* A keepsake admission ticket. Write your name; it gets a seat and a number,
@@ -90,7 +91,7 @@ export default function Invitation() {
           </label>
           <div className="invite__actions" data-reveal>
             <button type="button" className="btn btn--light magnetic" onClick={save}><span>Save invitation</span><i aria-hidden="true">↓</i></button>
-            <a className="btn btn--ghost" href="#be-in-the-room"><span>Be in the room</span><i aria-hidden="true">→</i></a>
+            <RegistrationLink className="btn btn--ghost"><span>Be in the room</span><i aria-hidden="true">→</i></RegistrationLink>
           </div>
         </header>
 

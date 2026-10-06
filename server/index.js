@@ -314,6 +314,12 @@ if (fs.existsSync(UPLOADS)) {
 
 const dist = path.join(root, 'dist');
 if (fs.existsSync(dist)) {
+  app.get('/launches', (req, res, next) => {
+    res.sendFile(path.join(dist, 'launches', 'index.html'), (error) => { if (error) next(error); });
+  });
+  app.get('/asdfghjkl', (req, res, next) => {
+    res.sendFile(path.join(dist, 'asdfghjkl', 'index.html'), (error) => { if (error) next(error); });
+  });
   app.use(express.static(dist, { index: false, maxAge: '1h' }));
   app.get('*', (req, res) => res.sendFile(path.join(dist, 'index.html')));
 }
@@ -330,7 +336,9 @@ let httpServer;
 try {
   await prisma.$connect();
   await importLegacyContent();
-  httpServer = app.listen(port, () => console.log(`  Launchpad content server on http://localhost:${port}`));
+  httpServer = app.listen(port, '127.0.0.1', () => {
+    console.log(`  Launchpad content server on http://127.0.0.1:${port}`);
+  });
   httpServer.on('error', async (error) => {
     console.error('Could not start the content server:', error);
     await prisma.$disconnect();

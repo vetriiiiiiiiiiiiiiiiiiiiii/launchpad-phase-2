@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Rv from '../components/Rv.jsx';
-import Btn from '../components/Btn.jsx';
+import { RegistrationButton } from '../components/RegistrationLink.jsx';
 import StageCanvas from '../components/StageCanvas.jsx';
 import { useCountdown } from '../hooks/useCountdown.js';
+import { useLaunchesSeo } from '../hooks/useEventSeo.js';
 import { useReveal } from '../hooks/useReveal.js';
 import { useArrive } from '../hooks/useArrive.js';
 import { hasWebGL, reduceMotion } from '../hooks/env.js';
@@ -83,7 +84,7 @@ function Product({ p }) {
             onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); hold(true); } }} onKeyUp={() => hold(false)}>
             <span>Hold to peek</span><i aria-hidden="true">◐</i>
           </button>
-          <Btn to="/#be-in-the-room" variant="ghost">Be in the room for the reveal</Btn>
+          <RegistrationButton variant="ghost">Be in the room for the reveal</RegistrationButton>
         </div>
       </article>
     </section>
@@ -93,9 +94,10 @@ function Product({ p }) {
 export default function LaunchesPage() {
   useReveal();
   useArrive();
+  useLaunchesSeo();
   const { d, h, m, s } = useCountdown();
   const [lineupReady, setLineupReady] = useState(false);
-  useEffect(() => { document.title = 'The Launches — Launchpad, 26 October 2026'; document.body.classList.remove('is-loading'); }, []);
+  useEffect(() => { document.body.classList.remove('is-loading'); }, []);
   return (
     <main className="lp">
       <section className={`lp-hero is-in${lineupReady ? ' has-3d' : ''}${!hasWebGL || reduceMotion ? ' no-3d' : ''}`} data-tone="dark">
@@ -138,7 +140,7 @@ export default function LaunchesPage() {
       <section className="lp-cta" data-tone="dark">
         <h2 className="lp-cta__title"><span>See them</span> <em>first.</em></h2>
         <p className="lp-cta__date">26 October 2026 · Launchpad</p>
-        <Btn to="/#be-in-the-room" big magnetic>Be in the room</Btn>
+        <RegistrationButton big magnetic>Be in the room</RegistrationButton>
       </section>
     </main>
   );

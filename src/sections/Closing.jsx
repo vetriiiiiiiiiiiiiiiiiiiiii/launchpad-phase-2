@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react';
-import Btn from '../components/Btn.jsx';
 import { useScrollVars } from '../hooks/useScroll.js';
 import { useCountdown } from '../hooks/useCountdown.js';
-import { S } from '../lib/content.js';
+import { RegistrationButton } from '../components/RegistrationLink.jsx';
 import { hasWebGL, isMobile, reduceMotion } from '../hooks/env.js';
 
 export function Marks() {
@@ -66,7 +65,7 @@ export function Finale() {
           </div>
           <p className="finale__date">26 October 2026</p>
           <p className="finale__word">Launchpad</p>
-          <Btn href={S.registerUrl || '#be-in-the-room'} big magnetic {...(S.registerUrl ? { target: '_blank', rel: 'noopener' } : {})}>Be in the room</Btn>
+          <RegistrationButton big magnetic>Be in the room</RegistrationButton>
         </div>
       </div>
     </section>

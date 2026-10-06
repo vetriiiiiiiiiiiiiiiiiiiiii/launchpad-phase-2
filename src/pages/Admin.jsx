@@ -110,8 +110,17 @@ export default function Admin() {
     document.title = 'Admin — Launchpad';
     document.body.classList.remove('is-loading');
     // keep the admin out of search engines
-    const m = document.createElement('meta'); m.name = 'robots'; m.content = 'noindex, nofollow'; document.head.appendChild(m);
-    return () => m.remove();
+    let robots = document.head.querySelector('meta[name="robots"]');
+    if (!robots) {
+      robots = document.createElement('meta');
+      robots.name = 'robots';
+      document.head.appendChild(robots);
+    }
+    robots.content = 'noindex, nofollow';
+    document.querySelector('link[rel="canonical"]')?.remove();
+    document.head.querySelectorAll('script[data-seo-schema]').forEach((node) => node.remove());
+    document.head.querySelectorAll('meta[name="description"], meta[property^="og:"], meta[name^="twitter:"]').forEach((node) => node.remove());
+    return () => robots.remove();
   }, []);
   useEffect(() => { api('/api/auth').then((a) => setNeedsLogin(!!a.required)).catch(() => setNeedsLogin(true)); }, []);
   useEffect(() => {
@@ -176,7 +185,7 @@ export default function Admin() {
         <div className="ad-fields">
           {setting('summitLabel', 'Line above the headline', 'Shown in the hero, e.g. "Entrepreneurship & Innovation Summit"')}
           {setting('eventStart', 'Doors open (countdown target)', 'ISO date & time with offset, e.g. 2026-10-26T09:00:00+05:30')}
-          {setting('registerUrl', 'Registration link', '"Enter Launchpad" and the final "Be in the room" open this link', 'url')}
+          {setting('registerUrl', 'Registration link', 'All “Be in the room” buttons and “Enter Launchpad” open this link. Leave blank to scroll to the invitation section.', 'url')}
           {setting('doorsTime', 'Doors open (shown)', 'As visitors read it, e.g. 9:00 AM. Empty shows "To be announced"')}
           {setting('venue', 'Venue', 'e.g. Main Auditorium, SRM Campus. Empty shows "To be announced"')}
           {setting('city', 'City', 'e.g. Tiruchirappalli')}

@@ -22,6 +22,22 @@ Use Node.js 22.9 or newer. The production command is `npm start`; it builds the
 site, applies committed migrations, then starts the API and serves the site on
 `PORT` (default 8787).
 
+## Search and sharing metadata
+
+The build emits separate HTML metadata for `/` and `/launches`, so each route
+has its own title, description, canonical URL, Open Graph/Twitter preview, and
+structured data before client-side JavaScript runs. It also generates
+`robots.txt` and `sitemap.xml`. The admin route is marked `noindex, nofollow`
+and is excluded from the sitemap. The home page adds Event data only after a
+venue or city is configured in Admin; its FAQ data follows the published FAQs.
+
+Set `SITE_URL` to the public HTTPS origin (for example `https://example.com`)
+in the deployment environment. The production build requires this setting and
+uses it for canonical URLs, the sitemap, and social preview URLs. Since the
+public domain has not been chosen yet, local builds use the current browser
+origin for client-side canonical tags and omit the absolute sitemap until
+`SITE_URL` is set.
+
 ## Admin panel — `/asdfghjkl`
 
 Open `http://localhost:5173/asdfghjkl` (or `https://your-domain/asdfghjkl`). The address is
@@ -54,7 +70,7 @@ Pasted Unsplash links are already resized and compressed by Unsplash; other
 pasted links are used as-is, so uploading is better.
 - **Event settings**: the line above the hero headline, the countdown target
   (doors-open date and time), and the registration link used by
-  "Enter Launchpad" and the final "Be in the room".
+  "Enter Launchpad" and all "Be in the room" buttons.
 
 Settings, image-slot choices, FAQs, and uploaded image bytes are stored in
 PostgreSQL. Existing data in `server/data/content.json` and its uploaded files are
@@ -70,6 +86,8 @@ environment variables in the host dashboard:
 - `DATABASE_URL`: runtime PostgreSQL URL (pooled URL is supported).
 - `DIRECT_URL`: direct PostgreSQL URL for Prisma migrations; set it to the same
   URL when the provider has no separate direct endpoint.
+- `SITE_URL`: the public HTTPS origin used in canonical URLs, metadata and the
+  sitemap (for example `https://example.com`).
 - `ADMIN_PASSWORD`: a unique secret of at least 16 characters.
 - `TRUST_PROXY_HOPS`: set to the exact number of trusted proxies in front of the
   app if the host uses a reverse proxy; leave unset for direct connections.

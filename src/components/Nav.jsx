@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrollSubscribe } from '../hooks/useScroll.js';
+import { RegistrationLink } from './RegistrationLink.jsx';
 
 /* Minimal floating navigation. It goes quiet once you're inside, and inks
    itself dark over paper-coloured rooms. */
@@ -39,7 +40,7 @@ export default function Nav() {
           <A hash="#the-experience">The Experience</A>
           <A hash="#about">About</A>
         </nav>
-        <A hash="#be-in-the-room" className="nav__cta magnetic"><span>Be in the room</span><i aria-hidden="true">→</i></A>
+        <RegistrationLink className="nav__cta magnetic"><span>Be in the room</span><i aria-hidden="true">→</i></RegistrationLink>
         <button className="nav__menu" aria-expanded={open} aria-controls="sheet" onClick={() => setOpen((o) => !o)}>
           <span>{open ? 'Close' : 'Menu'}</span>
         </button>
@@ -54,7 +55,7 @@ export default function Nav() {
         </nav>
         <div className="sheet__foot">
           <span>26 October 2026</span>
-          <A hash="#be-in-the-room" onClick={() => setOpen(false)}>Be in the room →</A>
+          <RegistrationLink onClick={() => setOpen(false)}>Be in the room →</RegistrationLink>
         </div>
       </div>
     </>
