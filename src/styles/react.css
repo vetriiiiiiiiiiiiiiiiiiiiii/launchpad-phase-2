@@ -340,3 +340,9 @@ main.lp { display: block; }
 .hero:not(.is-copy) .hero__actions { transition-delay: 0s; transition-duration: .4s; }
 .hero:not(.is-copy) .rv > span { transition-delay: 0s !important; transition-duration: .5s; }
 .hero:not(.is-copy) .hero__replay { transition-delay: 0s; }
+
+/* the curtain is in place the moment the loader lifts; no fade-in gap */
+.hero.has-curtain3d .curtain3d { transition: opacity .35s var(--ease); }
+.hero.has-curtain3d .hero__mark { display: none; }
+/* the hall brightens as the fabric parts, the headline rises during the opening */
+.hero.has-curtain3d .hero__room { transition: opacity 2.2s var(--ease) .15s; }

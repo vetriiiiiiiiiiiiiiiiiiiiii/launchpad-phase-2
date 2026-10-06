@@ -48,7 +48,7 @@ export default function Hero() {
       curtain.current?.dispose(); curtain.current = null;
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (phase >= 3) curtain.current?.open(2.6); }, [phase, curtain3d]);
+  useEffect(() => { if (phase >= 3) curtain.current?.open(3.0); }, [phase, curtain3d]);
 
   /* close the curtain and play the opening again */
   const replay = () => {
@@ -86,10 +86,12 @@ export default function Hero() {
     window.lenis?.stop();
     if (!ready) return undefined;            // wait in the dark until the loader is done
     if (phase === 0) { setHandoff(true); setPhase(1); return undefined; }
-    const delays = [0, 1500, 1600, 1300];
+    // one movement: the curtain is already hung and closed as the loader lifts,
+    // starts parting at once, and the hall and headline rise in while it opens
+    const delays = curtain3d ? [0, 0, 450, 1300] : [0, 600, 900, 1300];
     const t = setTimeout(() => setPhase((p) => p + 1), delays[phase]);
     return () => clearTimeout(t);
-  }, [phase, ready]);
+  }, [phase, ready, curtain3d]);
 
   useEffect(() => {
     const impatient = () => { if (loaderDone()) setPhase((p) => (p >= 2 ? 4 : p)); };
