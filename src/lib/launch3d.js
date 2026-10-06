@@ -509,3 +509,5 @@ export function mountLineup(host, { mobile = false } = {}) {
     },
   };
 }
+
+export { Cloth, STAGES, beamMaterial };

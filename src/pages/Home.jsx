@@ -9,6 +9,7 @@ import Pitch from '../sections/Pitch.jsx';
 import { LaunchesIntro, LaunchOne, LaunchTwo, LaunchThree } from '../sections/Launches.jsx';
 import { Builders, Conversation, Exhibition, Connection } from '../sections/People.jsx';
 import { Marks, Finale } from '../sections/Closing.jsx';
+import Invitation from '../sections/Invitation.jsx';
 import Fuse from '../components/Fuse.jsx';
 import SvgDefs from '../components/SvgDefs.jsx';
 import { useReveal } from '../hooks/useReveal.js';
@@ -38,6 +39,7 @@ export default function Home() {
         <Conversation />
         <Exhibition />
         <Connection />
+        <Invitation />
         <Marks />
         <Finale />
       </main>

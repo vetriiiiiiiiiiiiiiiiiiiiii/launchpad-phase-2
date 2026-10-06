@@ -24,27 +24,47 @@ export default function Hero() {
   const [ready, setReady] = useState(loaderDone());
   useEffect(() => onLoaderDone(() => setReady(true)), []);
   const { d } = useCountdown();
-  useScrollVars(ref);
+  useScrollVars(ref, ({ x }) => hall.current?.setScroll(x));
 
   /* the velvet curtain: a real cloth simulation when WebGL is available */
   const curtainHost = useRef(null), curtain = useRef(null);
   const [curtain3d, setCurtain3d] = useState(false);
+  const hallHost = useRef(null), hall = useRef(null);
+  const [hall3d, setHall3d] = useState(false);
   useEffect(() => {
     const announce = () => { window.__curtainReady = true; window.dispatchEvent(new Event('lp:curtain')); };
     if (!hasWebGL || reduceMotion) { announce(); return undefined; }
     let cancelled = false, io = null;
-    import('../lib/curtain3d.js').then(({ mountCurtain }) => {
+    const idle = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 60 }) : setTimeout(fn, 16));
+    Promise.all([import('../lib/curtain3d.js'), import('../lib/hall3d.js')]).then(([{ mountCurtain }, { mountHall }]) => {
       if (cancelled || !curtainHost.current) return;
+      // the hall behind the curtain: built, its veiled objects settled, before the doors open
+      let h = null;
+      try { h = mountHall(hallHost.current, { mobile: isMobile() }); } catch (e) { h = null; }
+      hall.current = h;
+      if (h && skipNow) h.setOpen(1);
       const c = mountCurtain(curtainHost.current, { mobile: isMobile(), startOpen: skipNow });
       curtain.current = c;
       setCurtain3d(true);
-      io = new IntersectionObserver((e) => (e[0].isIntersecting ? c.start() : c.stop()));
-      io.observe(ref.current);
-      announce();
+      io = new IntersectionObserver((e) => {
+        if (e[0].isIntersecting) { c.start(); h?.start(); } else { c.stop(); h?.stop(); }
+      });
+      const warm = () => {
+        if (cancelled) return;
+        if (h && !h.warm(30)) { idle(warm); return; }
+        if (h) { h.renderOnce(); setHall3d(true); }
+        io.observe(ref.current);
+        announce();
+      };
+      warm();
     }).catch(announce);
-    return () => { cancelled = true; io?.disconnect(); curtain.current?.dispose(); curtain.current = null; };
+    return () => {
+      cancelled = true; io?.disconnect();
+      curtain.current?.dispose(); curtain.current = null;
+      hall.current?.dispose(); hall.current = null;
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (phase >= 3) curtain.current?.open(2.6); }, [phase, curtain3d]);
+  useEffect(() => { if (phase >= 3) { curtain.current?.open(2.6); if (!skipNow) hall.current?.animateOpen(3000); } }, [phase, curtain3d]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (phase >= 4) {
@@ -68,12 +88,13 @@ export default function Hero() {
     return () => ['wheel', 'touchstart', 'keydown'].forEach((t) => removeEventListener(t, impatient));
   }, []);
 
-  const cls = ['hero', handoff && phase < 2 && 'from-loader', curtain3d && 'has-curtain3d', ...PHASES.slice(1, phase + 1)].filter(Boolean).join(' ');
+  const cls = ['hero', handoff && phase < 2 && 'from-loader', curtain3d && 'has-curtain3d', hall3d && 'has-hall3d', ...PHASES.slice(1, phase + 1)].filter(Boolean).join(' ');
   const set = [900, 1800, 2600].map((w) => `${IMG(P.heroRoom, w)} ${w}w`).join(', ');
 
   return (
     <section className={cls} id="top" ref={ref}>
       <div className="hero__stage">
+        <div className="hero__hall" ref={hallHost} aria-hidden="true" />
         <div className="hero__room">
           <img src={IMG(P.heroRoom, 1800)} srcSet={set} sizes="100vw" fetchpriority="high"
             alt="A hall of empty chairs under green light, moments before the doors open." />
