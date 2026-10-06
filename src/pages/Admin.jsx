@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/admin.css';
+import CropDialog, { fmt } from '../components/admin/CropDialog.jsx';
 import { DEFAULT_P, IMAGE_SLOTS, IMG } from '../lib/images.js';
 import { DEFAULT_SETTINGS } from '../lib/content.js';
 
-/* /admin — change every photograph and the key event settings.
+/* /asdfghjkl — change every photograph and the key event settings.
    Saved content is served by the content server and applies on next load. */
 const api = async (path, opts = {}, token) => {
   const res = await fetch(path, { ...opts, headers: { ...(opts.headers || {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) } });
@@ -41,40 +42,56 @@ function Login({ onToken }) {
   );
 }
 
-function Slot({ k, label, value, onChange, token, onError }) {
+function Slot({ k, label, ratio, maxW, value, onChange, token, onError }) {
   const [url, setUrl] = useState('');
   const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState(null);   // a file waiting in the crop step
+  const [note, setNote] = useState('');
   const file = useRef(null);
   const current = value || DEFAULT_P[k];
   const changed = !!value && value !== DEFAULT_P[k];
-  const upload = async (f) => {
+  const pick = (f) => {
     if (!f) return;
-    setBusy(true);
-    try { const { url: u } = await api('/api/upload', { method: 'POST', headers: { 'Content-Type': f.type }, body: f }, token); onChange(u); }
-    catch (x) { onError(x.message); } finally { setBusy(false); file.current.value = ''; }
+    if (!/^image\/(jpeg|png|webp|avif)$/.test(f.type)) { onError('Use a JPG, PNG, WebP or AVIF photo'); return; }
+    if (f.size > 40 * 1048576) { onError('That file is over 40 MB — export a smaller version first'); return; }
+    setPending(f);
+  };
+  const done = async (blob, info) => {
+    setPending(null); setBusy(true);
+    try {
+      const { url: u } = await api('/api/upload', { method: 'POST', headers: { 'Content-Type': blob.type }, body: blob }, token);
+      onChange(u);
+      const saved = Math.max(0, Math.round((1 - info.to.size / info.from.size) * 100));
+      setNote(`Compressed ${fmt(info.from.size)} → ${fmt(info.to.size)} (−${saved}%) · ${info.to.w}×${info.to.h} ${info.to.type}`);
+    } catch (x) { onError(x.message); } finally { setBusy(false); if (file.current) file.current.value = ''; }
   };
   const useUrl = () => {
     const n = normalise(url);
     if (n === null) { onError('Paste an Unsplash photo link or an https:// image URL'); return; }
     onChange(n); setUrl('');
+    setNote(n.startsWith('photo-') ? 'Unsplash photo — served already resized and compressed' : 'External link — used as-is (not compressed). Uploading is better.');
   };
   return (
     <article className={`ad-slot${changed ? ' is-changed' : ''}`}>
-      <div className="ad-thumb" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); upload(e.dataTransfer.files[0]); }}>
+      <div className="ad-thumb" style={{ aspectRatio: `${ratio[0]} / ${ratio[1]}` }}
+        onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); pick(e.dataTransfer.files[0]); }}>
         <img src={IMG(current, 640)} alt="" loading="lazy" />
         {busy && <span className="ad-busy">Uploading…</span>}
         {changed && <span className="ad-flag">Custom</span>}
+        <span className="ad-ratio">{ratio[0]}:{ratio[1]} · {maxW}px</span>
       </div>
       <p className="ad-label">{label}</p>
+      {note && <p className="ad-note">{note}</p>}
       <div className="ad-row">
         <button type="button" className="ad-btn" onClick={() => file.current.click()} disabled={busy}>Upload</button>
-        <input ref={file} type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onChange={(e) => upload(e.target.files[0])} />
-        {changed && <button type="button" className="ad-btn ad-btn--ghost" onClick={() => onChange('')}>Reset</button>}
+        <input ref={file} type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onChange={(e) => pick(e.target.files[0])} />
+        {changed && <button type="button" className="ad-btn ad-btn--ghost" onClick={() => { onChange(''); setNote(''); }}>Reset</button>}
       </div>
       <div className="ad-row">
         <input className="ad-url" placeholder="…or paste Unsplash / image link" value={url} onChange={(e) => setUrl(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && useUrl()} />
         <button type="button" className="ad-btn" onClick={useUrl} disabled={!url.trim()}>Use</button>
       </div>
+      {pending && <CropDialog file={pending} ratio={ratio} maxW={maxW} label={label} onCancel={() => { setPending(null); if (file.current) file.current.value = ''; }} onDone={done} />}
     </article>
   );
 }
@@ -87,7 +104,13 @@ export default function Admin() {
   const [status, setStatus] = useState('');
   const [err, setErr] = useState('');
 
-  useEffect(() => { document.title = 'Admin — Launchpad'; document.body.classList.remove('is-loading'); }, []);
+  useEffect(() => {
+    document.title = 'Admin — Launchpad';
+    document.body.classList.remove('is-loading');
+    // keep the admin out of search engines
+    const m = document.createElement('meta'); m.name = 'robots'; m.content = 'noindex, nofollow'; document.head.appendChild(m);
+    return () => m.remove();
+  }, []);
   useEffect(() => {
     api('/api/content').then((c) => { setImages(c.images || {}); setSettings(c.settings || {}); setSaved(JSON.stringify({ i: c.images || {}, s: c.settings || {} })); })
       .catch(() => setErr('Cannot reach the content server. Start it with "npm run dev".'));
@@ -129,6 +152,15 @@ export default function Admin() {
         </div>
       </header>
       {err && <p className="ad-err ad-err--bar" role="alert">{err}</p>}
+      <aside className="ad-info">
+        <b>Every upload is automatically fitted and compressed.</b>
+        <ol>
+          <li><b>Ratio fix</b> — each spot has a fixed shape (shown on its picture, e.g. <i>16:9</i>). When you upload, you drag the photo inside that frame to choose what shows; it's cropped to exactly that ratio, so nothing is stretched or awkwardly cut on the site.</li>
+          <li><b>Resize</b> — it's scaled down to the size that spot needs (e.g. <i>2400px</i> wide for the hero). Photos are never enlarged; you're warned if one is too small.</li>
+          <li><b>Compress</b> — it's saved as WebP at high quality, usually 85–95% smaller than a camera or phone original. You'll see the before and after size.</li>
+        </ol>
+        <span>Pasted Unsplash links are already resized and compressed by Unsplash. Other pasted links are used as-is, so uploading is better.</span>
+      </aside>
 
       <section className="ad-sec">
         <h2>Event</h2>
@@ -143,14 +175,14 @@ export default function Admin() {
         <section className="ad-sec" key={section}>
           <h2>{section}</h2>
           <div className="ad-grid">
-            {slots.map(([k, label]) => (
-              <Slot key={k} k={k} label={label} value={images[k]} token={token} onError={setErr}
+            {slots.map(([k, label, ratio, maxW]) => (
+              <Slot key={k} k={k} label={label} ratio={ratio} maxW={maxW} value={images[k]} token={token} onError={setErr}
                 onChange={(v) => { setErr(''); setStatus(''); setImages((im) => { const n = { ...im }; if (v) n[k] = v; else delete n[k]; return n; }); }} />
             ))}
           </div>
         </section>
       ))}
-      <p className="ad-foot">Photos: upload JPG, PNG, WebP or AVIF up to 15 MB, drop a file on a picture, or paste an Unsplash photo link. Wide photos (at least 2000px) look best in the hero.</p>
+      <p className="ad-foot">Upload any JPG, PNG, WebP or AVIF (up to 40 MB), or drop it on a picture.</p>
     </main>
   );
 }

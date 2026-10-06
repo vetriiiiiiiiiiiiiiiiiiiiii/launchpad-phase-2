@@ -1,5 +1,5 @@
 /* Every photograph on the site, by role. Defaults are green-toned Unsplash
-   photographs; any slot can be replaced from the admin panel (/admin), which
+   photographs; any slot can be replaced from the admin panel (/asdfghjkl), which
    stores either an Unsplash photo id or a full image URL / uploaded file. */
 const isUrl = (id) => typeof id === 'string' && (id.startsWith('/') || /^https?:\/\//.test(id) || id.startsWith('data:'));
 export const IMG = (id, w, q = 70) => (isUrl(id) ? id : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=${q}`);
@@ -49,15 +49,49 @@ export const DEFAULT_P = {
 /* the live set: defaults, overlaid with whatever the admin has saved */
 export const P = { ...DEFAULT_P };
 
-/* what each slot is, for the admin panel */
+/* what each slot is, for the admin panel: [key, label, ratio w:h, max width px].
+   Uploads are cropped to the ratio and compressed to this width. */
 export const IMAGE_SLOTS = [
-  ['Hero', [['heroTalk', 'Slide 1 — Expert talks'], ['heroPitch', 'Slide 2 — Pitching'], ['heroWork', 'Slide 3 — Hands-on problem solving'], ['talksStage', 'Slide 4 — Product launches (also Talks section)']]],
-  ['The Day', [['tealHall', 'Arrival'], ['lectern', 'The Talks (also Talks section)'], ['chalkTeacher', 'The Workshop (also Workshop)'], ['podium', 'The Pitch (also Pitch section)'], ['glasshouse', 'Discovery (also Exhibition)'], ['cafeMonstera', 'Connection (also The Room)'], ['forestLibrary', 'Closing (also Exhibition)']]],
-  ['Statement & Talks', [['greenRoom', 'Statement photograph'], ['greenSeats', 'Talks — the room']]],
-  ['Workshop', [['chalkStudents', 'Print 2 — solving together'], ['chalkNotes', 'Print 3 — the working']]],
-  ['For the ones who build', [['founderLeaves', 'Founders (large)'], ['greenhouseDuo', 'Reviewing'], ['teamOffice', 'Teams'], ['chalkHand', 'Working it out'], ['planningTable', 'Planning'], ['greenFabric', 'Imagining'], ['glasshouseWalk', 'Exploring']]],
-  ['Conversation', [['greenhouseTalk', 'Main photograph'], ['velvetSofa', 'Hover: two chairs'], ['emeraldGlass', 'Hover: prototype / launches index'], ['speaker', 'Hover: microphone'], ['cafeTree', 'Hover: coffee']]],
-  ['Exhibition', [['roundLibrary', 'Hall'], ['glassBlocks', 'Object'], ['greenTiles', 'Light']]],
-  ['The Room', [['cafePlants', 'Second photograph'], ['cafeChairs', 'Third photograph']]],
-  ['Launches', [['whiteRibs', 'Launch 02 room backdrop']]],
+  ['Hero', [
+    ['heroTalk', 'Slide 1 — Expert talks', [16, 9], 2400],
+    ['heroPitch', 'Slide 2 — Pitching', [16, 9], 2400],
+    ['heroWork', 'Slide 3 — Hands-on problem solving', [16, 9], 2400],
+    ['talksStage', 'Slide 4 — Product launches (also Talks section)', [16, 9], 2400]]],
+  ['The Day', [
+    ['tealHall', 'Arrival', [4, 3], 1600],
+    ['lectern', 'The Talks (also Talks section)', [4, 5], 1400],
+    ['chalkTeacher', 'The Workshop (also Workshop print 1)', [4, 3], 1600],
+    ['podium', 'The Pitch (also Pitch backdrop)', [16, 9], 2400],
+    ['glasshouse', 'Discovery (also Exhibition)', [16, 10], 2000],
+    ['cafeMonstera', 'Connection (also The Room)', [1, 1], 1600],
+    ['forestLibrary', 'Closing (also Exhibition)', [16, 10], 2000]]],
+  ['Statement & Talks', [
+    ['greenRoom', 'Statement photograph', [4, 5], 1600],
+    ['greenSeats', 'Talks — the room', [3, 4], 1200]]],
+  ['Workshop', [
+    ['chalkStudents', 'Print 2 — solving together', [4, 3], 1200],
+    ['chalkNotes', 'Print 3 — the working', [4, 3], 1200]]],
+  ['For the ones who build', [
+    ['founderLeaves', 'Founders (large)', [3, 4], 1400],
+    ['greenhouseDuo', 'Reviewing', [1, 1], 1000],
+    ['teamOffice', 'Teams', [3, 2], 1400],
+    ['chalkHand', 'Working it out', [1, 1], 1000],
+    ['planningTable', 'Planning', [3, 2], 1400],
+    ['greenFabric', 'Imagining', [1, 1], 1000],
+    ['glasshouseWalk', 'Exploring', [1, 1], 1000]]],
+  ['Conversation', [
+    ['greenhouseTalk', 'Main photograph', [4, 5], 1600],
+    ['velvetSofa', 'Hover: two chairs', [4, 5], 800],
+    ['emeraldGlass', 'Hover: prototype / launches index', [4, 5], 800],
+    ['speaker', 'Hover: microphone', [4, 5], 800],
+    ['cafeTree', 'Hover: coffee', [4, 5], 800]]],
+  ['Exhibition', [
+    ['roundLibrary', 'Hall', [3, 4], 1400],
+    ['glassBlocks', 'Object', [5, 4], 1400],
+    ['greenTiles', 'Light', [3, 4], 1400]]],
+  ['The Room', [
+    ['cafePlants', 'Second photograph', [4, 3], 1200],
+    ['cafeChairs', 'Third photograph', [3, 4], 1200]]],
+  ['Launches', [
+    ['whiteRibs', 'Launch 02 room backdrop', [16, 9], 2400]]],
 ];

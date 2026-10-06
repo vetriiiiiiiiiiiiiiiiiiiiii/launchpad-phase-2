@@ -13,10 +13,12 @@ import { PeekProvider } from './components/Peek.jsx';
 import Loader from './components/Loader.jsx';
 
 const Admin = lazy(() => import('./pages/Admin.jsx'));
+// the admin panel lives at an unlisted address (still password-protected)
+export const ADMIN_PATH = '/asdfghjkl';
 
 export default function App() {
   const location = useLocation();
-  if (location.pathname.startsWith('/admin')) return <Suspense fallback={null}><Admin /></Suspense>;
+  if (location.pathname.replace(/\/$/, '') === ADMIN_PATH) return <Suspense fallback={null}><Admin /></Suspense>;
   return (
     <PeekProvider>
       <Loader />
