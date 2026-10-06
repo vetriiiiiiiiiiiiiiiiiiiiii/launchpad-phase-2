@@ -651,3 +651,4 @@ body { font-weight: 450; }
   /* the statement photograph sits below the headline, never under it */
   .statement__plate { margin-top: clamp(28px, 5vh, 60px) !important; }
 }
+@media (max-width: 860px) { .spread__quote { padding: 28px 0 !important; margin-bottom: 12px; } .ph--c { margin-top: 0 !important; } }
