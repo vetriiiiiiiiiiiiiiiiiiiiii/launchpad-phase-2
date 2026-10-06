@@ -30,10 +30,12 @@ const frame = () => {
       y, vh, top, h,
     };
     if (it.vars) {
-      el.style.setProperty('--p', v.p.toFixed(4));
-      el.style.setProperty('--e', v.e.toFixed(4));
-      el.style.setProperty('--x', v.x.toFixed(4));
-      el.style.setProperty('--v', v.v.toFixed(4));
+      // write only what changed: every write invalidates styles below it
+      const c = it.cache || (it.cache = {});
+      for (const k of ['p', 'e', 'x', 'v']) {
+        const s = v[k].toFixed(3);
+        if (c[k] !== s) { c[k] = s; el.style.setProperty(`--${k}`, s); }
+      }
     }
     if (it.cb) it.cb(v);
   });

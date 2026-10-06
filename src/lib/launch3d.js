@@ -216,7 +216,7 @@ function beamMaterial(color) {
 export function mountStage(host, key, { mobile = false, interactive = null, idle = false } = {}) {
   const S = STAGES[key];
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 1.8));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.25 : 1.5));
   renderer.setClearColor(0x023b2c, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -249,7 +249,7 @@ export function mountStage(host, key, { mobile = false, interactive = null, idle
   }
 
   // cloth
-  const N = mobile ? 38 : 54;
+  const N = mobile ? 32 : 42;   // dense enough for soft folds, light enough to run beside everything else
   const cloth = new Cloth(N, S.cloth.size, S.cloth.y, S.sdf);
   const geo = new THREE.PlaneGeometry(1, 1, N, N);
   const shown = new Float32Array(cloth.pos.length);
@@ -370,10 +370,13 @@ export function mountStage(host, key, { mobile = false, interactive = null, idle
     else if (key !== 'three') cloth.lift = 0;
   };
 
+  let tick = 0;
   const frame = (t) => {
     raf = running ? requestAnimationFrame(frame) : 0;
     if (!settle(40)) return;
-    const dt = Math.min((t - last) / 1000, 1 / 30) || 1 / 60; last = t;
+    // the motion here is slow (drifting cloth, a moving sun): 30fps is plenty
+    if (tick++ & 1) return;
+    const dt = Math.min((t - last) / 1000, 1 / 15) || 1 / 30; last = t;
     clock += dt;
     if (idle) {
       // the stage breathes on its own: a slow drift, and (for 02) a sun that keeps moving
@@ -382,8 +385,11 @@ export function mountStage(host, key, { mobile = false, interactive = null, idle
     }
     theta = clamp(theta, -1.1, 1.1);
     peek += (peekTarget - peek) * .08;
-    cloth.step(Math.min(dt, 1 / 60), key === 'two' ? .25 : .35);
-    cloth.smoothInto(shown);
+    // at rest the cloth only drifts in a faint breeze: one step per drawn frame;
+    // while it's being lifted (peek / the final reveal) it gets full physics
+    const busy = peek > 0.01 || peekTarget > 0 || cloth.lift > 0;
+    for (let i = 0, n = busy ? 2 : 1; i < n; i++) cloth.step(1 / 60, key === 'two' ? .25 : .35);
+    cloth.smoothInto(shown, 2);
     geo.attributes.position.needsUpdate = true;
     geo.computeVertexNormals();
     apply();
@@ -415,7 +421,7 @@ export function mountStage(host, key, { mobile = false, interactive = null, idle
 /* ---------- the lineup: all three, side by side ---------- */
 export function mountLineup(host, { mobile = false } = {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 1.8));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.25 : 1.5));
   renderer.setClearColor(0x023b2c, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -435,7 +441,7 @@ export function mountLineup(host, { mobile = false } = {}) {
   scene.add(new THREE.HemisphereLight(0x3fd09a, 0x023b2c, .32));
 
   const xs = { one: -2.7, two: 0, three: 2.7 };
-  const N = mobile ? 26 : 34;
+  const N = mobile ? 24 : 30;
   const items = [];
   ['one', 'two', 'three'].forEach((key, idx) => {
     const S = STAGES[key], ox = xs[key];
@@ -482,13 +488,15 @@ export function mountLineup(host, { mobile = false } = {}) {
     camera.updateProjectionMatrix();
   };
   addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
+  let tick = 0;
   const frame = (t) => {
     raf = running ? requestAnimationFrame(frame) : 0;
     if (!settle(30)) return;
+    if (tick++ & 1) return;   // 30fps: slow motion only
     const dt = Math.min((t - last) / 1000, 1 / 30) || 1 / 60; last = t; clock += dt;
     items.forEach((it) => {
-      it.cloth.step(Math.min(dt, 1 / 60), .3);
-      it.cloth.smoothInto(it.shown);
+      it.cloth.step(1 / 60, .3);
+      it.cloth.smoothInto(it.shown, 2);
       it.geo.attributes.position.needsUpdate = true; it.geo.computeVertexNormals();
       it.spot.intensity = 46 * ease(clamp((clock - it.delay) / 1.6));
     });

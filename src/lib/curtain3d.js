@@ -156,7 +156,7 @@ function pileTexture() {
 
 export function mountCurtain(host, { mobile = false, startOpen = false } = {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 1.75));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.25 : 1.5));
   renderer.setClearColor(0x023b2c, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -252,11 +252,19 @@ export function mountCurtain(host, { mobile = false, startOpen = false } = {}) {
     const nx = ((e.clientX - r.left) / r.width) * 2 - 1, ny = -(((e.clientY - r.top) / r.height) * 2 - 1);
     const x = nx * W / 2, y = ny * H / 2;
     if (lastX !== null) { brush.vx = clamp((x - lastX) * 3, -1, 1); brush.vy = clamp((y - lastY) * 3, -1, 1); }
-    lastX = x; lastY = y; brush.x = x; brush.y = y; brush.active = true; idleT = 0;
+    lastX = x; lastY = y; brush.x = x; brush.y = y; idleT = 0;
+    // only a hand near the fabric counts as brushing it
+    const near = drapes.some((d) => { if (!d.movable) return false; const a = d.edge, b2 = d.ringX(d.cols - 1, open); return x > Math.min(a, b2) - brush.r && x < Math.max(a, b2) + brush.r; });
+    brush.active = near;
   };
   addEventListener('pointermove', onMove, { passive: true });
 
   let running = false, raf = 0, last = 0, t = 0;
+  /* the fabric only simulates while something moves it (opening, closing, a
+     brushing hand) plus a short settle afterwards; at rest it stops entirely,
+     so an idle curtain costs nothing */
+  let awake = 2.5, lastOpen = open;
+  const wake = (secs = 1.6) => { awake = Math.max(awake, secs); };
   const frame = (now) => {
     raf = running ? requestAnimationFrame(frame) : 0;
     const dt = Math.min((now - last) / 1000, 1 / 30) || 1 / 60; last = now; t += dt;
@@ -267,8 +275,14 @@ export function mountCurtain(host, { mobile = false, startOpen = false } = {}) {
     }
     // scroll-driven: ease toward a target at the pace a real curtain travels
     else if (target !== null) open += clamp(target - open, -dt * 0.55, dt * 0.55);
+    if (Math.abs(open - lastOpen) > 1e-4) { wake(); lastOpen = open; }
     idleT += dt; if (idleT > 0.15) { brush.vx *= 0.8; brush.vy *= 0.8; if (idleT > 0.6) brush.active = false; }
-    for (let sub = 0; sub < 2; sub++) drapes.forEach((d) => d.step(dt / 2, d.movable ? open : 0, t, d.movable ? brush : still));
+    if (brush.active) wake(1.2);
+    if (awake <= 0) return;                 // at rest: no simulation, no redraw
+    awake -= dt;
+    const moving = openT0 || brush.active;
+    const subs = moving ? 2 : 1;
+    for (let sub = 0; sub < subs; sub++) drapes.forEach((d) => d.step(dt / subs, d.movable ? open : 0, t, d.movable ? brush : still));
     sync();
     footlight.intensity = 14 * open;
     spot.intensity = 85 - 35 * open;   // once open, the hall takes the light
@@ -276,15 +290,15 @@ export function mountCurtain(host, { mobile = false, startOpen = false } = {}) {
   };
 
   build();
-  const onResize = () => build();
+  const onResize = () => { build(); wake(); renderer.render(scene, camera); };
   addEventListener('resize', onResize);
 
   return {
-    open(duration = 3) { openFrom = open; openTo = 1; openDur = duration * 1000; openT0 = performance.now(); },
-    close(duration = 1.4) { openFrom = open; openTo = 0; openDur = duration * 1000; openT0 = performance.now(); },
-    setOpen(v) { open = openFrom = openTo = v; openT0 = 0; },
-    setTarget(v) { target = clamp(v); openT0 = 0; },
-    start() { if (!running) { running = true; last = performance.now(); raf = requestAnimationFrame(frame); } },
+    open(duration = 3) { wake(duration + 1.6); openFrom = open; openTo = 1; openDur = duration * 1000; openT0 = performance.now(); },
+    close(duration = 1.4) { wake(duration + 1.6); openFrom = open; openTo = 0; openDur = duration * 1000; openT0 = performance.now(); },
+    setOpen(v) { open = openFrom = openTo = v; openT0 = 0; wake(); },
+    setTarget(v) { const n = clamp(v); if (n !== target) wake(); target = n; openT0 = 0; },
+    start() { if (!running) { running = true; wake(0.5); last = performance.now(); raf = requestAnimationFrame(frame); } },
     stop() { running = false; cancelAnimationFrame(raf); },
     dispose() {
       running = false; cancelAnimationFrame(raf);

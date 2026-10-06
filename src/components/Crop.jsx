@@ -6,7 +6,8 @@ import { clamp } from '../lib/scroll.js';
 export default function Crop({ children }) {
   const ref = useRef(null);
   useScrollVars(ref, ({ y, vh, top }) => {
-    ref.current.style.setProperty('--cv', clamp((vh - (top - y)) / (vh * 0.9)).toFixed(3));
+    const cv = clamp((vh - (top - y)) / (vh * 0.9)).toFixed(3);
+    if (ref.current.__cv !== cv) { ref.current.__cv = cv; ref.current.style.setProperty('--cv', cv); }
   }, { vars: false });
   return <div className="crop" ref={ref}>{children}</div>;
 }

@@ -86,42 +86,48 @@ export default function Hero() {
       tx = (e.clientX / innerWidth - 0.5) * -22; ty = (e.clientY / innerHeight - 0.5) * -12;
       stx = e.clientX; sty = e.clientY; lastMove = performance.now();
     };
+    // a value is only written when it actually changes, so the page only
+    // restyles when something visibly moves
+    const set = (el, k, v) => { if (el && el['__' + k] !== v) { el['__' + k] = v; el.style.setProperty(k, v); } };
+    let visible = true, tickN = 0;
     const loop = (now = 0) => {
-      x += (tx - x) * 0.05; y += (ty - y) * 0.05;
+      raf = visible ? requestAnimationFrame(loop) : 0;
+      if (tickN++ & 1) return;                 // the light is a heavy lamp: 30fps is enough
+      x += (tx - x) * 0.1; y += (ty - y) * 0.1;
       if (now - lastMove > 2500) {          // nobody steering: the operator drifts it slowly
         const t = now / 1000;
         stx = innerWidth * (0.5 + 0.26 * Math.sin(t * 0.23)); sty = innerHeight * (0.5 + 0.12 * Math.sin(t * 0.31 + 1));
       }
-      sx += (stx - sx) * 0.07; sy += (sty - sy) * 0.07;   // a heavy lamp: it lags, then lands
-      const el = ref.current;
-      if (el) {
-        el.style.setProperty('--sx', `${sx.toFixed(1)}px`);
-        el.style.setProperty('--sy', `${sy.toFixed(1)}px`);
-      }
+      sx += (stx - sx) * 0.13; sy += (sty - sy) * 0.13;   // it lags, then lands
       // the type is lit by the lamp: letters near it brighten, and the
       // headline's shadow falls away from the light
       const tl = titleRef.current;
       if (tl) {
-        if (!letters.length || frameN++ % 30 === 0) letters = [...tl.querySelectorAll('.lch')].map((n) => ({ n, r: n.getBoundingClientRect() }));
+        if (!letters.length || frameN++ % 20 === 0) letters = [...tl.querySelectorAll('.lch')].map((n) => ({ n, r: n.getBoundingClientRect() }));
         letters.forEach(({ n, r }) => {
           const dx = r.left + r.width / 2 - sx, dy = r.top + r.height / 2 - sy;
           const lit = Math.max(0, 1 - Math.hypot(dx, dy * 1.4) / (innerWidth * 0.32));
-          n.style.setProperty('--lit', lit.toFixed(3));
+          set(n, '--lit', lit.toFixed(2));
         });
         const tr = tl.getBoundingClientRect();
         const cx = tr.left + tr.width / 2, cy = tr.top + tr.height / 2;
         const vx = cx - sx, vy = cy - sy, dist = Math.hypot(vx, vy) || 1;
         const len = Math.min(34, 8 + dist / 40);
-        tl.style.setProperty('--shx', `${(vx / dist * len).toFixed(1)}px`);
-        tl.style.setProperty('--shy', `${(vy / dist * len * 0.6 + 6).toFixed(1)}px`);
+        set(tl, '--shx', `${Math.round(vx / dist * len)}px`);
+        set(tl, '--shy', `${Math.round(vy / dist * len * 0.6 + 6)}px`);
       }
-      roomRef.current?.style.setProperty('--px', `${x.toFixed(2)}px`);
-      roomRef.current?.style.setProperty('--py', `${y.toFixed(2)}px`);
-      raf = requestAnimationFrame(loop);
+      set(roomRef.current, '--px', `${x.toFixed(1)}px`);
+      set(roomRef.current, '--py', `${y.toFixed(1)}px`);
     };
+    // nothing runs once the hero is scrolled away
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (visible && !raf) raf = requestAnimationFrame(loop);
+    });
+    if (ref.current) io.observe(ref.current);
     addEventListener('pointermove', move, { passive: true });
     loop();
-    return () => { cancelAnimationFrame(raf); removeEventListener('pointermove', move); };
+    return () => { cancelAnimationFrame(raf); io.disconnect(); removeEventListener('pointermove', move); };
   }, []);
 
   useEffect(() => {

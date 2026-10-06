@@ -600,3 +600,19 @@ body { font-weight: 450; }
   .foot__top { grid-template-columns: 1fr 1fr; gap: 34px; }
   .foot__brand { grid-column: 1 / -1; }
 }
+
+/* ==========================================================================
+   Performance: GPU-friendly hero grade
+   (an SVG colour filter re-rendered the photo on the CPU every frame)
+   ========================================================================== */
+.hero .hero__room img { filter: grayscale(1) contrast(1.06) brightness(.92) !important; }
+/* emerald duotone: tint the greys, and lift the darkest tones to deep emerald (never black) */
+.hero .hero__room::before, .hero .hero__room::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.hero .hero__room::before { background: #0f7a57; mix-blend-mode: color; }
+.hero .hero__room::after { background: #033a2c; mix-blend-mode: lighten; }
+/* parallax moves the frame, the drift scales the photo: each stays on its own GPU layer */
+.hero .hero__room { transform: translate3d(var(--px, 0), var(--py, 0), 0) scale(calc(1 + var(--x, 0) * .45)); will-change: transform; }
+.hero.is-copy .hero__room img, .hero.is-open .hero__room img, .hero .hero__room img { transform: none !important; }
+.hero__slide { will-change: opacity; }
+.hero__slide.is-active img { will-change: scale; }
+.hero__title .lch { transition: none; }
