@@ -47,13 +47,41 @@ export function mountHall(host, { mobile = false } = {}) {
   const rake = new THREE.Mesh(new THREE.PlaneGeometry(30, 16), new THREE.MeshStandardMaterial({ color: 0x043b2e, roughness: 0.9 }));
   rake.rotation.x = -Math.PI / 2 - 0.31; rake.position.set(0, 1.2, 1.2);   // rises toward the back rake.receiveShadow = true; scene.add(rake);
   // stage
-  const stage = new THREE.Mesh(new THREE.BoxGeometry(16, STAGE_TOP, 6.5), new THREE.MeshStandardMaterial({ color: 0x0a5c44, roughness: 0.45, emissive: 0x032e22 }));
+  const stage = new THREE.Mesh(new THREE.BoxGeometry(16, STAGE_TOP, 6.5), new THREE.MeshPhysicalMaterial({ color: 0x064a37, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.18, emissive: 0x022a1f }));
   stage.position.set(0, STAGE_TOP / 2, STAGE_Z); stage.receiveShadow = stage.castShadow = true; scene.add(stage);
   const lip = new THREE.Mesh(new THREE.BoxGeometry(16.2, 0.06, 0.1), new THREE.MeshBasicMaterial({ color: 0x7fe0b5 }));
   lip.position.set(0, STAGE_TOP + 0.01, STAGE_Z + 3.26); scene.add(lip);
   // back wall and side walls with vertical fins
   const back = new THREE.Mesh(new THREE.PlaneGeometry(40, 16), wallMat);
   back.position.set(0, 8, STAGE_Z - 3.4); scene.add(back);
+  // the name, projected softly on the back wall, like a launch set
+  const wordTex = (() => {
+    const c = document.createElement('canvas'); c.width = 2048; c.height = 400;
+    const g = c.getContext('2d');
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = '600 220px Archivo, "Helvetica Neue", Arial, sans-serif';
+    if ('letterSpacing' in g) g.letterSpacing = '70px';
+    g.fillText('LAUNCHPAD', 1024 + 35, 200);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  })();
+  const wordMat = new THREE.MeshBasicMaterial({ map: wordTex, color: 0x7fe0b5, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
+  const word = new THREE.Mesh(new THREE.PlaneGeometry(13, 13 * 400 / 2048), wordMat);
+  word.position.set(0, 4.15, STAGE_Z - 3.3); scene.add(word);
+  // a soft halo behind the name
+  const haloMat = new THREE.MeshBasicMaterial({ color: 0x1fae78, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false,
+    map: (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'); const r = g.createRadialGradient(128, 128, 0, 128, 128, 128); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 256, 256); return new THREE.CanvasTexture(c); })() });
+  const halo = new THREE.Mesh(new THREE.PlaneGeometry(22, 9), haloMat);
+  halo.position.set(0, 4.1, STAGE_Z - 3.35); scene.add(halo);
+  // two moving heads, sweeping slowly across the room
+  const movers = [-1, 1].map((side) => {
+    const len = 16;
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 1.1, len, 32, 1, true), beamMaterial(0x9ff0c9));
+    m.material.uniforms.uLen.value = len;
+    m.geometry.translate(0, -len / 2, 0);
+    m.position.set(side * 7.2, 10.8, STAGE_Z + 2.6);
+    scene.add(m);
+    return { m, side };
+  });
   const finGeo = new THREE.BoxGeometry(0.25, 14, 0.6);
   const fins = new THREE.InstancedMesh(finGeo, wallMat, 48);
   const m4 = new THREE.Matrix4();
@@ -73,7 +101,7 @@ export function mountHall(host, { mobile = false } = {}) {
 
   // ---------- seats: curved, raked rows facing the stage ----------
   const rows = mobile ? 9 : 12;
-  const seatMat = new THREE.MeshStandardMaterial({ color: 0x0b6a4d, roughness: 0.82, emissive: 0x012a1f });
+  const seatMat = new THREE.MeshStandardMaterial({ color: 0x07503b, roughness: 0.75, emissive: 0x011f17 });
   const placements = [];
   const focus = new THREE.Vector3(0, 0, STAGE_Z - 2);
   for (let r = 0; r < rows; r++) {
@@ -104,7 +132,7 @@ export function mountHall(host, { mobile = false } = {}) {
   const wash = new THREE.PointLight(0x2fbf86, 30, 30, 1.6);              // wall wash
   wash.position.set(0, 9, 4); scene.add(wash);
   const backGlow = new THREE.PointLight(0x3ddc9c, 6, 18, 1.4);       // a glow on the back wall, behind the objects
-  backGlow.position.set(0, 5, STAGE_Z - 2.2); scene.add(backGlow);
+  backGlow.position.set(0, 2.4, STAGE_Z - 1.6); scene.add(backGlow);
   // ceiling: a field of small lamps
   const dots = new THREE.InstancedMesh(new THREE.SphereGeometry(0.06, 6, 6), new THREE.MeshBasicMaterial({ color: 0xd9ffee }), 140);
   for (let i = 0; i < 140; i++) {
@@ -168,13 +196,13 @@ export function mountHall(host, { mobile = false } = {}) {
     return done;
   };
 
-  const CAM = { back: new THREE.Vector3(0, 7.2, 17), mid: new THREE.Vector3(0, 6.0, 12.5), near: new THREE.Vector3(0, 4.2, 4.5) };
-  const look = new THREE.Vector3(0, -0.6, STAGE_Z);
+  const CAM = { back: new THREE.Vector3(0, 7.6, 14.5), mid: new THREE.Vector3(0, 5.9, 7.6), near: new THREE.Vector3(0, 3.9, 0.5) };
+  const look = new THREE.Vector3(0, 0.45, STAGE_Z);
   const onResize = () => {
     const w = host.clientWidth || innerWidth, h = host.clientHeight || innerHeight;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    camera.fov = camera.aspect < 0.8 ? 64 : camera.aspect < 1.2 ? 48 : 36;
+    camera.fov = camera.aspect < 0.8 ? 84 : camera.aspect < 1.2 ? 52 : 38;
     camera.updateProjectionMatrix();
   };
   const onMove = (e) => { mx = e.clientX / innerWidth - 0.5; my = e.clientY / innerHeight - 0.5; };
@@ -195,9 +223,17 @@ export function mountHall(host, { mobile = false } = {}) {
     camera.position.lerp(pos, 0.08);
     camera.lookAt(look);
     // house lights down, stage lights up
-    house.intensity = lerp(1.5, 0.45, open);
-    wash.intensity = lerp(40, 16, open);
-    backGlow.intensity = lerp(6, 26, open);
+    house.intensity = lerp(1.5, 0.22, open);
+    wash.intensity = lerp(40, 6, open);
+    backGlow.intensity = lerp(4, 14, open);
+    const lit = ease(clamp(open * 1.3 - 0.3));
+    wordMat.opacity = 0.55 * lit * (0.92 + 0.08 * Math.sin(t * 1.3));
+    haloMat.opacity = 0.22 * lit;
+    movers.forEach(({ m, side }, i) => {
+      m.rotation.z = side * (0.35 + 0.28 * Math.sin(t * 0.32 + i * 1.7));
+      m.rotation.x = 0.55 + 0.12 * Math.sin(t * 0.21 + i);
+      m.material.uniforms.uStrength.value = 0.55 * lit;
+    });
     objects.forEach((o, i) => {
       const k = ease(clamp(open * 1.6 - i * 0.22));
       o.spot.intensity = 420 * k;

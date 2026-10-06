@@ -278,3 +278,11 @@ main.lp { display: block; }
   .ticket { transform: rotate(-2deg); }
 }
 @media (prefers-reduced-motion: reduce) { .ticket { animation: none; } }
+.tminus b { font-variant-numeric: tabular-nums; letter-spacing: .12em; }
+
+/* hero copy: sits below the stage, not across it */
+.hero.has-hall3d .hero__title { font-size: clamp(52px, 7.6vw, 150px); }
+.hero.has-hall3d .hero__copy { row-gap: clamp(16px, 2.4vh, 30px); }
+@media (max-width: 860px) {
+  .hero.has-hall3d .hero__title { font-size: clamp(48px, 14vw, 80px); }
+}

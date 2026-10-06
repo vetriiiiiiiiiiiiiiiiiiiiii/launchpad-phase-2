@@ -23,7 +23,7 @@ export default function Hero() {
   const [handoff, setHandoff] = useState(false);
   const [ready, setReady] = useState(loaderDone());
   useEffect(() => onLoaderDone(() => setReady(true)), []);
-  const { d } = useCountdown();
+  const { d, h, m, s: sec } = useCountdown();
   useScrollVars(ref, ({ x }) => hall.current?.setScroll(x));
 
   /* the velvet curtain: a real cloth simulation when WebGL is available */
@@ -117,7 +117,7 @@ export default function Hero() {
           <span className="hero__rule" aria-hidden="true" />
           <Rv>26 October 2026</Rv>
           <span className="hero__rule" aria-hidden="true" />
-          <Rv className="tminus">T–<b>{d}</b> days</Rv>
+          <Rv className="tminus">Doors open in <b>{d}d {h}:{m}:{sec}</b></Rv>
         </p>
         <p className="hero__count"><Rv>One day.</Rv><Rv>Three launches.</Rv></p>
         <h1 className="hero__title"><Rv>Where ideas</Rv><Rv><em>become real.</em></Rv></h1>
