@@ -388,3 +388,71 @@ main.lp { display: block; }
 .day__clock span { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--forest); }
 .day__clock em { font-style: normal; font: 500 10px/1 var(--sans); font-stretch: 115%; letter-spacing: .26em; color: var(--ink-3); }
 @media (prefers-reduced-motion: reduce) { .day__halo { animation: none; } }
+
+/* ==========================================================================
+   HERO, more: lit type, a split-flap board, and walking into the hall
+   ========================================================================== */
+/* letters lit by the follow spot; the headline casts its shadow away from the light */
+.hero__title { --shx: 10px; --shy: 14px; }
+.hero__title .lch {
+  --lit: 0;
+  color: color-mix(in srgb, var(--paper) calc(78% + var(--lit) * 22%), var(--sage-l));
+  text-shadow:
+    var(--shx) var(--shy) 18px rgba(1, 30, 22, calc(.35 + var(--lit) * .35)),
+    0 0 calc(var(--lit) * 28px) rgba(200, 255, 228, calc(var(--lit) * .55));
+  transition: color .2s linear;
+}
+
+/* the split-flap board */
+.hero .hero__count { padding-bottom: .4em; text-align: right; letter-spacing: 0; text-transform: none; }
+.flapclock { display: inline-flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+.flapclock__label { font: 500 10px/1 var(--sans); font-stretch: 118%; letter-spacing: .32em; text-transform: uppercase; color: var(--mint); }
+.flapclock__row { display: flex; align-items: flex-start; gap: 6px; }
+.flapclock__group { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.flapclock__group + .flapclock__group { margin-left: 14px; }
+.flapclock__sep { position: absolute; right: -12px; top: calc(var(--fh, 64px) * .38); width: 3px; height: 16px; background: radial-gradient(circle, var(--sage) 1.4px, transparent 1.6px) 0 0 / 3px 7px; }
+.flapclock__digits { display: flex; gap: 3px; }
+.flapclock__unit { font: 500 9px/1 var(--sans); font-stretch: 115%; letter-spacing: .26em; text-transform: uppercase; color: var(--sage); }
+.flap {
+  --h: clamp(56px, 5.4vw, 84px); --w: clamp(40px, 3.8vw, 58px);
+  position: relative; display: block; width: var(--w); height: var(--h);
+  perspective: 200px; border-radius: 4px;
+  font-family: var(--serif); font-variation-settings: "opsz" 96; font-size: calc(var(--h) * .78); line-height: var(--h); color: var(--paper);
+  box-shadow: 0 10px 18px -8px rgba(1, 26, 19, .7);
+}
+.flap__half {
+  position: absolute; left: 0; right: 0; height: 50%; overflow: hidden;
+  background: linear-gradient(180deg, #0a5a43, #06412f);
+  backface-visibility: hidden;
+}
+.flap__half b { position: absolute; left: 0; right: 0; height: var(--h); text-align: center; font-weight: 400; font-variant-numeric: lining-nums tabular-nums; }
+.flap__top, .flap__fold-top { top: 0; border-radius: 4px 4px 0 0; }
+.flap__top b, .flap__fold-top b { top: 0; }
+.flap__bottom, .flap__fold-bottom { bottom: 0; border-radius: 0 0 4px 4px; background: linear-gradient(180deg, #054030, #073a2c); }
+.flap__bottom b, .flap__fold-bottom b { bottom: 0; }
+.flap::after { /* the hinge */
+  content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; translate: 0 -.5px; background: rgba(1, 26, 19, .75); z-index: 3;
+}
+.flap__fold-top { transform-origin: 50% 100%; transform: rotateX(0deg); z-index: 2; display: none; }
+.flap__fold-bottom { transform-origin: 50% 0%; transform: rotateX(90deg); z-index: 2; display: none; }
+.flap.is-flipping .flap__fold-top { display: block; animation: flap-top .3s ease-in forwards; }
+.flap.is-flipping .flap__fold-bottom { display: block; animation: flap-bottom .3s ease-out .3s forwards; }
+@keyframes flap-top { to { transform: rotateX(-90deg); filter: brightness(.6); } }
+@keyframes flap-bottom { from { transform: rotateX(90deg); filter: brightness(1.4); } to { transform: rotateX(0deg); filter: none; } }
+@media (max-width: 860px) {
+  .hero .hero__count { text-align: left; }
+  .flapclock { align-items: flex-start; }
+  .flap { --h: 40px; --w: 28px; }
+  .flapclock__sep { top: 11px; height: 10px; right: -10px; }
+  .flapclock__group + .flapclock__group { margin-left: 10px; }
+}
+
+/* walking into the hall: as you scroll, the camera pushes in, the curtains slide past */
+.hero .hero__stage { transform: none; }
+.hero.is-copy .hero__room img { transform: translate(var(--px, 0), var(--py, 0)) scale(calc(1.06 + var(--x, 0) * .45)); }
+.hero .hero__curtain3d { transform: scale(calc(1 + var(--x, 0) * .9)); transform-origin: 50% 40%; }
+.hero .hero__spot, .hero .hero__light { transform: scale(calc(1 + var(--x, 0) * .4)); transform-origin: 50% 30%; }
+.hero.is-copy .hero__copy { filter: blur(calc(var(--x, 0) * 10px)); transform: translateY(calc(var(--x, 0) * 22vh)) scale(calc(1 - var(--x, 0) * .08)); transform-origin: 0 100%; }
+
+.flapclock__group { --fh: clamp(56px, 5.4vw, 84px); }
+@media (max-width: 860px) { .flapclock__group { --fh: 40px; } }

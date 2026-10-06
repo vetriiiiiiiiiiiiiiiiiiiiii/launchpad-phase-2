@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import Rv from '../components/Rv.jsx';
 import Btn from '../components/Btn.jsx';
+import FlapClock from '../components/FlapClock.jsx';
 import { useScrollVars } from '../hooks/useScroll.js';
-import { useCountdown } from '../hooks/useCountdown.js';
 import { hasWebGL, isMobile, reduceMotion } from '../hooks/env.js';
 import { loaderDone, onLoaderDone } from '../lib/loader.js';
 import { IMG, P } from '../lib/images.js';
+
+/* headline letters, each lit by the follow spot */
+function Lit({ text }) {
+  return [...text].map((c, i) => (c === ' ' ? ' ' : <span key={i} className="lch" aria-hidden="true">{c}</span>));
+}
 
 const PHASES = ['', 'is-logo', 'is-develop', 'is-open', 'is-copy'];
 // arriving via a link to a section skips the intro
@@ -24,7 +29,6 @@ export default function Hero() {
   const [handoff, setHandoff] = useState(false);
   const [ready, setReady] = useState(loaderDone());
   useEffect(() => onLoaderDone(() => setReady(true)), []);
-  const { d, h, m, s: sec } = useCountdown();
   useScrollVars(ref);
 
   /* the velvet curtain: a real cloth simulation when WebGL is available */
@@ -61,11 +65,12 @@ export default function Hero() {
   /* the room leans with you (a few pixels of parallax, like a camera on a slider),
      and the cursor is a follow spot: it lights the dark hall wherever it points.
      Without a cursor, the spot drifts slowly on its own. */
-  const roomRef = useRef(null);
+  const roomRef = useRef(null), titleRef = useRef(null);
   useEffect(() => {
     if (reduceMotion) return undefined;
     let tx = 0, ty = 0, x = 0, y = 0, raf = 0;
     let sx = innerWidth * 0.62, sy = innerHeight * 0.48, stx = sx, sty = sy, lastMove = -1e9;
+    let letters = [], frameN = 0;
     const move = (e) => {
       tx = (e.clientX / innerWidth - 0.5) * -22; ty = (e.clientY / innerHeight - 0.5) * -12;
       stx = e.clientX; sty = e.clientY; lastMove = performance.now();
@@ -81,6 +86,23 @@ export default function Hero() {
       if (el) {
         el.style.setProperty('--sx', `${sx.toFixed(1)}px`);
         el.style.setProperty('--sy', `${sy.toFixed(1)}px`);
+      }
+      // the type is lit by the lamp: letters near it brighten, and the
+      // headline's shadow falls away from the light
+      const tl = titleRef.current;
+      if (tl) {
+        if (!letters.length || frameN++ % 30 === 0) letters = [...tl.querySelectorAll('.lch')].map((n) => ({ n, r: n.getBoundingClientRect() }));
+        letters.forEach(({ n, r }) => {
+          const dx = r.left + r.width / 2 - sx, dy = r.top + r.height / 2 - sy;
+          const lit = Math.max(0, 1 - Math.hypot(dx, dy * 1.4) / (innerWidth * 0.32));
+          n.style.setProperty('--lit', lit.toFixed(3));
+        });
+        const tr = tl.getBoundingClientRect();
+        const cx = tr.left + tr.width / 2, cy = tr.top + tr.height / 2;
+        const vx = cx - sx, vy = cy - sy, dist = Math.hypot(vx, vy) || 1;
+        const len = Math.min(34, 8 + dist / 40);
+        tl.style.setProperty('--shx', `${(vx / dist * len).toFixed(1)}px`);
+        tl.style.setProperty('--shy', `${(vy / dist * len * 0.6 + 6).toFixed(1)}px`);
       }
       roomRef.current?.style.setProperty('--px', `${x.toFixed(2)}px`);
       roomRef.current?.style.setProperty('--py', `${y.toFixed(2)}px`);
@@ -159,10 +181,13 @@ export default function Hero() {
           <span className="hero__rule" aria-hidden="true" />
           <Rv>26 October 2026</Rv>
           <span className="hero__rule" aria-hidden="true" />
-          <Rv className="tminus">Doors open in <b>{d}d {h}:{m}:{sec}</b></Rv>
+          <Rv>One day · Three launches</Rv>
         </p>
-        <p className="hero__count"><Rv>One day.</Rv><Rv>Three launches.</Rv></p>
-        <h1 className="hero__title"><Rv>Where ideas</Rv><Rv><em>become real.</em></Rv></h1>
+        <div className="hero__count"><FlapClock /></div>
+        <h1 className="hero__title" ref={titleRef} aria-label="Where ideas become real.">
+          <Rv><Lit text="Where ideas" /></Rv>
+          <Rv><em><Lit text="become real." /></em></Rv>
+        </h1>
         <div className="hero__actions">
           <Btn href="#be-in-the-room" magnetic>Enter Launchpad</Btn>
           <Btn href="#the-day" variant="ghost" icon="↓">Explore the day</Btn>
