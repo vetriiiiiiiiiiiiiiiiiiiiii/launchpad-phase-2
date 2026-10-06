@@ -279,6 +279,7 @@ export function mountCurtain(host, { mobile = false, startOpen = false } = {}) {
 
   return {
     open(duration = 3) { openFrom = open; openTo = 1; openDur = duration * 1000; openT0 = performance.now(); },
+    close(duration = 1.4) { openFrom = open; openTo = 0; openDur = duration * 1000; openT0 = performance.now(); },
     setOpen(v) { open = openFrom = openTo = v; openT0 = 0; },
     start() { if (!running) { running = true; last = performance.now(); raf = requestAnimationFrame(frame); } },
     stop() { running = false; cancelAnimationFrame(raf); },

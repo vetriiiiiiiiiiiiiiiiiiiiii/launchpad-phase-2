@@ -318,3 +318,25 @@ main.lp { display: block; }
   .hero__light { opacity: 1; animation: none !important; }
   .hero__haze { animation: none; }
 }
+
+/* replay the opening */
+.hero__replay {
+  position: absolute; z-index: 6; right: var(--gutter); top: 50%;
+  display: inline-flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 999px;
+  font: 500 10px/1 var(--sans); font-stretch: 115%; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--sage-l); background: rgba(2,46,34,.35); border: 1px solid rgba(207,229,217,.18);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  opacity: 0; pointer-events: none; transition: opacity .6s var(--ease) 1.2s, background .3s, color .3s;
+}
+.hero__replay i { font-style: normal; font-size: 14px; letter-spacing: 0; transition: transform .6s var(--ease); }
+.hero__replay:hover { background: var(--paper); color: var(--forest); }
+.hero__replay:hover i { transform: rotate(-200deg); }
+.hero.is-copy .hero__replay { opacity: 1; pointer-events: auto; }
+@media (max-width: 860px) {
+  .hero__replay { top: 76px; right: var(--gutter); }
+  .hero__replay span { display: none; }
+}
+/* on replay, the copy clears at once rather than lingering */
+.hero:not(.is-copy) .hero__actions { transition-delay: 0s; transition-duration: .4s; }
+.hero:not(.is-copy) .rv > span { transition-delay: 0s !important; transition-duration: .5s; }
+.hero:not(.is-copy) .hero__replay { transition-delay: 0s; }

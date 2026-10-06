@@ -10,6 +10,7 @@ import { IMG, P } from '../lib/images.js';
 const PHASES = ['', 'is-logo', 'is-develop', 'is-open', 'is-copy'];
 // arriving via a link to a section skips the intro
 const seen = () => {
+  if (new URLSearchParams(location.search).has('intro')) return null;   // ?intro always plays it
   if (location.hash) return '1'; try { return sessionStorage.getItem('lp-seen'); } catch (e) { return null; } };
 const markSeen = () => { try { sessionStorage.setItem('lp-seen', 1); } catch (e) { /* private mode */ } };
 
@@ -48,6 +49,14 @@ export default function Hero() {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (phase >= 3) curtain.current?.open(2.6); }, [phase, curtain3d]);
+
+  /* close the curtain and play the opening again */
+  const replay = () => {
+    window.lenis ? window.lenis.scrollTo(0, { immediate: true, force: true }) : scrollTo(0, 0);
+    curtain.current?.close(1.4);   // draw it closed, rings sliding back along the rail
+    setHandoff(false);
+    setPhase(1);
+  };
 
   /* the room leans with you: a few pixels of parallax, like a camera on a slider */
   const roomRef = useRef(null);
@@ -142,6 +151,9 @@ export default function Hero() {
       </div>
 
       <button className="hero__skip" type="button" onClick={() => setPhase(4)}>Skip intro</button>
+      <button className="hero__replay" type="button" onClick={replay} aria-label="Replay the opening">
+        <i aria-hidden="true">↺</i><span>Replay the opening</span>
+      </button>
     </section>
   );
 }
