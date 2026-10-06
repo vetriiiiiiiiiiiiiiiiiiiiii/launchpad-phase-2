@@ -1,0 +1,64 @@
+name: Deploy Launchpad
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: launchpad-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Package tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git archive --format=tar.gz \
+            --output="$RUNNER_TEMP/launchpad.tar.gz" HEAD
+
+      - name: Deploy through restricted SSH receiver
+        shell: bash
+        env:
+          DEPLOY_KEY: ${{ secrets.LAUNCHPAD_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.LAUNCHPAD_KNOWN_HOSTS }}
+          DEPLOY_USER: ${{ secrets.LAUNCHPAD_SSH_USER }}
+        run: |
+          set -euo pipefail
+
+          : "${DEPLOY_KEY:?Missing LAUNCHPAD_SSH_KEY}"
+          : "${KNOWN_HOSTS:?Missing LAUNCHPAD_KNOWN_HOSTS}"
+          : "${DEPLOY_USER:?Missing LAUNCHPAD_SSH_USER}"
+
+          SSH_DIR="$(mktemp -d "$RUNNER_TEMP/launchpad-ssh.XXXXXX")"
+          trap 'rm -rf "$SSH_DIR"' EXIT
+
+          printf '%s\n' "$DEPLOY_KEY" > "$SSH_DIR/key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$SSH_DIR/known_hosts"
+          chmod 600 "$SSH_DIR/key" "$SSH_DIR/known_hosts"
+
+          ssh -T \
+            -p 22 \
+            -i "$SSH_DIR/key" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$SSH_DIR/known_hosts" \
+            -o ConnectTimeout=15 \
+            "${DEPLOY_USER}@82.29.164.17" \
+            "deploy-launchpad ${GITHUB_SHA}" \
+            < "$RUNNER_TEMP/launchpad.tar.gz"
