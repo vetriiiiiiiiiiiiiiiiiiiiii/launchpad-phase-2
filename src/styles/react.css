@@ -616,3 +616,38 @@ body { font-weight: 450; }
 .hero__slide { will-change: opacity; }
 .hero__slide.is-active img { will-change: scale; }
 .hero__title .lch { transition: none; }
+
+/* Connection: the title keeps to its own column; it never runs under the photographs */
+@media (min-width: 861px) {
+  .meet__title { max-width: 52vw; font-size: clamp(56px, 7.4vw, 140px) !important; }
+  .meet__title .rv:nth-child(2) { padding-left: 5vw !important; }
+  .meet__title .rv:nth-child(3) { padding-left: 11vw !important; }
+  .meet__ph--1 { width: 40vw !important; top: 10vh !important; }
+}
+/* italic lines lean past their box: give the mask room so the last letter and full stop aren't clipped */
+.rv { padding-right: .12em; margin-right: -.12em; }
+
+/* souvenir ticket: clearly not an entry pass */
+.invite__notice {
+  display: flex; gap: 14px; align-items: flex-start; max-width: 520px; margin-top: 28px;
+  padding: 14px 16px; border-radius: 10px;
+  background: rgba(232,200,134,.12); border: 1px solid rgba(232,200,134,.45);
+  color: #f4e6c3; font-size: 14px; line-height: 1.5;
+}
+.invite__notice b {
+  flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  background: #e8c886; color: #3a2a05; font: 800 14px/1 var(--sans);
+}
+.invite__notice strong { color: #fff3d6; }
+.ticket__void {
+  position: absolute; left: 0; right: 26%; bottom: 0; z-index: 4; margin: 0;
+  padding: 7px 0; text-align: center; background: rgba(232,200,134,.92); color: #3a2a05;
+  font: 700 clamp(9px, .75vw, 12px)/1 var(--sans); letter-spacing: .14em; text-transform: uppercase;
+}
+.ticket__main { padding-bottom: calc(6% + 22px) !important; }
+@media (min-width: 861px) {
+  .meet__title { max-width: 48vw; }
+  .meet__ph--1 { width: 38vw !important; }
+  /* the statement photograph sits below the headline, never under it */
+  .statement__plate { margin-top: clamp(28px, 5vh, 60px) !important; }
+}

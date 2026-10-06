@@ -3,7 +3,7 @@ import Rv from '../components/Rv.jsx';
 import { RegistrationLink } from '../components/RegistrationLink.jsx';
 import { finePointer, reduceMotion } from '../hooks/env.js';
 
-/* A keepsake admission ticket. Write your name; it gets a seat and a number,
+/* A keepsake ticket — a fun souvenir, clearly marked as NOT an entry pass. Write your name; it gets a seat and a number,
    tilts in your hand, catches light on its foil, and can be saved. */
 const ROWS = 'ABCDEFGHJKLM';
 const hash = (s) => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
@@ -40,13 +40,19 @@ function drawTicket(name, s) {
   for (let y = 24; y < H; y += 34) { g.beginPath(); g.arc(1500, y, 6, 0, Math.PI * 2); g.fill(); }
   const serif = 'Fraunces, Georgia, serif', sans = 'Manrope, Helvetica, Arial, sans-serif';
   g.fillStyle = '#7fe0b5'; g.font = `600 30px ${sans}`; g.letterSpacing = '12px';
-  g.fillText('ADMIT ONE  ·  26 OCTOBER 2026', 110, 140);
+  g.fillText('SOUVENIR  ·  26 OCTOBER 2026', 110, 140);
   g.fillStyle = '#fafbf8'; g.font = `400 150px ${serif}`; g.letterSpacing = '-4px';
   g.fillText('LAUNCHPAD', 100, 330);
   g.font = `italic 400 76px ${serif}`; g.letterSpacing = '0px'; g.fillStyle = '#cfe5d9';
   g.fillText((name.trim() || 'Your name here').slice(0, 28), 110, 470);
   g.fillStyle = '#93b8a6'; g.font = `500 26px ${sans}`; g.letterSpacing = '8px';
   g.fillText('ONE DAY  ·  THREE LAUNCHES  ·  WHERE IDEAS BECOME REAL', 110, 680);
+  // the notice, on the image itself, so a shared copy can't pass as a ticket
+  g.save(); g.translate(0, 0);
+  g.fillStyle = 'rgba(232,200,134,.95)'; g.fillRect(0, H - 64, 1500, 64);
+  g.fillStyle = '#3a2a05'; g.font = `700 26px ${sans}`; g.letterSpacing = '4px';
+  g.fillText('⚠  NOT A TICKET OR ENTRY PASS  ·  A FUN SOUVENIR ONLY', 110, H - 22);
+  g.restore();
   g.fillStyle = '#023b2c'; g.font = `500 26px ${sans}`;
   g.fillText('ROW', 1580, 180); g.fillText('SEAT', 1780, 180); g.fillText('NO.', 1580, 520);
   g.font = `400 140px ${serif}`; g.letterSpacing = '0px';
@@ -84,7 +90,7 @@ export default function Invitation() {
         <header className="invite__head">
           <p className="eyebrow" data-reveal>The Invitation</p>
           <h2 className="invite__title" data-reveal><Rv>Your name</Rv><Rv><em>on the list.</em></Rv></h2>
-          <p className="invite__body" data-reveal>Write your name and keep the ticket — a seat in the room where the three launches happen.</p>
+          <p className="invite__body" data-reveal>Write your name and keep it as a souvenir of the day the three launches happen.</p>
           <label className="invite__field" data-reveal>
             <span>Name on the ticket</span>
             <input value={name} onChange={(e) => setName(e.target.value)} maxLength={28} placeholder="Your name" autoComplete="name" />
@@ -93,12 +99,16 @@ export default function Invitation() {
             <button type="button" className="btn btn--light magnetic" onClick={save}><span>Save invitation</span><i aria-hidden="true">↓</i></button>
             <RegistrationLink className="btn btn--ghost"><span>Be in the room</span><i aria-hidden="true">→</i></RegistrationLink>
           </div>
+          <p className="invite__notice" role="note" data-reveal>
+            <b aria-hidden="true">!</b>
+            <span><strong>Not a ticket or entry pass.</strong> This is just a fun keepsake — it doesn't reserve a seat or get you in. To attend, register through “Be in the room”.</span>
+          </p>
         </header>
 
         <div className="invite__stage" onPointerMove={tilt} onPointerLeave={rest}>
-          <div className="ticket" ref={card} role="img" aria-label={`Admission ticket for ${name.trim() || 'a guest'} — row ${s.row}, seat ${s.seat}, 26 October 2026`}>
+          <div className="ticket" ref={card} role="img" aria-label={`Souvenir ticket for ${name.trim() || 'a guest'} — not valid for entry`}>
             <div className="ticket__main">
-              <p className="ticket__admit">Admit one · 26 October 2026</p>
+              <p className="ticket__admit">Souvenir · 26 October 2026</p>
               <p className="ticket__word">Launchpad</p>
               <p className="ticket__name">{name.trim() || 'Your name here'}</p>
               <p className="ticket__foot">One day · Three launches · Where ideas become real</p>
@@ -108,6 +118,7 @@ export default function Invitation() {
               <div><span>Seat</span><b>{s.seat}</b></div>
               <div className="ticket__no"><span>No.</span><b>{s.no}</b></div>
             </div>
+            <p className="ticket__void" aria-hidden="true">Not a ticket · Souvenir only</p>
             <i className="ticket__foil" aria-hidden="true" />
           </div>
           <div className="ticket__shadow" aria-hidden="true" />
