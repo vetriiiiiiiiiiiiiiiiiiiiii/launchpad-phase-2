@@ -37,7 +37,7 @@ function drawTicket(name, s) {
   // perforation
   g.fillStyle = '#fafbf8';
   for (let y = 24; y < H; y += 34) { g.beginPath(); g.arc(1500, y, 6, 0, Math.PI * 2); g.fill(); }
-  const serif = '"Bodoni Moda", Didot, Georgia, serif', sans = 'Archivo, Helvetica, Arial, sans-serif';
+  const serif = 'Fraunces, Georgia, serif', sans = 'Manrope, Helvetica, Arial, sans-serif';
   g.fillStyle = '#7fe0b5'; g.font = `600 30px ${sans}`; g.letterSpacing = '12px';
   g.fillText('ADMIT ONE  ·  26 OCTOBER 2026', 110, 140);
   g.fillStyle = '#fafbf8'; g.font = `400 150px ${serif}`; g.letterSpacing = '-4px';

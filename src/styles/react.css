@@ -5,7 +5,7 @@
   background: radial-gradient(130% 90% at 50% 0%, #076a4f 0%, #04503b 45%, #023b2c 100%);
 }
 .turn__word {
-  font-family: var(--sans); font-weight: 600; font-stretch: 125%; text-transform: uppercase;
+  font-family: var(--sans); font-weight: 600; text-transform: uppercase;
   font-size: clamp(18px, 3vw, 40px); color: var(--paper);
 }
 /* the product page's main sits inside the router; keep its body colour */
@@ -128,7 +128,7 @@ main.lp { display: block; }
   display: block; font-size: clamp(22px, 4.6vw, 64px);
   letter-spacing: var(--track, .9em); margin-right: calc(var(--track, .9em) * -1);
 }
-.loader__mark small { display: block; margin-top: 18px; font: 500 10px/1 var(--sans); letter-spacing: .5em; text-transform: uppercase; color: var(--mint); }
+.loader__mark small { display: block; margin-top: 18px; font: 500 12px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--mint); }
 
 .loader__foot {
   position: absolute; left: var(--gutter); right: var(--gutter); bottom: clamp(28px, 7vh, 64px);
@@ -154,7 +154,7 @@ main.lp { display: block; }
   animation: loader-spark 1.1s ease-in-out infinite;
 }
 @keyframes loader-spark { 50% { box-shadow: 0 0 0 6px rgba(127,224,181,.12), 0 0 26px 8px rgba(127,224,181,.75); } }
-.loader__row--meta { font: 500 10px/1 var(--sans); font-stretch: 115%; letter-spacing: .28em; text-transform: uppercase; color: var(--sage); }
+.loader__row--meta { font: 500 12px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--sage); }
 
 @media (max-width: 860px) {
   .loader__row--meta span:last-child { display: none; }
@@ -207,7 +207,7 @@ main.lp { display: block; }
 .invite__title em { color: var(--mint); }
 .invite__body { margin-top: 28px; max-width: 26em; color: var(--sage-l); font-size: clamp(16px, 1.2vw, 18px); }
 .invite__field { display: block; margin-top: 44px; max-width: 460px; }
-.invite__field span { display: block; font: 500 10px/1 var(--sans); font-stretch: 115%; letter-spacing: .28em; text-transform: uppercase; color: var(--sage); margin-bottom: 12px; }
+.invite__field span { display: block; font: 500 12px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--sage); margin-bottom: 12px; }
 .invite__field input {
   width: 100%; background: transparent; border: 0; border-bottom: 1px solid rgba(207,229,217,.35); border-radius: 0;
   padding: 10px 0 14px; color: var(--paper); font-family: var(--serif); font-style: italic; font-size: clamp(28px, 2.6vw, 40px);
@@ -233,10 +233,10 @@ main.lp { display: block; }
   position: relative; padding: 7% 7% 6%; display: flex; flex-direction: column;
   background: linear-gradient(135deg, #087a56 0%, #04503b 55%, #023b2c 100%);
 }
-.ticket__admit { font: 600 clamp(8px, .75vw, 11px)/1 var(--sans); font-stretch: 118%; letter-spacing: .32em; text-transform: uppercase; color: var(--mint); }
+.ticket__admit { font: 600 clamp(11px, .75vw, 11px)/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--mint); }
 .ticket__word { margin-top: 6%; font-family: var(--serif); font-variation-settings: "opsz" 96; font-size: clamp(34px, 4.4vw, 80px); line-height: .9; letter-spacing: -.03em; text-transform: uppercase; }
 .ticket__name { margin-top: 5%; font-family: var(--serif); font-style: italic; font-size: clamp(20px, 2.2vw, 40px); color: var(--sage-l); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ticket__foot { margin-top: auto; font: 500 clamp(7px, .6vw, 9px)/1.4 var(--sans); font-stretch: 115%; letter-spacing: .26em; text-transform: uppercase; color: var(--sage); }
+.ticket__foot { margin-top: auto; font: 500 clamp(11px, .6vw, 9px)/1.4 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--sage); }
 .ticket__stub {
   position: relative; background: #f0f4ef; color: var(--forest); padding: 14% 12%;
   display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr; gap: 10% 6%;
@@ -245,7 +245,7 @@ main.lp { display: block; }
   content: ""; position: absolute; left: -5px; top: 0; bottom: 0; width: 10px;
   background: radial-gradient(circle at 5px 50%, var(--deep) 4px, transparent 4.5px) 0 0 / 10px 18px repeat-y;
 }
-.ticket__stub span { display: block; font: 500 clamp(7px, .6vw, 9px)/1 var(--sans); font-stretch: 115%; letter-spacing: .26em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+.ticket__stub span { display: block; font: 500 clamp(11px, .6vw, 9px)/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
 .ticket__stub b { font-family: var(--serif); font-weight: 400; font-variation-settings: "opsz" 96; font-size: clamp(30px, 3.6vw, 66px); line-height: .9; }
 .ticket__no { grid-column: 1 / -1; align-self: end; }
 .ticket__no b { font-size: clamp(14px, 1.3vw, 22px); letter-spacing: .02em; }
@@ -323,7 +323,7 @@ main.lp { display: block; }
 .hero__replay {
   position: absolute; z-index: 6; right: var(--gutter); top: 50%;
   display: inline-flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 999px;
-  font: 500 10px/1 var(--sans); font-stretch: 115%; letter-spacing: .24em; text-transform: uppercase;
+  font: 500 12px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase;
   color: var(--sage-l); background: rgba(2,46,34,.35); border: 1px solid rgba(207,229,217,.18);
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   opacity: 0; pointer-events: none; transition: opacity .6s var(--ease) 1.2s, background .3s, color .3s;
@@ -386,7 +386,7 @@ main.lp { display: block; }
 @keyframes sun-breathe { 50% { transform: scale(1.35); } }
 .day__clock { display: flex; flex-direction: column; gap: 6px; padding-bottom: 4px; }
 .day__clock span { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--forest); }
-.day__clock em { font-style: normal; font: 500 10px/1 var(--sans); font-stretch: 115%; letter-spacing: .26em; color: var(--ink-3); }
+.day__clock em { font-style: normal; font: 500 12px/1 var(--sans); letter-spacing: .16em; color: var(--ink-3); }
 @media (prefers-reduced-motion: reduce) { .day__halo { animation: none; } }
 
 /* ==========================================================================
@@ -406,13 +406,13 @@ main.lp { display: block; }
 /* the split-flap board */
 .hero .hero__count { padding-bottom: .4em; text-align: right; letter-spacing: 0; text-transform: none; }
 .flapclock { display: inline-flex; flex-direction: column; align-items: flex-end; gap: 12px; }
-.flapclock__label { font: 500 10px/1 var(--sans); font-stretch: 118%; letter-spacing: .32em; text-transform: uppercase; color: var(--mint); }
+.flapclock__label { font: 500 12px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--mint); }
 .flapclock__row { display: flex; align-items: flex-start; gap: 6px; }
 .flapclock__group { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .flapclock__group + .flapclock__group { margin-left: 14px; }
 .flapclock__sep { position: absolute; right: -12px; top: calc(var(--fh, 64px) * .38); width: 3px; height: 16px; background: radial-gradient(circle, var(--sage) 1.4px, transparent 1.6px) 0 0 / 3px 7px; }
 .flapclock__digits { display: flex; gap: 3px; }
-.flapclock__unit { font: 500 9px/1 var(--sans); font-stretch: 115%; letter-spacing: .26em; text-transform: uppercase; color: var(--sage); }
+.flapclock__unit { font: 500 12px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--sage); }
 .flap {
   --h: clamp(56px, 5.4vw, 84px); --w: clamp(40px, 3.8vw, 58px);
   position: relative; display: block; width: var(--w); height: var(--h);
@@ -472,7 +472,7 @@ main.lp { display: block; }
 .hero.is-copy .hero__programme { opacity: 1; transform: none; }
 .hero__programme li { position: relative; }
 .hero__programme button {
-  font: 500 11px/1 var(--sans); font-stretch: 115%; letter-spacing: .24em; text-transform: uppercase;
+  font: 500 12px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase;
   color: var(--sage); padding: 8px 0; transition: color .4s;
 }
 .hero__programme li::after { content: ""; position: absolute; left: 0; bottom: 0; height: 1px; width: 100%; background: var(--mint); transform: scaleX(0); transform-origin: left; }
@@ -485,7 +485,7 @@ main.lp { display: block; }
 @media (max-width: 860px) {
   .hero__copy { grid-template-areas: "meta" "count" "title" "prog" "actions" !important; }
   .hero__programme { gap: 2px 20px; }
-  .hero__programme button { font-size: 9px; letter-spacing: .18em; }
+  .hero__programme button { font-size: 12px; letter-spacing: .16em; }
 }
 @media (prefers-reduced-motion: reduce) { .hero__slide.is-active img { animation: none; } .hero__programme li.is-now::after { animation: none; transform: scaleX(1); } }
 /* people, not a stage effect: no beam over faces; a quiet text-side shade */
@@ -495,3 +495,43 @@ main.lp { display: block; }
     linear-gradient(180deg, rgba(2,46,34,.6) 0%, rgba(2,46,34,.1) 22%, rgba(2,46,34,.25) 55%, rgba(2,46,34,.93) 100%),
     linear-gradient(90deg, rgba(2,46,34,.85) 0%, rgba(2,46,34,.45) 42%, rgba(2,46,34,0) 72%) !important;
 }
+
+/* ==========================================================================
+   Legibility: Fraunces + Manrope, and contrast everywhere
+   ========================================================================== */
+:root {
+  --sage: #b7d6c6;        /* labels on emerald: lifted for contrast */
+  --sage-l: #dcece3;
+}
+/* paper rooms keep their own darker ink for secondary text */
+.is-light, [data-tone="light"] { --stone: #4d6f60; --stone-d: #4d6f60; --ink-3: #4d6f60; }
+body { font-weight: 450; }
+.eyebrow { font-weight: 600; letter-spacing: .14em; }
+/* Fraunces at display sizes: calmer weight, a touch of softness */
+.hero__title, .statement__big, .day__title, .inside__title, .talks__title, .shop__title, .pitch__title,
+.launches-intro__title, .builders__title, .talk__title, .expo__title, .meet__title, .finale__line, .finale__word,
+.invite__title, .lp-hero__title, .lp-cta__title, .launch__name, .l3__title, .lp-dossier__name, .moment h3, .index__t, .card h3 {
+  font-weight: 350; font-variation-settings: "opsz" 144, "SOFT" 30;
+}
+.hero__title em, .statement__sub em, h2 em, h3 em { font-weight: 330; }
+/* The Day: upcoming moments readable, not ghosts */
+.moment { opacity: .45; }
+.moment.is-active { opacity: 1; }
+/* small text on photographs gets a soft lift */
+.hero__meta, .hero__programme, .flapclock__label, .flapclock__unit, .ph figcaption { text-shadow: 0 1px 10px rgba(2,46,34,.55); }
+.hero__programme button { color: var(--sage-l); font-weight: 600; }
+.hero__programme li.is-now button { color: #fff; }
+.launch__tag, .lp-hero__countlabel, .loader__row--meta, .flapclock__unit, .lp-stage__hint, .card__f { color: var(--sage-l); opacity: 1; }
+.launch--two .launch__tag { color: #4d6f60; }
+.launch__num { opacity: 1 !important; }
+.l1__text .launch__num { -webkit-text-stroke-color: rgba(250,251,248,.6); }
+.lp-dossier__num { opacity: .75 !important; }
+.l3__word { -webkit-text-stroke: 1px rgba(250,251,248,.18); }
+.roll__track span { -webkit-text-stroke-width: 1.4px; }
+.index__d, .steps p, .talk__body, .meet__body, .statement__body, .launches-intro__body { font-size: max(15px, 1em); }
+.foot { font-size: 12px; color: var(--sage-l); }
+.day__list .moment { opacity: .5; }
+.day__list .moment.is-active { opacity: 1; }
+.work--end { width: 44vw !important; }
+.work--end p { font-size: clamp(28px, 3vw, 52px) !important; }
+@media (max-width: 860px) { .day__list .moment { opacity: 1; } .work--end { width: 78vw !important; } }
