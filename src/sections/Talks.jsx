@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import Rv from '../components/Rv.jsx';
 import Photo from '../components/Photo.jsx';
+import Speakers from './Speakers.jsx';
 import { useScrollVars } from '../hooks/useScroll.js';
 import { P } from '../lib/images.js';
 
@@ -27,10 +28,7 @@ export default function Talks() {
           <figure className="ph talks-more__a" data-reveal><Photo id={P.lectern} w={1100} sizes="(max-width: 860px) 50vw, 35vw" alt="A speaker at the lectern, mid-sentence." /><figcaption><b>i</b> On stage</figcaption></figure>
           <figure className="ph talks-more__b" data-reveal><Photo id={P.greenSeats} w={900} alt="Rows of green seats, waiting." /><figcaption><b>ii</b> The room</figcaption></figure>
         </div>
-        <div className="lineup" data-reveal>
-          <p className="lineup__label">The lineup</p>
-          <p className="lineup__status">Revealed <em>soon.</em></p>
-        </div>
+        <Speakers />
         <div className="roll" aria-hidden="true">
           <div className="roll__track">
             {[0, 1].map((k) => <span key={k}>Founders <i>·</i> Operators <i>·</i> Investors <i>·</i> Makers <i>·</i> Experts <i>·</i>&nbsp;</span>)}

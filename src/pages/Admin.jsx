@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/admin.css';
 import CropDialog, { fmt } from '../components/admin/CropDialog.jsx';
 import { DEFAULT_P, IMAGE_SLOTS, IMG } from '../lib/images.js';
-import { DEFAULT_SETTINGS, DEFAULT_FAQ } from '../lib/content.js';
+import { DEFAULT_SETTINGS, DEFAULT_FAQ, DEFAULT_PRIVACY } from '../lib/content.js';
 
 /* /asdfghjkl — change every photograph and the key event settings.
    Saved content is served by the content server and applies on next load. */
@@ -96,12 +96,57 @@ function Slot({ k, label, ratio, maxW, value, onChange, token, onError }) {
   );
 }
 
+/* one speaker: photo (cropped 4:5, compressed) and the words under it */
+function SpeakerCard({ sp, i, count, token, onError, onChange, onMove, onRemove }) {
+  const [pending, setPending] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const file = useRef(null);
+  const set = (k) => (e) => onChange({ ...sp, [k]: e.target.value });
+  const pick = (f) => {
+    if (!f) return;
+    if (!/^image\/(jpeg|png|webp|avif)$/.test(f.type)) { onError('Use a JPG, PNG, WebP or AVIF photo'); return; }
+    setPending(f);
+  };
+  const done = async (blob) => {
+    setPending(null); setBusy(true);
+    try { const { url } = await api('/api/upload', { method: 'POST', headers: { 'Content-Type': blob.type }, body: blob }, token); onChange({ ...sp, photo: url }); }
+    catch (x) { onError(x.message); } finally { setBusy(false); if (file.current) file.current.value = ''; }
+  };
+  return (
+    <article className="ad-speaker">
+      <div className="ad-speaker__photo" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); pick(e.dataTransfer.files[0]); }}>
+        {sp.photo ? <img src={IMG(sp.photo, 400)} alt="" /> : <span>No photo</span>}
+        {busy && <span className="ad-busy">Uploading…</span>}
+        <span className="ad-ratio">4:5 · 800px</span>
+      </div>
+      <div className="ad-speaker__fields">
+        <input value={sp.name} placeholder="Name (required)" onChange={set('name')} maxLength={120} />
+        <input value={sp.role} placeholder="Role, e.g. Founder & CEO" onChange={set('role')} maxLength={160} />
+        <input value={sp.organisation} placeholder="Organisation" onChange={set('organisation')} maxLength={160} />
+        <input value={sp.topic} placeholder="Talk topic (optional)" onChange={set('topic')} maxLength={240} />
+        <div className="ad-row">
+          <button type="button" className="ad-btn" onClick={() => file.current.click()} disabled={busy}>{sp.photo ? 'Change photo' : 'Upload photo'}</button>
+          <input ref={file} type="file" accept="image/jpeg,image/png,image/webp,image/avif" hidden onChange={(e) => pick(e.target.files[0])} />
+          {sp.photo && <button type="button" className="ad-btn ad-btn--ghost" onClick={() => onChange({ ...sp, photo: '' })}>Remove photo</button>}
+        </div>
+      </div>
+      <div className="ad-faq__tools">
+        <button type="button" className="ad-btn ad-btn--ghost" disabled={i === 0} onClick={() => onMove(-1)} aria-label="Move up">↑</button>
+        <button type="button" className="ad-btn ad-btn--ghost" disabled={i === count - 1} onClick={() => onMove(1)} aria-label="Move down">↓</button>
+        <button type="button" className="ad-btn ad-btn--ghost" onClick={onRemove}>Remove</button>
+      </div>
+      {pending && <CropDialog file={pending} ratio={[4, 5]} maxW={800} label={sp.name || 'Speaker'} onCancel={() => setPending(null)} onDone={done} />}
+    </article>
+  );
+}
+
 export default function Admin() {
   const [token, setToken] = useState(() => { try { return sessionStorage.getItem('lp-admin') || ''; } catch { return ''; } });
   const [needsLogin, setNeedsLogin] = useState(null);   // null until the server says
   const [images, setImages] = useState({});
   const [settings, setSettings] = useState({});
   const [faq, setFaq] = useState(DEFAULT_FAQ);
+  const [speakers, setSpeakers] = useState([]);
   const [saved, setSaved] = useState('');
   const [status, setStatus] = useState('');
   const [err, setErr] = useState('');
@@ -124,7 +169,7 @@ export default function Admin() {
   }, []);
   useEffect(() => { api('/api/auth').then((a) => setNeedsLogin(!!a.required)).catch(() => setNeedsLogin(true)); }, []);
   useEffect(() => {
-    api('/api/content').then((c) => { const f = Array.isArray(c.faq) ? c.faq : DEFAULT_FAQ; setImages(c.images || {}); setSettings(c.settings || {}); setFaq(f); setSaved(JSON.stringify({ i: c.images || {}, s: c.settings || {}, f })); })
+    api('/api/content').then((c) => { const f = Array.isArray(c.faq) ? c.faq : DEFAULT_FAQ; const sp = Array.isArray(c.speakers) ? c.speakers : []; setImages(c.images || {}); setSettings(c.settings || {}); setFaq(f); setSpeakers(sp); setSaved(JSON.stringify({ i: c.images || {}, s: c.settings || {}, f, sp })); })
       .catch(() => setErr('Cannot reach the content server. Start it with "npm run dev".'));
   }, []);
   const keep = (t) => { setToken(t); try { sessionStorage.setItem('lp-admin', t); } catch { /* private mode */ } };
@@ -132,13 +177,13 @@ export default function Admin() {
     if (token) api('/api/logout', { method: 'POST' }, token).catch(() => {});
     keep('');
   };
-  const dirty = useMemo(() => saved && JSON.stringify({ i: images, s: settings, f: faq }) !== saved, [images, settings, faq, saved]);
+  const dirty = useMemo(() => saved && JSON.stringify({ i: images, s: settings, f: faq, sp: speakers }) !== saved, [images, settings, faq, speakers, saved]);
 
   const save = async () => {
     setStatus('Saving…'); setErr('');
     try {
-      await api('/api/content', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ images, settings, faq }) }, token);
-      setSaved(JSON.stringify({ i: images, s: settings, f: faq }));
+      await api('/api/content', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ images, settings, faq, speakers }) }, token);
+      setSaved(JSON.stringify({ i: images, s: settings, f: faq, sp: speakers }));
       setStatus('Saved — reload the site to see it');
     } catch (x) {
       if (/signed in/i.test(x.message)) keep('');
@@ -222,6 +267,35 @@ export default function Admin() {
             <button type="button" className="ad-btn" disabled={faq.length >= 16} onClick={() => setFaq((l) => [...l, { q: '', a: '' }])}>Add question</button>
             <button type="button" className="ad-btn ad-btn--ghost" onClick={() => setFaq(DEFAULT_FAQ)}>Restore defaults</button>
           </div>
+        </div>
+      </section>
+
+      <section className="ad-sec">
+        <h2>Speakers</h2>
+        <p className="ad-hint">{speakers.filter((x) => x.name.trim()).length
+          ? <>The lineup shows on the site in this order{dirty ? <> — <b>press Save changes</b> to publish it</> : ' (live now)'}.</>
+          : <>Hidden on the site until you add a speaker and save. Until then it says <i>“The lineup — Revealed soon.”</i></>}</p>
+        <div className="ad-faq">
+          {speakers.map((sp, i) => (
+            <SpeakerCard key={i} sp={sp} i={i} count={speakers.length} token={token} onError={setErr}
+              onChange={(v) => setSpeakers((l) => l.map((x, j) => (j === i ? v : x)))}
+              onMove={(d) => setSpeakers((l) => { const n = [...l]; [n[i + d], n[i]] = [n[i], n[i + d]]; return n; })}
+              onRemove={() => setSpeakers((l) => l.filter((_, j) => j !== i))} />
+          ))}
+          <div className="ad-row">
+            <button type="button" className="ad-btn" disabled={speakers.length >= 40} onClick={() => setSpeakers((l) => [...l, { name: '', role: '', organisation: '', topic: '', photo: '' }])}>Add speaker</button>
+          </div>
+        </div>
+      </section>
+
+      <section className="ad-sec">
+        <h2>Privacy policy</h2>
+        <p className="ad-hint">Shown at <a href="/privacy" target="_blank" rel="noopener">/privacy</a> and linked in the footer. Leave empty to use the default, which describes what this website actually does — review it, and update it if you start collecting registrations on the site. Format: <code>## </code> for headings, <code>- </code> for bullets, a blank line between paragraphs, <code>{'{contact}'}</code> for the contact email.</p>
+        <textarea className="ad-policy" rows={18} value={settings.privacyPolicy ?? ''} placeholder={DEFAULT_PRIVACY}
+          onChange={(e) => setSettings((x) => ({ ...x, privacyPolicy: e.target.value }))} />
+        <div className="ad-row">
+          <button type="button" className="ad-btn" onClick={() => setSettings((x) => ({ ...x, privacyPolicy: DEFAULT_PRIVACY }))}>Start from the default text</button>
+          {settings.privacyPolicy && <button type="button" className="ad-btn ad-btn--ghost" onClick={() => setSettings((x) => ({ ...x, privacyPolicy: '' }))}>Clear (use default)</button>}
         </div>
       </section>
 

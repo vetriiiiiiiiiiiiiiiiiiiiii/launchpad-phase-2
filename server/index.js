@@ -149,15 +149,17 @@ app.get('/api/auth', (req, res) => res.json({ required: !OPEN }));
 app.get('/api/content', async (req, res, next) => {
   try {
     res.set('Cache-Control', 'no-store');
-    const [event, images, faq] = await Promise.all([
+    const [event, images, faq, speakers] = await Promise.all([
       prisma.eventSettings.findUnique({ where: { id: 'main' } }),
       prisma.imageSlot.findMany({ orderBy: { key: 'asc' } }),
       prisma.faqItem.findMany({ orderBy: { sortOrder: 'asc' } }),
+      prisma.speaker.findMany({ orderBy: { sortOrder: 'asc' } }),
     ]);
     res.json({
       images: Object.fromEntries(images.map(({ key, source }) => [key, source])),
       settings: event?.values || {},
       ...(event?.faqConfigured ? { faq: faq.map(({ question: q, answer: a }) => ({ q, a })) } : {}),
+      speakers: speakers.map(({ name, role, organisation, topic, photo }) => ({ name, role, organisation, topic, photo })),
     });
   } catch (error) {
     next(error);
@@ -194,7 +196,7 @@ app.post('/api/logout', auth, (req, res, next) => {
     .catch(next);
 });
 
-app.put('/api/content', auth, express.json({ limit: '128kb' }), async (req, res, next) => {
+app.put('/api/content', auth, express.json({ limit: '256kb' }), async (req, res, next) => {
   try {
     const body = req.body || {};
     if (!isRecord(body.images) || !isRecord(body.settings) || !Array.isArray(body.faq)) {
@@ -230,6 +232,31 @@ app.put('/api/content', auth, express.json({ limit: '128kb' }), async (req, res,
       }
       settings[key] = trimmed.slice(0, 300);
     }
+    if ('privacyPolicy' in body.settings) {
+      if (typeof body.settings.privacyPolicy !== 'string') return res.status(400).json({ error: 'Invalid privacy policy' });
+      settings.privacyPolicy = body.settings.privacyPolicy.replace(/\r\n/g, '\n').trim().slice(0, 20000);
+    }
+
+    // speakers: optional for older admin clients; when sent, the list replaces the saved one
+    let speakers = null;
+    if (body.speakers !== undefined) {
+      if (!Array.isArray(body.speakers)) return res.status(400).json({ error: 'Speakers must be a list' });
+      speakers = [];
+      for (const item of body.speakers.slice(0, 40)) {
+        const name = String(item?.name || '').trim().slice(0, 120);
+        if (!name) continue;
+        const photo = String(item?.photo || '').trim();
+        if (photo && !okImage(photo)) return res.status(400).json({ error: `Not a usable photo for ${name}` });
+        speakers.push({
+          name,
+          role: String(item?.role || '').trim().slice(0, 160),
+          organisation: String(item?.organisation || '').trim().slice(0, 160),
+          topic: String(item?.topic || '').trim().slice(0, 240),
+          photo,
+          sortOrder: speakers.length,
+        });
+      }
+    }
 
     const faq = body.faq.slice(0, 16)
       .map((item) => ({
@@ -260,6 +287,11 @@ app.put('/api/content', auth, express.json({ limit: '128kb' }), async (req, res,
 
       await tx.faqItem.deleteMany();
       if (faq.length) await tx.faqItem.createMany({ data: faq });
+
+      if (speakers) {
+        await tx.speaker.deleteMany();
+        if (speakers.length) await tx.speaker.createMany({ data: speakers });
+      }
     });
     res.json({ ok: true });
   } catch (error) {
@@ -316,6 +348,9 @@ const dist = path.join(root, 'dist');
 if (fs.existsSync(dist)) {
   app.get('/launches', (req, res, next) => {
     res.sendFile(path.join(dist, 'launches', 'index.html'), (error) => { if (error) next(error); });
+  });
+  app.get('/privacy', (req, res, next) => {
+    res.sendFile(path.join(dist, 'privacy', 'index.html'), (error) => { if (error) next(error); });
   });
   app.get('/asdfghjkl', (req, res, next) => {
     res.sendFile(path.join(dist, 'asdfghjkl', 'index.html'), (error) => { if (error) next(error); });

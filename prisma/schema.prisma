@@ -45,3 +45,14 @@ model AdminSession {
 
   @@index([expiresAt])
 }
+
+model Speaker {
+  id           String   @id @default(cuid())
+  name         String   @db.VarChar(120)
+  role         String   @default("") @db.VarChar(160)
+  organisation String   @default("") @db.VarChar(160)
+  topic        String   @default("") @db.VarChar(240)
+  photo        String   @default("") @db.VarChar(2000)
+  sortOrder    Int      @unique
+  updatedAt    DateTime @updatedAt
+}

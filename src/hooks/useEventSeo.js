@@ -30,6 +30,13 @@ export function useEventSeo() {
         ...(S.registerUrl ? {
           offers: { '@type': 'Offer', url: S.registerUrl, availability: 'https://schema.org/InStock' },
         } : {}),
+        ...(S.speakers.length ? {
+          performer: S.speakers.map((sp) => ({
+            '@type': 'Person', name: sp.name,
+            ...(sp.role ? { jobTitle: sp.role } : {}),
+            ...(sp.organisation ? { worksFor: { '@type': 'Organization', name: sp.organisation } } : {}),
+          })),
+        } : {}),
       });
     }
     if (Array.isArray(S.faq) && S.faq.length) {

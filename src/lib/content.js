@@ -12,7 +12,40 @@ export const DEFAULT_SETTINGS = {
   contactEmail: '',
   instagramUrl: '',
   linkedinUrl: '',
+  privacyPolicy: '',      // empty = the default policy below
 };
+
+/* A plain-language starting point that describes what this website actually
+   does. Organisers should review it (and adapt it if registration moves onto
+   this site). Format: "## " headings, "- " bullets, blank lines between
+   paragraphs. {contact} becomes the contact email. */
+export const DEFAULT_PRIVACY = `Last updated: 6 October 2026
+
+This policy explains what information the Launchpad website handles and why. Launchpad is an entrepreneurship and innovation event taking place on 26 October 2026.
+
+## What this website collects
+The website does not ask you to create an account, and it does not collect your name, email address or phone number.
+
+## The souvenir ticket
+When you write your name on the souvenir ticket, it stays in your browser. It is not sent to us or stored anywhere. The downloadable image is created on your own device.
+
+## Registration
+Registration for the event happens through the registration link on this site. Any details you submit there are handled by the organisers through that registration form, under the terms shown on it.
+
+## Technical information
+Like most websites, our hosting server may record standard technical details when you visit — such as your IP address, browser type, the pages you requested and the time — to keep the site secure and working. We do not use this information to identify you.
+
+## Cookies and browser storage
+We do not use advertising or analytics cookies. The site keeps one small note in your browser's session storage to remember that you have already seen the opening animation. It is removed when you close the tab.
+
+## Third-party services
+Fonts are loaded from Google Fonts, and some photographs are served by Unsplash. When your browser loads them, those services receive your IP address under their own privacy policies.
+
+## Questions
+For any question about this policy or your information, contact us at {contact}.
+
+## Changes
+If we change how the website handles information, we will update this page and the date above.`;
 
 /* questions people ask before they register; editable in the admin */
 export const DEFAULT_FAQ = [
@@ -22,7 +55,7 @@ export const DEFAULT_FAQ = [
   { q: 'How do I register?', a: 'Use “Be in the room” on this page. Registration details are shared there as soon as they open.' },
   { q: 'Where is it held?', a: 'The venue will be announced here soon.' },
 ];
-export const S = { ...DEFAULT_SETTINGS, faq: DEFAULT_FAQ };
+export const S = { ...DEFAULT_SETTINGS, faq: DEFAULT_FAQ, speakers: [] };
 
 export async function loadContent() {
   try {
@@ -35,6 +68,7 @@ export async function loadContent() {
     Object.entries(data.images || {}).forEach(([k, v]) => { if (k in DEFAULT_P && v) P[k] = v; });
     Object.entries(data.settings || {}).forEach(([k, v]) => { if (k in DEFAULT_SETTINGS && typeof v === 'string') S[k] = v; });
     if (Array.isArray(data.faq)) S.faq = data.faq;
+    if (Array.isArray(data.speakers)) S.speakers = data.speakers.filter((sp) => sp && sp.name);
   } catch { /* no server (static hosting): defaults stand */ }
 }
 

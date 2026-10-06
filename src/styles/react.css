@@ -652,3 +652,38 @@ body { font-weight: 450; }
   .statement__plate { margin-top: clamp(28px, 5vh, 60px) !important; }
 }
 @media (max-width: 860px) { .spread__quote { padding: 28px 0 !important; margin-bottom: 12px; } .ph--c { margin-top: 0 !important; } }
+
+/* ==========================================================================
+   Speakers (shown once added in the admin)
+   ========================================================================== */
+.speakers { margin-top: clamp(90px, 14vh, 160px); padding-top: 28px; border-top: 1px solid rgba(2,59,44,.16); }
+.speakers__head { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; flex-wrap: wrap; margin-bottom: clamp(36px, 6vh, 64px); }
+.speakers__count { font-family: var(--serif); font-weight: 350; font-variation-settings: "opsz" 144; font-size: clamp(36px, 4.6vw, 80px); line-height: 1; letter-spacing: -.03em; color: var(--forest); }
+.speakers__count em { color: var(--emerald); }
+.speakers__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(20px, 2.4vw, 40px) clamp(16px, 2vw, 32px); }
+.speaker { transition-delay: calc(var(--i) * 80ms); }
+.speaker__photo { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--pale); margin: 0; }
+.speaker__photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease), filter .6s; filter: saturate(.85); }
+.speaker:hover .speaker__photo img { transform: scale(1.04); filter: saturate(1); }
+.speaker__initials { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--serif); font-size: clamp(40px, 5vw, 72px); color: var(--emerald); background: linear-gradient(160deg, var(--pale), #d2e7da); }
+.speaker__text { padding-top: 16px; }
+.speaker__name { font-family: var(--serif); font-weight: 400; font-variation-settings: "opsz" 48; font-size: clamp(22px, 1.8vw, 28px); line-height: 1.15; color: var(--forest); }
+.speaker__role { margin-top: 6px; font: 600 12px/1.45 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--emerald); }
+.speaker__topic { margin-top: 10px; font-family: var(--serif); font-style: italic; font-size: 16px; line-height: 1.4; color: #2e5747; }
+@media (max-width: 1100px) { .speakers__grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 860px) { .speakers__grid { grid-template-columns: 1fr 1fr; } .speakers__count { font-size: 11vw; } }
+
+/* ==========================================================================
+   Privacy policy page
+   ========================================================================== */
+.privacy { background: var(--paper); color: var(--forest); padding: clamp(130px, 18vh, 180px) var(--gutter) clamp(90px, 12vh, 140px); }
+.privacy__doc { max-width: 760px; margin: 0 auto; }
+.privacy .eyebrow { color: var(--emerald); margin-bottom: 18px; }
+.privacy h1 { font-family: var(--serif); font-weight: 350; font-variation-settings: "opsz" 144; font-size: clamp(48px, 7vw, 96px); line-height: .95; letter-spacing: -.035em; margin-bottom: 44px; }
+.privacy__body h2 { font-family: var(--serif); font-weight: 400; font-variation-settings: "opsz" 48; font-size: clamp(24px, 2.2vw, 30px); margin: 40px 0 12px; }
+.privacy__body p, .privacy__body li { font-size: 17px; line-height: 1.7; color: #2e5747; }
+.privacy__body p + p { margin-top: 12px; }
+.privacy__body ul { margin: 12px 0 0 20px; list-style: disc; }
+.privacy__body a, .privacy__back a { color: var(--forest); text-decoration: underline; text-underline-offset: 4px; }
+.privacy__back { margin-top: 56px; font-size: 15px; }
+.foot__bottom a { text-decoration: underline; text-underline-offset: 3px; }

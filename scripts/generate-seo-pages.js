@@ -36,6 +36,12 @@ const launches = {
   path: '/launches',
 };
 
+const privacy = {
+  title: 'Privacy Policy | Launchpad 2026',
+  description: 'How the Launchpad website handles information: what it collects, browser storage, third-party services and how to contact us.',
+  path: '/privacy',
+};
+
 const escapeAttr = (value) => String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
 const escapeXml = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
 
@@ -137,6 +143,8 @@ const template = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
 fs.writeFileSync(path.join(dist, 'index.html'), makePage(template, home, homeSchema));
 fs.mkdirSync(path.join(dist, 'launches'), { recursive: true });
 fs.writeFileSync(path.join(dist, 'launches', 'index.html'), makePage(template, launches, launchSchema));
+fs.mkdirSync(path.join(dist, 'privacy'), { recursive: true });
+fs.writeFileSync(path.join(dist, 'privacy', 'index.html'), makePage(template, privacy, null));
 
 let admin = setTitle(template, 'Admin — Launchpad');
 admin = setMeta(admin, 'name', 'robots', 'noindex, nofollow');
@@ -164,7 +172,7 @@ const robots = ['User-agent: *', 'Allow: /', ...(origin ? [`Sitemap: ${origin}/s
 fs.writeFileSync(path.join(dist, 'robots.txt'), robots);
 const sitemapFile = path.join(dist, 'sitemap.xml');
 if (origin) {
-  const urls = ['/', '/launches'].map((route) => `  <url><loc>${escapeXml(new URL(route, `${origin}/`).href)}</loc></url>`).join('\n');
+  const urls = ['/', '/launches', '/privacy'].map((route) => `  <url><loc>${escapeXml(new URL(route, `${origin}/`).href)}</loc></url>`).join('\n');
   fs.writeFileSync(sitemapFile, `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
 } else if (fs.existsSync(sitemapFile)) {
   fs.rmSync(sitemapFile);

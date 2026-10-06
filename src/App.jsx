@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Home from './pages/Home.jsx';
 import LaunchesPage from './pages/LaunchesPage.jsx';
+import Privacy from './pages/Privacy.jsx';
 import Nav from './components/Nav.jsx';
 import Footer from './components/Footer.jsx';
 import Cursor from './components/Cursor.jsx';
@@ -31,6 +32,7 @@ export default function App() {
           <Routes location={location}>
             <Route path="/" element={<Home />} />
             <Route path="/launches" element={<LaunchesPage />} />
+            <Route path="/privacy" element={<Privacy />} />
             <Route path="*" element={<Home />} />
           </Routes>
           <Footer />

@@ -35,7 +35,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="foot__bottom">
-        <span>© 2026 Launchpad</span>
+        <span>© 2026 Launchpad · <Link to="/privacy">Privacy policy</Link></span>
         <span>One day · Three launches · Where ideas become real</span>
         {home ? <a href="#top">Back to the top ↑</a> : <Link to="/">Back to Launchpad ↑</Link>}
       </div>
