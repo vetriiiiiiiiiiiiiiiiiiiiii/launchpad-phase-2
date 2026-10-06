@@ -55,7 +55,7 @@ export default function Loader() {
       setShown((s) => {
         const ceiling = target >= 100 ? 100 : Math.min(92, target + 18);
         const goal = Math.max(target, Math.min(ceiling, s + 0.18));
-        const next = s + (goal - s) * (target >= 100 ? 0.12 : 0.06);
+        const next = reduceMotion ? goal : s + (goal - s) * (target >= 100 ? 0.12 : 0.06);
         return Math.abs(goal - next) < 0.05 ? goal : next;
       });
       raf.current = requestAnimationFrame(tick);

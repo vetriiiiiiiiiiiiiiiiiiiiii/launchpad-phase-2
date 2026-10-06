@@ -4,6 +4,22 @@ import Photo from '../components/Photo.jsx';
 import { isMobile } from '../hooks/env.js';
 import { P } from '../lib/images.js';
 
+/* the three launches, shown as their veiled silhouettes (drawn from SvgDefs) */
+const VEILS = {
+  dark: { vb: '0 0 400 500', shape: 'tall', fill: 'litTop', folds: 'folds', t: 'translate(20 44) scale(3.6 4.3)' },
+  light: { vb: '0 0 600 360', shape: 'wide', fill: 'litIvory', folds: 'foldsLight', t: 'translate(0 62) scale(6 2.75)' },
+  spot: { vb: '0 0 420 460', shape: 'peak', fill: 'litSpot', folds: 'folds', t: 'translate(20 24) scale(3.8 3.9)' },
+};
+function Veil({ kind }) {
+  const v = VEILS[kind];
+  return (
+    <svg className={`veil-art veil-art--${kind}`} viewBox={v.vb} aria-hidden="true">
+      <use href={`#shape-${v.shape}`} fill={`url(#${v.fill})`} />
+      <g clipPath={`url(#clip-${v.shape})`}><use href={`#${v.folds}`} transform={v.t} filter="url(#fold)" /></g>
+    </svg>
+  );
+}
+
 const ACTS = ['Arrive', 'Discover', 'Launch', 'Connect', 'Leave different'];
 const NUM = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
 const MOMENTS = [
@@ -47,7 +63,7 @@ export default function Day() {
         <div className="day__media" aria-hidden="true">
           <div className="day__frame">
             {MOMENTS.map((m, i) => (m.veil
-              ? <div key={i} className={`day__veil day__veil--${m.veil}${i === active ? ' is-active' : ''}`} />
+              ? <div key={i} className={`day__veil day__veil--${m.veil}${i === active ? ' is-active' : ''}`}><Veil kind={m.veil} /></div>
               : <Photo key={i} id={m.img} w={1400} sizes="(max-width: 860px) 100vw, 55vw" className={i === active ? 'is-active' : undefined} eager={i < 2} />))}
           </div>
           <p className="day__counter"><span className="day__now">{NUM[active]}</span><span>/ XI</span></p>
@@ -59,7 +75,7 @@ export default function Day() {
               <span className="moment__num">{NUM[i]}</span>
               <div><p className="moment__time">{m.time}</p><h3>{m.title}</h3><p>{m.text}</p></div>
               {m.veil
-                ? <div className={`moment__m moment__m--${m.veil}`} aria-hidden="true" />
+                ? <div className={`moment__m moment__m--${m.veil}`} aria-hidden="true"><Veil kind={m.veil} /></div>
                 : <Photo className="moment__m" id={m.img} w={900} alt={m.alt} sizes="84vw" />}
             </li>
           ))}

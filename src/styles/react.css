@@ -175,3 +175,23 @@ main.lp { display: block; }
 /* with the real curtain, the hall stays dark until the fabric actually parts */
 .hero.has-curtain3d .hero__room { opacity: 0; transition: opacity 1.4s var(--ease) .3s; }
 .hero.has-curtain3d.is-open .hero__room { opacity: 1; }
+
+/* ==========================================================================
+   Review fixes
+   ========================================================================== */
+/* Talks: the rolling roles band, inked for a paper room */
+.talks-more .roll__track span { -webkit-text-stroke: 1px rgba(2,59,44,.28); }
+.talks-more .roll__track i { color: var(--emerald-2); }
+
+/* The Day: launch frames show the veiled objects, standing in their light */
+.day__veil, .moment__m--dark, .moment__m--light, .moment__m--spot { display: grid; place-items: center; }
+.veil-art { width: 46%; max-height: 62%; height: auto; overflow: visible; filter: drop-shadow(0 30px 30px rgba(2,46,34,.35)); }
+.veil-art--light { width: 64%; filter: drop-shadow(0 24px 28px rgba(2,59,44,.18)); }
+.moment__m .veil-art { width: 52%; margin-bottom: 26%; }
+.moment__m .veil-art--light { width: 70%; }
+@media (min-width: 861px) { .moment__m { display: none !important; } }
+
+/* Finale: no empty stretch between the two lines and the invitation */
+.finale__line--1 { opacity: calc(clamp(0, calc((var(--p, 0) - .03) / .1), 1) - clamp(0, calc((var(--p, 0) - .27) / .07), 1)) !important; filter: blur(calc(clamp(0, calc((var(--p, 0) - .27) / .07), 1) * 8px)) !important; }
+.finale__line--2 { opacity: calc(clamp(0, calc((var(--p, 0) - .34) / .1), 1) - clamp(0, calc((var(--p, 0) - .58) / .07), 1)) !important; transform: translateY(calc((1 - clamp(0, calc((var(--p, 0) - .34) / .12), 1)) * 30px)) !important; filter: blur(calc(clamp(0, calc((var(--p, 0) - .58) / .07), 1) * 8px)) !important; }
+.finale__end { opacity: clamp(0, calc((var(--p, 0) - .62) / .1), 1) !important; transform: translateY(calc((1 - clamp(0, calc((var(--p, 0) - .62) / .12), 1)) * 24px)) !important; }
