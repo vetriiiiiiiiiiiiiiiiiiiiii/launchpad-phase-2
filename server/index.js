@@ -12,8 +12,13 @@ const UPLOADS = path.join(DATA, 'uploads');
 const LEGACY_CONTENT = path.join(DATA, 'content.json');
 const prisma = new PrismaClient();
 
-const PASSWORD = process.env.ADMIN_PASSWORD;
+const PRODUCTION = process.env.NODE_ENV === 'production';
+const PASSWORD = process.env.ADMIN_PASSWORD || '';
 const OPEN = !PASSWORD;
+if (PRODUCTION && (OPEN || PASSWORD.length < 16)) {
+  console.error('Refusing to start in production: set ADMIN_PASSWORD to a value at least 16 characters long.');
+  process.exit(1);
+}
 if (OPEN) {
   console.warn('\n  Admin panel is OPEN (no ADMIN_PASSWORD set): anyone who finds /asdfghjkl can edit the site.\n  Set ADMIN_PASSWORD in .env before going live.\n');
 }
@@ -23,6 +28,12 @@ const SETTINGS = [
   'contactEmail', 'instagramUrl', 'linkedinUrl',
 ];
 const IMAGE_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/avif': 'avif' };
+const IMAGE_SIGNATURES = {
+  'image/jpeg': (data) => data.length >= 3 && data[0] === 0xff && data[1] === 0xd8 && data[2] === 0xff,
+  'image/png': (data) => data.length >= 8 && data.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])),
+  'image/webp': (data) => data.length >= 12 && data.toString('ascii', 0, 4) === 'RIFF' && data.toString('ascii', 8, 12) === 'WEBP',
+  'image/avif': (data) => data.length >= 12 && data.toString('ascii', 4, 8) === 'ftyp' && /^(avif|avis|mif1|msf1)$/.test(data.toString('ascii', 8, 12)),
+};
 const okImage = (v) => typeof v === 'string' && v.length < 2000
   && (/^photo-[\w-]+$/.test(v) || /^\/uploads\/[\w.-]+$/.test(v) || /^\/api\/uploads\/[\w-]+$/.test(v) || /^https:\/\/[^\s"'<>]+$/.test(v));
 const isRecord = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -81,23 +92,57 @@ async function importLegacyContent() {
   });
 }
 
-/* Sessions: random tokens held in memory for 12 hours. */
-const sessions = new Map();
+/* Raw session tokens are sent to the admin browser; only their SHA-256 hashes are stored. */
 const TTL = 12 * 3600 * 1000;
+const tokenHash = (token) => crypto.createHash('sha256').update(token).digest('hex');
 const auth = (req, res, next) => {
   if (OPEN) return next();
   const token = (req.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  const expiry = sessions.get(token);
-  if (!expiry || expiry < Date.now()) {
-    sessions.delete(token);
-    return res.status(401).json({ error: 'Not signed in' });
-  }
-  next();
+  if (!/^[a-f\d]{64}$/i.test(token)) return res.status(401).json({ error: 'Not signed in' });
+  const hash = tokenHash(token);
+  prisma.adminSession.findUnique({ where: { tokenHash: hash } })
+    .then(async (session) => {
+      if (!session || session.expiresAt <= new Date()) {
+        if (session) await prisma.adminSession.deleteMany({ where: { tokenHash: hash } });
+        return res.status(401).json({ error: 'Not signed in' });
+      }
+      req.adminTokenHash = hash;
+      next();
+    })
+    .catch(next);
 };
 
 const attempts = new Map();
 const app = express();
 app.disable('x-powered-by');
+app.use((req, res, next) => {
+  res.set('X-Content-Type-Options', 'nosniff');
+  res.set('X-Frame-Options', 'DENY');
+  res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+const proxyHops = process.env.TRUST_PROXY_HOPS;
+if (proxyHops !== undefined && /^\d+$/.test(proxyHops)) app.set('trust proxy', Number(proxyHops));
+
+const cleanupTimer = setInterval(() => {
+  const now = Date.now();
+  for (const [ip, attempt] of attempts) {
+    if (attempt.until <= now && now - attempt.updatedAt > 15 * 60 * 1000) attempts.delete(ip);
+  }
+  prisma.adminSession.deleteMany({ where: { expiresAt: { lte: new Date(now) } } }).catch((error) => {
+    console.error('Could not clean up expired admin sessions:', error.message);
+  });
+}, 15 * 60 * 1000);
+cleanupTimer.unref();
+
+app.get('/api/health', async (req, res, next) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.set('Cache-Control', 'no-store').json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
 
 app.get('/api/auth', (req, res) => res.json({ required: !OPEN }));
 
@@ -119,20 +164,34 @@ app.get('/api/content', async (req, res, next) => {
   }
 });
 
-app.post('/api/login', express.json({ limit: '4kb' }), (req, res) => {
+app.post('/api/login', express.json({ limit: '4kb' }), async (req, res, next) => {
   const ip = req.ip;
-  const attempt = attempts.get(ip) || { count: 0, until: 0 };
+  const attempt = attempts.get(ip) || { count: 0, until: 0, updatedAt: Date.now() };
   if (attempt.until > Date.now()) return res.status(429).json({ error: 'Too many attempts. Try again in a minute.' });
   if (!PASSWORD || !same(req.body?.password || '', PASSWORD)) {
     attempt.count += 1;
     if (attempt.count >= 5) { attempt.until = Date.now() + 60_000; attempt.count = 0; }
+    attempt.updatedAt = Date.now();
     attempts.set(ip, attempt);
     return res.status(401).json({ error: PASSWORD ? 'Wrong password' : 'ADMIN_PASSWORD is not configured on the server' });
   }
   attempts.delete(ip);
   const token = crypto.randomBytes(32).toString('hex');
-  sessions.set(token, Date.now() + TTL);
-  res.json({ token });
+  try {
+    await prisma.adminSession.create({
+      data: { tokenHash: tokenHash(token), expiresAt: new Date(Date.now() + TTL) },
+    });
+    res.json({ token });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/logout', auth, (req, res, next) => {
+  if (!req.adminTokenHash) return res.json({ ok: true });
+  prisma.adminSession.deleteMany({ where: { tokenHash: req.adminTokenHash } })
+    .then(() => res.json({ ok: true }))
+    .catch(next);
 });
 
 app.put('/api/content', auth, express.json({ limit: '128kb' }), async (req, res, next) => {
@@ -160,7 +219,7 @@ app.put('/api/content', auth, express.json({ limit: '128kb' }), async (req, res,
       if (key === 'eventStart' && (!trimmed || Number.isNaN(Date.parse(trimmed)))) {
         return res.status(400).json({ error: 'Event start is not a valid date' });
       }
-      if (key === 'registerUrl' && trimmed && !/^https?:\/\/\S+$/.test(trimmed)) {
+      if (key === 'registerUrl' && trimmed && !/^https:\/\/\S+$/.test(trimmed)) {
         return res.status(400).json({ error: 'Registration link must start with https://' });
       }
       if ((key === 'instagramUrl' || key === 'linkedinUrl') && trimmed && !/^https:\/\/\S+$/.test(trimmed)) {
@@ -215,6 +274,9 @@ app.post('/api/upload', auth, express.raw({ type: Object.keys(IMAGE_TYPES), limi
       return res.status(400).json({ error: 'Upload a JPG, PNG, WebP or AVIF image (max 15 MB)' });
     }
     const data = req.body;
+    if (!IMAGE_SIGNATURES[contentType](data)) {
+      return res.status(400).json({ error: 'The uploaded file does not match its image type' });
+    }
     const sha256 = crypto.createHash('sha256').update(data).digest('hex');
     const asset = await prisma.mediaAsset.upsert({
       where: { sha256 },
@@ -243,6 +305,8 @@ app.get('/api/uploads/:id', async (req, res, next) => {
   }
 });
 
+app.use('/api', (req, res) => res.status(404).json({ error: 'API endpoint not found' }));
+
 /* Keep serving existing local uploads not yet referenced by a database asset. */
 if (fs.existsSync(UPLOADS)) {
   app.use('/uploads', express.static(UPLOADS, { maxAge: '365d', immutable: true }));
@@ -262,12 +326,36 @@ app.use((error, req, res, next) => {
 });
 
 const port = Number(process.env.API_PORT || process.env.PORT || 8787);
+let httpServer;
 try {
   await prisma.$connect();
   await importLegacyContent();
-  app.listen(port, () => console.log(`  Launchpad content server on http://localhost:${port}`));
+  httpServer = app.listen(port, () => console.log(`  Launchpad content server on http://localhost:${port}`));
+  httpServer.on('error', async (error) => {
+    console.error('Could not start the content server:', error);
+    await prisma.$disconnect();
+    process.exitCode = 1;
+  });
 } catch (error) {
   console.error('Could not start the content server. Check DATABASE_URL and ensure PostgreSQL is reachable.', error);
   await prisma.$disconnect();
   process.exitCode = 1;
 }
+
+async function shutdown(signal) {
+  console.log(`Received ${signal}; shutting down.`);
+  clearInterval(cleanupTimer);
+  if (!httpServer) {
+    await prisma.$disconnect();
+    return;
+  }
+  const forceExit = setTimeout(() => process.exit(1), 10_000);
+  forceExit.unref();
+  httpServer.close(async () => {
+    clearTimeout(forceExit);
+    await prisma.$disconnect();
+    process.exit(0);
+  });
+}
+process.once('SIGTERM', () => shutdown('SIGTERM'));
+process.once('SIGINT', () => shutdown('SIGINT'));

@@ -119,6 +119,10 @@ export default function Admin() {
       .catch(() => setErr('Cannot reach the content server. Start it with "npm run dev".'));
   }, []);
   const keep = (t) => { setToken(t); try { sessionStorage.setItem('lp-admin', t); } catch { /* private mode */ } };
+  const signOut = () => {
+    if (token) api('/api/logout', { method: 'POST' }, token).catch(() => {});
+    keep('');
+  };
   const dirty = useMemo(() => saved && JSON.stringify({ i: images, s: settings, f: faq }) !== saved, [images, settings, faq, saved]);
 
   const save = async () => {
@@ -152,7 +156,7 @@ export default function Admin() {
           {status && <span className="ad-status">{status}</span>}
           <a className="ad-btn ad-btn--ghost" href="/" target="_blank" rel="noopener">View site ↗</a>
           <button className="ad-btn ad-btn--solid" onClick={save} disabled={!dirty}>{dirty ? 'Save changes' : 'Saved'}</button>
-          {needsLogin && <button className="ad-btn ad-btn--ghost" onClick={() => keep('')}>Sign out</button>}
+          {needsLogin && <button className="ad-btn ad-btn--ghost" onClick={signOut}>Sign out</button>}
         </div>
       </header>
       {err && <p className="ad-err ad-err--bar" role="alert">{err}</p>}

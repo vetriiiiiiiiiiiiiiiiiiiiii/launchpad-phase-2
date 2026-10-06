@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model EventSettings {
@@ -34,4 +35,13 @@ model MediaAsset {
   contentType String   @db.VarChar(32)
   data        Bytes
   createdAt   DateTime @default(now())
+}
+
+model AdminSession {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique @db.VarChar(64)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
 }

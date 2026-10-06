@@ -3,27 +3,33 @@
 One day. Three launches. A React (Vite) site with a small Node content server
 and an admin panel.
 
-## Run it
+## Run it locally
 
 ```bash
 npm install
-cp .env.example .env   # set DATABASE_URL and ADMIN_PASSWORD
-npm run db:dev         # create/apply the local PostgreSQL migration
+cp .env.example .env   # set DATABASE_URL, DIRECT_URL and ADMIN_PASSWORD
+npm run db:deploy      # apply committed migrations to the database
 npm run dev            # site on http://localhost:5173, API on :8787
-npm start              # production: builds, migrates, then serves site + API on $PORT (default 8787)
 ```
 
-Create the PostgreSQL database named in `DATABASE_URL` before running the app.
-`npm run dev` applies committed migrations automatically; `npm run db:dev` is
-available when creating or editing migrations.
+Create the PostgreSQL database before starting the app. `DATABASE_URL` is the
+runtime connection. `DIRECT_URL` is used by Prisma migrations and can be the
+same value unless your provider requires a direct connection separate from its
+pooled runtime URL. `npm run dev` applies committed migrations automatically;
+`npm run db:dev` is available when creating or editing migrations.
+
+Use Node.js 22.9 or newer. The production command is `npm start`; it builds the
+site, applies committed migrations, then starts the API and serves the site on
+`PORT` (default 8787).
 
 ## Admin panel — `/asdfghjkl`
 
 Open `http://localhost:5173/asdfghjkl` (or `https://your-domain/asdfghjkl`). The address is
 unlisted and not linked anywhere on the site, but the password is what protects it.
 
-Set `ADMIN_PASSWORD` in `.env` and restart to require sign-in. If it is unset,
-the panel is open without sign-in and displays a warning; never deploy it that way.
+Set `ADMIN_PASSWORD` in `.env` for local use. Production startup refuses to run
+unless `ADMIN_PASSWORD` is at least 16 characters. Set it as a secret environment
+variable on the hosting platform; do not commit `.env`.
 
 You can change:
 
@@ -56,12 +62,29 @@ imported automatically the first time the new database starts. Changes appear
 on the next page load. Without the content server (pure static hosting) the site
 uses its built-in defaults and the admin panel can't save.
 
-## Hosting
+## Deploy
 
-Needs a Node host (Render, Railway, a VPS…) running `npm start`, a reachable
-PostgreSQL database configured with `DATABASE_URL`, and `ADMIN_PASSWORD` set
-(otherwise anyone can edit the live site). Uploaded images are stored in the
-database, so no persistent application disk is required.
+Use a Node.js 22.9+ host with a reachable PostgreSQL database. Configure these
+environment variables in the host dashboard:
+
+- `DATABASE_URL`: runtime PostgreSQL URL (pooled URL is supported).
+- `DIRECT_URL`: direct PostgreSQL URL for Prisma migrations; set it to the same
+  URL when the provider has no separate direct endpoint.
+- `ADMIN_PASSWORD`: a unique secret of at least 16 characters.
+- `TRUST_PROXY_HOPS`: set to the exact number of trusted proxies in front of the
+  app if the host uses a reverse proxy; leave unset for direct connections.
+
+Set the build/start command to `npm ci` and `npm start` (or let the platform
+install dependencies automatically and use `npm start`). Startup builds the
+frontend, runs `prisma migrate deploy`, then starts the server. Configure the
+platform health check to `GET /api/health`; it returns success only when the
+database is reachable. Multiple instances can share database sessions and
+content. The login rate limit is per process, so use shared edge-level rate
+limiting if you scale across multiple instances.
+
+Uploaded image bytes and admin sessions are stored in PostgreSQL, so no
+persistent application disk is required. Back up the database, including the
+`MediaAsset` table, because it contains uploaded photos.
 
 ## Structure
 
