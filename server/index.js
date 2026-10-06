@@ -35,7 +35,11 @@ const IMAGE_SIGNATURES = {
   'image/avif': (data) => data.length >= 12 && data.toString('ascii', 4, 8) === 'ftyp' && /^(avif|avis|mif1|msf1)$/.test(data.toString('ascii', 8, 12)),
 };
 const okImage = (v) => typeof v === 'string' && v.length < 2000
-  && (/^photo-[\w-]+$/.test(v) || /^\/uploads\/[\w.-]+$/.test(v) || /^\/api\/uploads\/[\w-]+$/.test(v) || /^https:\/\/[^\s"'<>]+$/.test(v));
+  && (/^photo-[\w-]+$/.test(v) || /^\/uploads\/[\w.-]+$/.test(v) || /^\/api\/(uploads|media)\/[\w-]+$/.test(v) || /^https:\/\/[^\s"'<>]+$/.test(v));
+/* Uploaded images used to be served from /api/uploads/ as JSON (a Prisma
+   Uint8Array passed straight to res.send) with a one-year cache. They are now
+   served correctly from /api/media/, which also sidesteps those cached copies. */
+const mediaPath = (source) => (typeof source === 'string' ? source.replace(/^\/api\/uploads\//, '/api/media/') : source);
 const isRecord = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 const same = (a, b) => {
   const x = Buffer.from(String(a)), y = Buffer.from(String(b));
@@ -156,10 +160,10 @@ app.get('/api/content', async (req, res, next) => {
       prisma.speaker.findMany({ orderBy: { sortOrder: 'asc' } }),
     ]);
     res.json({
-      images: Object.fromEntries(images.map(({ key, source }) => [key, source])),
+      images: Object.fromEntries(images.map(({ key, source }) => [key, mediaPath(source)])),
       settings: event?.values || {},
       ...(event?.faqConfigured ? { faq: faq.map(({ question: q, answer: a }) => ({ q, a })) } : {}),
-      speakers: speakers.map(({ name, role, organisation, topic, photo }) => ({ name, role, organisation, topic, photo })),
+      speakers: speakers.map(({ name, role, organisation, topic, photo }) => ({ name, role, organisation, topic, photo: mediaPath(photo) })),
     });
   } catch (error) {
     next(error);
@@ -316,13 +320,13 @@ app.post('/api/upload', auth, express.raw({ type: Object.keys(IMAGE_TYPES), limi
       update: {},
       select: { id: true },
     });
-    res.json({ url: `/api/uploads/${asset.id}` });
+    res.json({ url: `/api/media/${asset.id}` });
   } catch (error) {
     next(error);
   }
 });
 
-app.get('/api/uploads/:id', async (req, res, next) => {
+app.get(['/api/media/:id', '/api/uploads/:id'], async (req, res, next) => {
   try {
     const asset = await prisma.mediaAsset.findUnique({ where: { id: req.params.id } });
     if (!asset) return res.status(404).json({ error: 'Image not found' });
@@ -331,7 +335,9 @@ app.get('/api/uploads/:id', async (req, res, next) => {
       'Content-Type': asset.contentType,
       'X-Content-Type-Options': 'nosniff',
     });
-    res.send(asset.data);
+    // Prisma returns Bytes as a Uint8Array; Express would serialise that as JSON,
+    // so send it as a Buffer (raw bytes)
+    res.send(Buffer.from(asset.data.buffer, asset.data.byteOffset, asset.data.byteLength));
   } catch (error) {
     next(error);
   }
