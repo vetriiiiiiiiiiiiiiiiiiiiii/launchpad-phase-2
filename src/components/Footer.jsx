@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { S, placeLine, registerHref } from '../lib/content.js';
+import { S, placeLine, registerHref, telHref } from '../lib/content.js';
 
 export default function Footer() {
   const home = useLocation().pathname === '/';
@@ -29,7 +29,15 @@ export default function Footer() {
         </nav>
         <div className="foot__col">
           <p>Contact</p>
-          {S.contactEmail ? <a href={`mailto:${S.contactEmail}`}>{S.contactEmail}</a> : <span>Contact details coming soon</span>}
+          {S.contactEmail && <a href={`mailto:${S.contactEmail}`}>{S.contactEmail}</a>}
+          {S.contacts.map((c, i) => (
+            <div className="foot__person" key={i}>
+              <b>{c.name}</b>
+              {c.email && <a href={`mailto:${c.email}`}>{c.email}</a>}
+              {c.phone && <a href={telHref(c.phone)}>{c.phone}</a>}
+            </div>
+          ))}
+          {!S.contactEmail && !S.contacts.length && <span>Contact details coming soon</span>}
           {S.instagramUrl && <a href={S.instagramUrl} target="_blank" rel="noopener">Instagram ↗</a>}
           {S.linkedinUrl && <a href={S.linkedinUrl} target="_blank" rel="noopener">LinkedIn ↗</a>}
         </div>

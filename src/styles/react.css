@@ -694,3 +694,14 @@ body { font-weight: 450; }
 .marks__row > .mark--word { flex: 1.4 1 300px; }
 .mark img { max-width: 100%; object-fit: contain; }
 @media (max-width: 860px) { .marks__row { flex-direction: column; } .marks__row > .mark { flex: none; } }
+
+/* named contacts */
+.foot__person { display: flex; flex-direction: column; gap: 4px; }
+.foot__person b { font-weight: 600; color: var(--paper); font-size: 14px; }
+.foot__person a { font-size: 14px; color: var(--sage-l) !important; overflow-wrap: anywhere; }
+.foot__person a:hover { color: var(--mint) !important; }
+.faq__people { margin-top: 26px; display: grid; gap: 16px; font-size: 15px; color: #4d6f60; }
+.faq__people li { display: flex; flex-direction: column; gap: 3px; }
+.faq__people b { font-weight: 600; color: var(--forest); }
+.faq__people a { color: #4d6f60; text-decoration: underline; text-underline-offset: 4px; width: fit-content; overflow-wrap: anywhere; }
+.faq__people a:hover { color: var(--forest); }

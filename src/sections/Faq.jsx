@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Rv from '../components/Rv.jsx';
-import { S } from '../lib/content.js';
+import { S, telHref } from '../lib/content.js';
 
 /* Questions people ask before they register. Editable in the admin panel. */
 export default function Faq() {
@@ -12,6 +12,18 @@ export default function Faq() {
         <h2 className="faq__title" data-reveal><Rv>Questions,</Rv><Rv><em>answered.</em></Rv></h2>
         {S.contactEmail && (
           <p className="faq__contact" data-reveal>Something else? <a href={`mailto:${S.contactEmail}`}>{S.contactEmail}</a></p>
+        )}
+        {S.contacts.length > 0 && (
+          <ul className="faq__people" data-reveal aria-label="Contacts">
+            {!S.contactEmail && <li className="faq__people-cap">Something else? Ask us.</li>}
+            {S.contacts.map((c, i) => (
+              <li key={i}>
+                <b>{c.name}</b>
+                {c.email && <a href={`mailto:${c.email}`}>{c.email}</a>}
+                {c.phone && <a href={telHref(c.phone)}>{c.phone}</a>}
+              </li>
+            ))}
+          </ul>
         )}
       </header>
       <ul className="faq__list">

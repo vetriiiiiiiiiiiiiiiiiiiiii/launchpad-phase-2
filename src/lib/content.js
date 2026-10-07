@@ -61,7 +61,7 @@ export const DEFAULT_LOGOS = [
   { name: 'RS Foundation', image: '/assets/logos/rs-foundation.png' },
   { name: 'SRM Organization', image: '/assets/logos/srm.png' },
 ];
-export const S = { ...DEFAULT_SETTINGS, faq: DEFAULT_FAQ, speakers: [], logos: DEFAULT_LOGOS };
+export const S = { ...DEFAULT_SETTINGS, faq: DEFAULT_FAQ, speakers: [], logos: DEFAULT_LOGOS, contacts: [] };
 
 export async function loadContent() {
   try {
@@ -76,6 +76,7 @@ export async function loadContent() {
     Object.entries(DERIVED).forEach(([k, base]) => { if (!data.images?.[k] && data.images?.[base]) P[k] = data.images[base]; });
     Object.entries(data.settings || {}).forEach(([k, v]) => { if (k in DEFAULT_SETTINGS && typeof v === 'string') S[k] = v; });
     if (Array.isArray(data.faq)) S.faq = data.faq;
+    if (Array.isArray(data.settings?.contacts)) S.contacts = data.settings.contacts.filter((c) => c && c.name);
     if (Array.isArray(data.settings?.logos)) S.logos = data.settings.logos.filter((l) => l && l.image);
     if (Array.isArray(data.speakers)) S.speakers = data.speakers.filter((sp) => sp && sp.name);
   } catch { /* no server (static hosting): defaults stand */ }
@@ -87,3 +88,6 @@ export const registerHref = () => S.registerUrl || '#be-in-the-room';
 /* tidy display values for the key facts */
 export const TBA = 'To be announced';
 export const placeLine = () => [S.venue, S.city].filter(Boolean).join(', ') || TBA;
+
+/* a phone number as a tel: link (digits and a leading +) */
+export const telHref = (phone) => `tel:${phone.replace(/[^\d+]/g, '')}`;
