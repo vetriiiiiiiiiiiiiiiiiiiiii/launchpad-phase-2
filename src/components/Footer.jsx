@@ -33,6 +33,7 @@ export default function Footer() {
           {S.contacts.map((c, i) => (
             <div className="foot__person" key={i}>
               <b>{c.name}</b>
+                {c.role && <span className="contact__role">{c.role}</span>}
               {c.email && <a href={`mailto:${c.email}`}>{c.email}</a>}
               {c.phone && <a href={telHref(c.phone)}>{c.phone}</a>}
             </div>

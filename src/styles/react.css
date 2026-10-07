@@ -705,3 +705,5 @@ body { font-weight: 450; }
 .faq__people b { font-weight: 600; color: var(--forest); }
 .faq__people a { color: #4d6f60; text-decoration: underline; text-underline-offset: 4px; width: fit-content; overflow-wrap: anywhere; }
 .faq__people a:hover { color: var(--forest); }
+.foot__col .foot__person .contact__role { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--mint); margin-top: -2px; }
+.faq__people .contact__role { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--emerald); }

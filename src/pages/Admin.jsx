@@ -350,7 +350,7 @@ export default function Admin() {
           {setting('linkedinUrl', 'LinkedIn link', 'https://linkedin.com/…', 'url')}
         </div>
         <h3 className="ad-sub">People to contact <span>{contacts.length} of 4</span></h3>
-        <p className="ad-hint">Shown in the footer and under the questions. Each needs a name and at least an email or a phone number. Phone numbers become tap-to-call links on phones.</p>
+        <p className="ad-hint">Shown in the footer and under the questions. Each needs a name and at least an email or a phone number; the role is optional and shows under the name. Phone numbers become tap-to-call links on phones.</p>
         <div className="ad-faq">
           {contacts.map((c, i) => {
             const set = (k) => (e) => setContacts((l) => l.map((x, j) => (j === i ? { ...x, [k]: e.target.value } : x)));
@@ -358,7 +358,8 @@ export default function Admin() {
               <div className="ad-faq__item" key={i}>
                 <span className="ad-faq__n">{String(i + 1).padStart(2, '0')}</span>
                 <div className="ad-contact">
-                  <input value={c.name} placeholder="Name, e.g. Priya (Event lead)" onChange={set('name')} maxLength={80} />
+                  <input value={c.name} placeholder="Name" onChange={set('name')} maxLength={80} />
+                  <input value={c.role ?? ''} placeholder="Role, e.g. Event lead" onChange={set('role')} maxLength={80} />
                   <input type="email" value={c.email} placeholder="Email" onChange={set('email')} maxLength={160} />
                   <input type="tel" value={c.phone} placeholder="Phone, e.g. +91 98765 43210" onChange={set('phone')} maxLength={30} />
                 </div>
@@ -371,7 +372,7 @@ export default function Admin() {
             );
           })}
           <div className="ad-row">
-            <button type="button" className="ad-btn" disabled={contacts.length >= 4} onClick={() => setContacts((l) => [...l, { name: '', email: '', phone: '' }])}>Add contact</button>
+            <button type="button" className="ad-btn" disabled={contacts.length >= 4} onClick={() => setContacts((l) => [...l, { name: '', role: '', email: '', phone: '' }])}>Add contact</button>
           </div>
         </div>
       </section>

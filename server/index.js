@@ -249,14 +249,15 @@ app.put('/api/content', auth, express.json({ limit: '256kb' }), async (req, res,
       settings.contacts = [];
       for (const item of body.contacts.slice(0, 4)) {
         const name = String(item?.name || '').trim().slice(0, 80);
+        const role = String(item?.role || '').trim().slice(0, 80);
         const email = String(item?.email || '').trim().slice(0, 160);
         const phone = String(item?.phone || '').trim().slice(0, 30);
-        if (!name && !email && !phone) continue;
+        if (!name && !role && !email && !phone) continue;
         if (!name) return res.status(400).json({ error: 'Each contact needs a name' });
         if (!email && !phone) return res.status(400).json({ error: `Add an email or a phone number for ${name}` });
         if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: `The email for ${name} does not look right` });
         if (phone && !/^\+?[\d\s()-]{6,24}$/.test(phone)) return res.status(400).json({ error: `The phone number for ${name} does not look right` });
-        settings.contacts.push({ name, email, phone });
+        settings.contacts.push({ name, role, email, phone });
       }
     }
 

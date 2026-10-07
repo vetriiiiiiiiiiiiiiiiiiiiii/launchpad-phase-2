@@ -109,5 +109,5 @@
 }
 .ad-sub { font-family: var(--serif); font-weight: 400; font-size: 22px; margin: 34px 0 6px; }
 .ad-sub span { font: 500 12px/1 var(--sans); letter-spacing: .1em; color: var(--ink-3); margin-left: 10px; }
-.ad-contact { display: grid; grid-template-columns: 1.2fr 1.2fr 1fr; gap: 10px; flex: 1; min-width: 0; }
+.ad-contact { display: grid; grid-template-columns: 1fr 1fr 1.2fr 1fr; gap: 10px; flex: 1; min-width: 0; }
 @media (max-width: 860px) { .ad-contact { grid-template-columns: 1fr; } }

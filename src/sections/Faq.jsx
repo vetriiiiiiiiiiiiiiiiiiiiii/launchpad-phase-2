@@ -19,6 +19,7 @@ export default function Faq() {
             {S.contacts.map((c, i) => (
               <li key={i}>
                 <b>{c.name}</b>
+                {c.role && <span className="contact__role">{c.role}</span>}
                 {c.email && <a href={`mailto:${c.email}`}>{c.email}</a>}
                 {c.phone && <a href={telHref(c.phone)}>{c.phone}</a>}
               </li>
