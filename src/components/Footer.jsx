@@ -27,14 +27,13 @@ export default function Footer() {
           <A hash="#faq">Questions</A>
           {reg.startsWith('http') ? <a href={reg} target="_blank" rel="noopener">Register ↗</a> : <A hash="#be-in-the-room">Be in the room</A>}
         </nav>
-        <div className="foot__col">
+        {(S.contactEmail || S.instagramUrl || S.linkedinUrl || !S.contacts.length) && <div className="foot__col">
           <p>Contact</p>
           {S.contactEmail && <a href={`mailto:${S.contactEmail}`}>{S.contactEmail}</a>}
           {!S.contactEmail && !S.contacts.length && <span>Contact details coming soon</span>}
-          {!S.contactEmail && S.contacts.length > 0 && <a href="#get-in-touch" onClick={(e) => { e.preventDefault(); document.querySelector('.foot__people')?.scrollIntoView({ behavior: 'smooth' }); }}>People to contact ↓</a>}
           {S.instagramUrl && <a href={S.instagramUrl} target="_blank" rel="noopener">Instagram ↗</a>}
           {S.linkedinUrl && <a href={S.linkedinUrl} target="_blank" rel="noopener">LinkedIn ↗</a>}
-        </div>
+        </div>}
       </div>
       {S.contacts.length > 0 && (
         <div className="foot__people">
