@@ -30,19 +30,29 @@ export default function Footer() {
         <div className="foot__col">
           <p>Contact</p>
           {S.contactEmail && <a href={`mailto:${S.contactEmail}`}>{S.contactEmail}</a>}
-          {S.contacts.map((c, i) => (
-            <div className="foot__person" key={i}>
-              <b>{c.name}</b>
-                {c.role && <span className="contact__role">{c.role}</span>}
-              {c.email && <a href={`mailto:${c.email}`}>{c.email}</a>}
-              {c.phone && <a href={telHref(c.phone)}>{c.phone}</a>}
-            </div>
-          ))}
           {!S.contactEmail && !S.contacts.length && <span>Contact details coming soon</span>}
+          {!S.contactEmail && S.contacts.length > 0 && <a href="#get-in-touch" onClick={(e) => { e.preventDefault(); document.querySelector('.foot__people')?.scrollIntoView({ behavior: 'smooth' }); }}>People to contact ↓</a>}
           {S.instagramUrl && <a href={S.instagramUrl} target="_blank" rel="noopener">Instagram ↗</a>}
           {S.linkedinUrl && <a href={S.linkedinUrl} target="_blank" rel="noopener">LinkedIn ↗</a>}
         </div>
       </div>
+      {S.contacts.length > 0 && (
+        <div className="foot__people">
+          <p className="foot__people-cap">Get in touch</p>
+          <ul>
+            {S.contacts.map((c, i) => (
+              <li className="foot__person" key={i}>
+                <b>{c.name}</b>
+                {c.role && <span className="contact__role">{c.role}</span>}
+                <span className="foot__reach">
+                  {c.email && <a href={`mailto:${c.email}`}>{c.email}</a>}
+                  {c.phone && <a href={telHref(c.phone)}>{c.phone}</a>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <div className="foot__bottom">
         <span>© 2026 Launchpad · <Link to="/privacy">Privacy policy</Link></span>
         <span>One day · Three launches · Where ideas become real</span>
