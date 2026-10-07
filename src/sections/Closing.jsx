@@ -2,25 +2,25 @@ import { useEffect, useRef } from 'react';
 import { useScrollVars } from '../hooks/useScroll.js';
 import { useCountdown } from '../hooks/useCountdown.js';
 import { RegistrationButton } from '../components/RegistrationLink.jsx';
+import { S } from '../lib/content.js';
+import { IMG } from '../lib/images.js';
 import { hasWebGL, isMobile, reduceMotion } from '../hooks/env.js';
 
 export function Marks() {
   return (
     <section className="marks" data-tone="light" data-folio="With purpose">
-      <p className="marks__cap" data-reveal>An experience built with purpose.</p>
-      <div className="marks__row">
+      {S.marksCaption && <p className="marks__cap" data-reveal>{S.marksCaption}</p>}
+      <div className="marks__row" style={{ '--marks': S.logos.length }}>
         <figure className="mark mark--word" data-reveal>
           <p className="mark__name">Launchpad</p>
           <p className="mark__date">26 October 2026</p>
         </figure>
-        <figure className="mark" data-reveal>
-          <img src="/assets/logos/rs-foundation.png" alt="RS Foundation" width="252" height="116" loading="lazy" />
-          <figcaption>RS Foundation</figcaption>
-        </figure>
-        <figure className="mark" data-reveal>
-          <img src="/assets/logos/srm.png" alt="SRM Organization" width="264" height="102" loading="lazy" />
-          <figcaption>SRM Organization</figcaption>
-        </figure>
+        {S.logos.map((l, i) => (
+          <figure className="mark" data-reveal key={i}>
+            <img src={IMG(l.image, 600)} alt={l.name || 'Partner logo'} loading="lazy" />
+            {l.name && <figcaption>{l.name}</figcaption>}
+          </figure>
+        ))}
       </div>
     </section>
   );

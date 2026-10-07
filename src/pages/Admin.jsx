@@ -3,7 +3,7 @@ import '../styles/admin.css';
 import CropDialog, { fmt } from '../components/admin/CropDialog.jsx';
 import { ACCEPT, decodeAny } from '../lib/decodeImage.js';
 import { DEFAULT_P, DERIVED, IMAGE_SLOTS, IMG } from '../lib/images.js';
-import { DEFAULT_SETTINGS, DEFAULT_FAQ, DEFAULT_PRIVACY } from '../lib/content.js';
+import { DEFAULT_SETTINGS, DEFAULT_FAQ, DEFAULT_PRIVACY, DEFAULT_LOGOS } from '../lib/content.js';
 
 /* /asdfghjkl — change every photograph and the key event settings.
    Saved content is served by the content server and applies on next load. */
@@ -152,6 +152,62 @@ function SpeakerCard({ sp, i, count, token, onError, onChange, onMove, onRemove 
   );
 }
 
+/* logos keep their own shape: no crop, just scaled to fit 800×400 and saved as
+   WebP (transparent backgrounds survive) */
+async function shrinkLogo(blob) {
+  const url = URL.createObjectURL(blob);
+  try {
+    const img = await new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => bad(new Error('That file could not be opened as an image')); i.src = url; });
+    const k = Math.min(1, 800 / img.naturalWidth, 400 / img.naturalHeight);
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k));
+    const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.drawImage(img, 0, 0, c.width, c.height);
+    let out = await new Promise((r) => c.toBlob(r, 'image/webp', 0.9));
+    if (!out || out.type !== 'image/webp') out = await new Promise((r) => c.toBlob(r, 'image/png'));
+    return { blob: out, w: c.width, h: c.height };
+  } finally { URL.revokeObjectURL(url); }
+}
+
+function LogoCard({ logo, i, count, token, onError, onChange, onMove, onRemove }) {
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState('');
+  const file = useRef(null);
+  const pick = async (f) => {
+    if (!f) return;
+    if (f.size > 60 * 1048576) { onError('That file is over 60 MB — export a smaller version first'); return; }
+    setBusy('Converting…');
+    try {
+      const { blob: decoded, note: conv } = await decodeAny(f);
+      setBusy('Uploading…');
+      const { blob, w, h } = await shrinkLogo(decoded);
+      const { url } = await api('/api/upload', { method: 'POST', headers: { 'Content-Type': blob.type }, body: blob }, token);
+      onChange({ ...logo, image: url });
+      setNote(`${conv ? `${conv} · ` : ''}${fmt(f.size)} → ${fmt(blob.size)} · ${w}×${h}`);
+    } catch (x) { onError(x.message); } finally { setBusy(false); if (file.current) file.current.value = ''; }
+  };
+  return (
+    <article className="ad-logo">
+      <div className="ad-logo__img" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); pick(e.dataTransfer.files[0]); }}>
+        {logo.image ? <img src={logo.image} alt="" /> : <span>No logo yet</span>}
+        {busy && <span className="ad-busy">{busy}</span>}
+      </div>
+      <div className="ad-speaker__fields">
+        <input value={logo.name} placeholder="Name under the logo (optional)" onChange={(e) => onChange({ ...logo, name: e.target.value })} maxLength={80} />
+        {note && <p className="ad-note">{note}</p>}
+        <div className="ad-row">
+          <button type="button" className="ad-btn" onClick={() => file.current.click()} disabled={!!busy}>{logo.image ? 'Change logo' : 'Upload logo'}</button>
+          <input ref={file} type="file" accept={ACCEPT} hidden onChange={(e) => pick(e.target.files[0])} />
+        </div>
+      </div>
+      <div className="ad-faq__tools">
+        <button type="button" className="ad-btn ad-btn--ghost" disabled={i === 0} onClick={() => onMove(-1)} aria-label="Move left">↑</button>
+        <button type="button" className="ad-btn ad-btn--ghost" disabled={i === count - 1} onClick={() => onMove(1)} aria-label="Move right">↓</button>
+        <button type="button" className="ad-btn ad-btn--ghost" onClick={onRemove}>Remove</button>
+      </div>
+    </article>
+  );
+}
+
 export default function Admin() {
   const [token, setToken] = useState(() => { try { return sessionStorage.getItem('lp-admin') || ''; } catch { return ''; } });
   const [needsLogin, setNeedsLogin] = useState(null);   // null until the server says
@@ -159,6 +215,8 @@ export default function Admin() {
   const [settings, setSettings] = useState({});
   const [faq, setFaq] = useState(DEFAULT_FAQ);
   const [speakers, setSpeakers] = useState([]);
+  const [logos, setLogos] = useState(DEFAULT_LOGOS);
+  const [tab, setTab] = useState(() => decodeURIComponent(location.hash.slice(1)) || 'event');
   const [saved, setSaved] = useState('');
   const [status, setStatus] = useState('');
   const [err, setErr] = useState('');
@@ -181,7 +239,7 @@ export default function Admin() {
   }, []);
   useEffect(() => { api('/api/auth').then((a) => setNeedsLogin(!!a.required)).catch(() => setNeedsLogin(true)); }, []);
   useEffect(() => {
-    api('/api/content').then((c) => { const f = Array.isArray(c.faq) ? c.faq : DEFAULT_FAQ; const sp = Array.isArray(c.speakers) ? c.speakers : []; setImages(c.images || {}); setSettings(c.settings || {}); setFaq(f); setSpeakers(sp); setSaved(JSON.stringify({ i: c.images || {}, s: c.settings || {}, f, sp })); })
+    api('/api/content').then((c) => { const f = Array.isArray(c.faq) ? c.faq : DEFAULT_FAQ; const sp = Array.isArray(c.speakers) ? c.speakers : []; const { logos: lg0, ...st } = c.settings || {}; const lg = Array.isArray(lg0) ? lg0 : DEFAULT_LOGOS; setImages(c.images || {}); setSettings(st); setFaq(f); setSpeakers(sp); setLogos(lg); setSaved(JSON.stringify({ i: c.images || {}, s: st, f, sp, lg })); })
       .catch(() => setErr('Cannot reach the content server. Start it with "npm run dev".'));
   }, []);
   const keep = (t) => { setToken(t); try { sessionStorage.setItem('lp-admin', t); } catch { /* private mode */ } };
@@ -189,13 +247,13 @@ export default function Admin() {
     if (token) api('/api/logout', { method: 'POST' }, token).catch(() => {});
     keep('');
   };
-  const dirty = useMemo(() => saved && JSON.stringify({ i: images, s: settings, f: faq, sp: speakers }) !== saved, [images, settings, faq, speakers, saved]);
+  const dirty = useMemo(() => saved && JSON.stringify({ i: images, s: settings, f: faq, sp: speakers, lg: logos }) !== saved, [images, settings, faq, speakers, logos, saved]);
 
   const save = async () => {
     setStatus('Saving…'); setErr('');
     try {
-      await api('/api/content', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ images, settings, faq, speakers }) }, token);
-      setSaved(JSON.stringify({ i: images, s: settings, f: faq, sp: speakers }));
+      await api('/api/content', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ images, settings, faq, speakers, logos }) }, token);
+      setSaved(JSON.stringify({ i: images, s: settings, f: faq, sp: speakers, lg: logos }));
       setStatus('Saved — reload the site to see it');
     } catch (x) {
       if (/signed in/i.test(x.message)) keep('');
@@ -214,6 +272,24 @@ export default function Admin() {
     </label>
   );
 
+  const imgTab = (section) => `photos-${section.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+  const custom = (slots) => slots.filter(([k]) => images[k] && images[k] !== DEFAULT_P[k]).length;
+  const NAV = [
+    ['Content', [
+      ['event', 'Event details'],
+      ['contact', 'Contact & social'],
+      ['faq', 'Questions (FAQ)', faq.length],
+      ['speakers', 'Speakers', speakers.filter((x) => x.name.trim()).length],
+      ['logos', 'Logos', logos.filter((l) => l.image).length],
+      ['privacy', 'Privacy policy'],
+    ]],
+    ['Photos, in page order', IMAGE_SLOTS.map(([section, slots]) => [imgTab(section), section, `${slots.length}`, custom(slots)])],
+  ];
+  const all = NAV.flatMap(([, items]) => items);
+  const active = all.some(([id]) => id === tab) ? tab : 'event';
+  const go = (id) => { setTab(id); history.replaceState(null, '', `#${id}`); window.scrollTo({ top: 0 }); };
+  const at = all.findIndex(([id]) => id === active);
+
   return (
     <main className="ad">
       <header className="ad-bar">
@@ -227,7 +303,22 @@ export default function Admin() {
       </header>
       {err && <p className="ad-err ad-err--bar" role="alert">{err}</p>}
       {!needsLogin && <p className="ad-warn">No password is set — anyone who knows this address can edit the site. Set <code>ADMIN_PASSWORD</code> in <code>.env</code> before the site goes live.</p>}
-      <aside className="ad-info">
+      <div className="ad-shell">
+      <nav className="ad-nav" aria-label="Admin sections">
+        {NAV.map(([group, items]) => (
+          <div key={group} className="ad-nav__group">
+            <p>{group}</p>
+            {items.map(([id, label, count, changed]) => (
+              <button key={id} type="button" className={id === active ? 'is-on' : ''} aria-current={id === active ? 'page' : undefined} onClick={() => go(id)}>
+                <span>{label}</span>
+                {changed ? <b title={`${changed} changed`}>{changed} custom</b> : count !== undefined && <i>{count}</i>}
+              </button>
+            ))}
+          </div>
+        ))}
+      </nav>
+      <div className="ad-main">
+      <aside className="ad-info" hidden={!active.startsWith('photos-')}>
         <b>Every upload is automatically converted, fitted and compressed.</b>
         <ol>
           <li><b>Any format</b> — upload JPG, PNG, WebP, AVIF, GIF, BMP, SVG, TIFF or <i>HEIC/HEIF straight from an iPhone</i>. Formats the browser can't open itself (HEIC, TIFF) are converted automatically first.</li>
@@ -238,7 +329,7 @@ export default function Admin() {
         <span>Pasted Unsplash links are already resized and compressed by Unsplash. Other pasted links are used as-is, so uploading is better.</span>
       </aside>
 
-      <section className="ad-sec">
+      <section className="ad-sec" hidden={active !== 'event'}>
         <h2>Event</h2>
         <div className="ad-fields">
           {setting('summitLabel', 'Line above the headline', 'Shown in the hero, e.g. "Entrepreneurship & Innovation Summit"')}
@@ -250,7 +341,7 @@ export default function Admin() {
         </div>
       </section>
 
-      <section className="ad-sec">
+      <section className="ad-sec" hidden={active !== 'contact'}>
         <h2>Contact &amp; social</h2>
         <div className="ad-fields">
           {setting('contactEmail', 'Contact email', 'Shown in the FAQ and footer', 'email')}
@@ -259,7 +350,7 @@ export default function Admin() {
         </div>
       </section>
 
-      <section className="ad-sec">
+      <section className="ad-sec" hidden={active !== 'faq'}>
         <h2>Questions (FAQ)</h2>
         <div className="ad-faq">
           {faq.map((f, i) => (
@@ -283,7 +374,7 @@ export default function Admin() {
         </div>
       </section>
 
-      <section className="ad-sec">
+      <section className="ad-sec" hidden={active !== 'speakers'}>
         <h2>Speakers</h2>
         <p className="ad-hint">{speakers.filter((x) => x.name.trim()).length
           ? <>The lineup shows on the site in this order{dirty ? <> — <b>press Save changes</b> to publish it</> : ' (live now)'}.</>
@@ -301,7 +392,29 @@ export default function Admin() {
         </div>
       </section>
 
-      <section className="ad-sec">
+      <section className="ad-sec" hidden={active !== 'logos'}>
+        <h2>Logos</h2>
+        <p className="ad-hint">The row near the end of the page, next to the Launchpad name. Upload any format — the logo keeps its own shape (no cropping) and is saved as a light WebP. Transparent PNG or SVG logos look best. Remove all to show only the Launchpad name.</p>
+        <label className="ad-field ad-field--wide">
+          <span>Line above the logos</span>
+          <input value={settings.marksCaption ?? ''} placeholder={DEFAULT_SETTINGS.marksCaption} onChange={(e) => setSettings((x) => ({ ...x, marksCaption: e.target.value }))} />
+          <em>Leave empty for the default: “{DEFAULT_SETTINGS.marksCaption}”</em>
+        </label>
+        <div className="ad-faq">
+          {logos.map((l, i) => (
+            <LogoCard key={i} logo={l} i={i} count={logos.length} token={token} onError={setErr}
+              onChange={(v) => setLogos((list) => list.map((x, j) => (j === i ? v : x)))}
+              onMove={(d) => setLogos((list) => { const n = [...list]; [n[i + d], n[i]] = [n[i], n[i + d]]; return n; })}
+              onRemove={() => setLogos((list) => list.filter((_, j) => j !== i))} />
+          ))}
+          <div className="ad-row">
+            <button type="button" className="ad-btn" disabled={logos.length >= 12} onClick={() => setLogos((list) => [...list, { name: '', image: '' }])}>Add logo</button>
+            <button type="button" className="ad-btn ad-btn--ghost" onClick={() => setLogos(DEFAULT_LOGOS)}>Restore defaults</button>
+          </div>
+        </div>
+      </section>
+
+      <section className="ad-sec" hidden={active !== 'privacy'}>
         <h2>Privacy policy</h2>
         <p className="ad-hint">Shown at <a href="/privacy" target="_blank" rel="noopener">/privacy</a> and linked in the footer. Leave empty to use the default, which describes what this website actually does — review it, and update it if you start collecting registrations on the site. Format: <code>## </code> for headings, <code>- </code> for bullets, a blank line between paragraphs, <code>{'{contact}'}</code> for the contact email.</p>
         <textarea className="ad-policy" rows={18} value={settings.privacyPolicy ?? ''} placeholder={DEFAULT_PRIVACY}
@@ -313,7 +426,7 @@ export default function Admin() {
       </section>
 
       {IMAGE_SLOTS.map(([section, slots]) => (
-        <section className="ad-sec" key={section}>
+        <section className="ad-sec" key={section} hidden={active !== imgTab(section)}>
           <h2>{section}</h2>
           <div className="ad-grid">
             {slots.map(([k, label, ratio, maxW]) => (
@@ -323,7 +436,13 @@ export default function Admin() {
           </div>
         </section>
       ))}
-      <p className="ad-foot">Upload any image format — including HEIC from iPhones and TIFF — up to 60 MB, or drop it on a picture. Everything is saved as an optimised WebP.</p>
+      <div className="ad-pager">
+        {at > 0 && <button type="button" className="ad-btn ad-btn--ghost" onClick={() => go(all[at - 1][0])}>← {all[at - 1][1]}</button>}
+        {at < all.length - 1 && <button type="button" className="ad-btn" onClick={() => go(all[at + 1][0])}>{all[at + 1][1]} →</button>}
+      </div>
+      <p className="ad-foot">Upload any image format — including HEIC from iPhones and TIFF — up to 60 MB, or drop it on a picture. Everything is saved as an optimised WebP. Changes in every section are kept until you press <b>Save changes</b>.</p>
+      </div>
+      </div>
     </main>
   );
 }

@@ -687,3 +687,10 @@ body { font-weight: 450; }
 .privacy__body a, .privacy__back a { color: var(--forest); text-decoration: underline; text-underline-offset: 4px; }
 .privacy__back { margin-top: 56px; font-size: 15px; }
 .foot__bottom a { text-decoration: underline; text-underline-offset: 3px; }
+
+/* logo row: any number of logos from the admin panel */
+.marks__row { display: flex; flex-wrap: wrap; }
+.marks__row > .mark { flex: 1 1 220px; height: auto; }
+.marks__row > .mark--word { flex: 1.4 1 300px; }
+.mark img { max-width: 100%; object-fit: contain; }
+@media (max-width: 860px) { .marks__row { flex-direction: column; } .marks__row > .mark { flex: none; } }

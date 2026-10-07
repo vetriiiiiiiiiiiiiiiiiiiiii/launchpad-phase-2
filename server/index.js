@@ -25,7 +25,7 @@ if (OPEN) {
 
 const SETTINGS = [
   'summitLabel', 'eventStart', 'registerUrl', 'doorsTime', 'venue', 'city',
-  'contactEmail', 'instagramUrl', 'linkedinUrl',
+  'contactEmail', 'instagramUrl', 'linkedinUrl', 'marksCaption',
 ];
 const IMAGE_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/avif': 'avif' };
 const IMAGE_SIGNATURES = {
@@ -161,7 +161,9 @@ app.get('/api/content', async (req, res, next) => {
     ]);
     res.json({
       images: Object.fromEntries(images.map(({ key, source }) => [key, mediaPath(source)])),
-      settings: event?.values || {},
+      settings: isRecord(event?.values) && Array.isArray(event.values.logos)
+        ? { ...event.values, logos: event.values.logos.map((l) => ({ ...l, image: mediaPath(l.image) })) }
+        : event?.values || {},
       ...(event?.faqConfigured ? { faq: faq.map(({ question: q, answer: a }) => ({ q, a })) } : {}),
       speakers: speakers.map(({ name, role, organisation, topic, photo }) => ({ name, role, organisation, topic, photo: mediaPath(photo) })),
     });
@@ -239,6 +241,19 @@ app.put('/api/content', auth, express.json({ limit: '256kb' }), async (req, res,
     if ('privacyPolicy' in body.settings) {
       if (typeof body.settings.privacyPolicy !== 'string') return res.status(400).json({ error: 'Invalid privacy policy' });
       settings.privacyPolicy = body.settings.privacyPolicy.replace(/\r\n/g, '\n').trim().slice(0, 20000);
+    }
+
+    // logos in the "built with purpose" row: optional; when sent, the list replaces the saved one
+    if (body.logos !== undefined) {
+      if (!Array.isArray(body.logos)) return res.status(400).json({ error: 'Logos must be a list' });
+      settings.logos = [];
+      for (const item of body.logos.slice(0, 12)) {
+        const name = String(item?.name || '').trim().slice(0, 80);
+        const image = String(item?.image || '').trim();
+        if (!image) continue;
+        if (!okImage(image) && !/^\/assets\/logos\/[\w.-]+$/.test(image)) return res.status(400).json({ error: `Not a usable logo for ${name || 'a logo'}` });
+        settings.logos.push({ name, image });
+      }
     }
 
     // speakers: optional for older admin clients; when sent, the list replaces the saved one

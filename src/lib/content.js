@@ -12,6 +12,7 @@ export const DEFAULT_SETTINGS = {
   contactEmail: '',
   instagramUrl: '',
   linkedinUrl: '',
+  marksCaption: 'An experience built with purpose.',
   privacyPolicy: '',      // empty = the default policy below
 };
 
@@ -55,7 +56,12 @@ export const DEFAULT_FAQ = [
   { q: 'How do I register?', a: 'Use “Be in the room” on this page. Registration details are shared there as soon as they open.' },
   { q: 'Where is it held?', a: 'The venue will be announced here soon.' },
 ];
-export const S = { ...DEFAULT_SETTINGS, faq: DEFAULT_FAQ, speakers: [] };
+/* the logo row near the end of the page */
+export const DEFAULT_LOGOS = [
+  { name: 'RS Foundation', image: '/assets/logos/rs-foundation.png' },
+  { name: 'SRM Organization', image: '/assets/logos/srm.png' },
+];
+export const S = { ...DEFAULT_SETTINGS, faq: DEFAULT_FAQ, speakers: [], logos: DEFAULT_LOGOS };
 
 export async function loadContent() {
   try {
@@ -70,6 +76,7 @@ export async function loadContent() {
     Object.entries(DERIVED).forEach(([k, base]) => { if (!data.images?.[k] && data.images?.[base]) P[k] = data.images[base]; });
     Object.entries(data.settings || {}).forEach(([k, v]) => { if (k in DEFAULT_SETTINGS && typeof v === 'string') S[k] = v; });
     if (Array.isArray(data.faq)) S.faq = data.faq;
+    if (Array.isArray(data.settings?.logos)) S.logos = data.settings.logos.filter((l) => l && l.image);
     if (Array.isArray(data.speakers)) S.speakers = data.speakers.filter((sp) => sp && sp.name);
   } catch { /* no server (static hosting): defaults stand */ }
 }
