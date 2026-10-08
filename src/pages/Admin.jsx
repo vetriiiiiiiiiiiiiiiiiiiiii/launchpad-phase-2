@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import '../styles/admin.css';
 import CropDialog, { fmt } from '../components/admin/CropDialog.jsx';
+import Tickets from '../components/admin/Tickets.jsx';
 import { ACCEPT, decodeAny } from '../lib/decodeImage.js';
 import { DEFAULT_P, DERIVED, IMAGE_SLOTS, IMG } from '../lib/images.js';
 import { DEFAULT_SETTINGS, DEFAULT_FAQ, DEFAULT_PRIVACY, DEFAULT_LOGOS } from '../lib/content.js';
@@ -276,6 +277,7 @@ export default function Admin() {
   const imgTab = (section) => `photos-${section.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
   const custom = (slots) => slots.filter(([k]) => images[k] && images[k] !== DEFAULT_P[k]).length;
   const NAV = [
+    ['Passes', [['tickets', 'Seat passes']]],
     ['Content', [
       ['event', 'Event details'],
       ['contact', 'Contact & social', contacts.filter((c) => c.name.trim()).length],
@@ -417,6 +419,11 @@ export default function Admin() {
             <button type="button" className="ad-btn" disabled={speakers.length >= 40} onClick={() => setSpeakers((l) => [...l, { name: '', role: '', organisation: '', topic: '', photo: '' }])}>Add speaker</button>
           </div>
         </div>
+      </section>
+
+      <section className="ad-sec" hidden={active !== 'tickets'}>
+        <h2>Seat passes</h2>
+        <Tickets api={api} token={token} settings={settings} defaults={DEFAULT_SETTINGS} onError={setErr} />
       </section>
 
       <section className="ad-sec" hidden={active !== 'logos'}>

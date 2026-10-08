@@ -376,6 +376,49 @@ app.get(['/api/media/:id', '/api/uploads/:id'], async (req, res, next) => {
   }
 });
 
+/* Seat tickets: 300 seats, rows A–O, seats 1–10 left of the aisle and 11–20 right of it */
+const SEAT = /^[A-O](?:[1-9]|1\d|20)$/;
+const ticketOut = ({ id, number, seat, name, year, dept, section, createdAt }) => ({ id, number, seat, name, year, dept, section, createdAt });
+
+app.get('/api/tickets', auth, async (req, res, next) => {
+  try {
+    res.set('Cache-Control', 'no-store');
+    const tickets = await prisma.ticket.findMany({ orderBy: { number: 'desc' } });
+    res.json({ tickets: tickets.map(ticketOut) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/tickets', auth, express.json({ limit: '4kb' }), async (req, res, next) => {
+  try {
+    const body = req.body || {};
+    const field = (k, max) => String(body[k] ?? '').replace(/\s+/g, ' ').trim().slice(0, max);
+    const data = { name: field('name', 80), year: field('year', 20), dept: field('dept', 60), section: field('section', 20), seat: field('seat', 4).toUpperCase() };
+    if (!data.name) return res.status(400).json({ error: 'Enter the attendee’s name' });
+    if (!data.year || !data.dept || !data.section) return res.status(400).json({ error: 'Enter year, department and section' });
+    if (!SEAT.test(data.seat)) return res.status(400).json({ error: 'Choose a seat' });
+    try {
+      const ticket = await prisma.ticket.create({ data });
+      res.status(201).json({ ticket: ticketOut(ticket) });
+    } catch (error) {
+      if (error?.code === 'P2002') return res.status(409).json({ error: `Seat ${data.seat} was just taken — choose another` });
+      throw error;
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete('/api/tickets/:id', auth, async (req, res, next) => {
+  try {
+    await prisma.ticket.deleteMany({ where: { id: String(req.params.id).slice(0, 40) } });
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.use('/api', (req, res) => res.status(404).json({ error: 'API endpoint not found' }));
 
 /* Keep serving existing local uploads not yet referenced by a database asset. */

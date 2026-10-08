@@ -56,3 +56,14 @@ model Speaker {
   sortOrder    Int      @unique
   updatedAt    DateTime @updatedAt
 }
+
+model Ticket {
+  id        String   @id @default(cuid())
+  number    Int      @unique @default(autoincrement())
+  seat      String   @unique @db.VarChar(4)
+  name      String   @db.VarChar(80)
+  year      String   @db.VarChar(20)
+  dept      String   @db.VarChar(60)
+  section   String   @db.VarChar(20)
+  createdAt DateTime @default(now())
+}
