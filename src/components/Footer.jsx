@@ -22,7 +22,7 @@ export default function Footer() {
         </nav>
         <nav className="foot__col" aria-label="More">
           <p>Launchpad</p>
-          <Link to="/launches">The launches</Link>
+          <A hash="#the-launches">The launches</A>
           <A hash="#invitation">Invitation</A>
           <A hash="#faq">Questions</A>
           {reg.startsWith('http') ? <a href={reg} target="_blank" rel="noopener">Register ↗</a> : <A hash="#be-in-the-room">Be in the room</A>}

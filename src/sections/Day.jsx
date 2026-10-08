@@ -29,9 +29,7 @@ const MOMENTS = [
   { act: 'Discover', time: 'Hands-on', title: 'The Workshop', text: 'Real problems, solved together.', img: P.dayWorkshop, alt: 'A teacher working through a problem on a green chalkboard.' },
   { act: 'Discover', time: 'Pitching', title: 'The Pitch', text: 'Ideas, said out loud.', img: P.dayPitch, alt: 'A student pitching from a podium.' },
   { act: 'Discover', time: 'Exhibition', title: 'Discovery', text: 'Ideas, products and people meet.', img: P.dayDiscovery, alt: 'Inside a glasshouse full of green.' },
-  { act: 'Launch', time: 'The first launch', title: 'Product One', text: 'Under wraps until the moment.', veil: 'dark' },
-  { act: 'Launch', time: 'The second launch', title: 'Product Two', text: 'Under wraps until the moment.', veil: 'light' },
-  { act: 'Launch', time: 'The third launch', title: 'Product Three', text: 'Under wraps until the moment.', veil: 'spot' },
+  { act: 'Launch', time: 'On stage', title: 'Three Launches', text: 'Three products, revealed live — under wraps until the moment.', veil: 'spot' },
   { act: 'Connect', time: 'After', title: 'Connection', text: 'People meet.', img: P.dayConnection, alt: 'A crowded café under hanging lights, everyone mid-conversation.' },
   { act: 'Leave different', time: 'Evening', title: 'Closing', text: 'The room leaves with something new.', img: P.dayClosing, alt: 'A library opening onto a forest.' },
 ];
@@ -58,7 +56,7 @@ export default function Day() {
     const k = tDay < 0.5 ? tDay * 2 : (tDay - 0.5) * 2, [a, b2] = tDay < 0.5 ? [stops[0], stops[1]] : [stops[1], stops[2]];
     return `rgb(${a.map((v, i) => Math.round(v + (b2[i] - v) * k)).join(',')})`;
   })();
-  const clock = ['Morning', 'Morning', 'Late morning', 'Midday', 'Midday', 'Afternoon', 'Afternoon', 'Late afternoon', 'Early evening', 'Evening', 'Evening'][active];
+  const clock = ['Morning', 'Morning', 'Late morning', 'Midday', 'Midday', 'Afternoon', 'Late afternoon', 'Evening', 'Evening'][active];
 
   return (
     <section className="day is-light" data-tone="light" id="the-day" data-folio="The Day" style={{ background: sky }}>
@@ -80,7 +78,7 @@ export default function Day() {
                 <circle r="14" className="day__halo" /><circle r="5.5" />
               </g>
             </svg>
-            <p className="day__clock"><span>{clock}</span><em>{NUM[active]} / XI</em></p>
+            <p className="day__clock"><span>{clock}</span><em>{NUM[active]} / {NUM[MOMENTS.length - 1]}</em></p>
           </div>
           <div className="day__frame">
             {MOMENTS.map((m, i) => (m.veil

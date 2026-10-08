@@ -63,7 +63,6 @@ export const DERIVED = {
   idxRoom: 'cafeMonstera',
   expoBooth: 'glasshouse',
   expoFloor: 'forestLibrary',
-  lpRoom02: 'whiteRibs',
 };
 Object.entries(DERIVED).forEach(([k, base]) => { DEFAULT_P[k] = DEFAULT_P[base]; });
 
@@ -92,8 +91,8 @@ export const IMAGE_SLOTS = [
     ['dayWorkshop', 'IV — The Workshop', [4, 3], 1600],
     ['dayPitch', 'V — The Pitch', [4, 3], 1600],
     ['dayDiscovery', 'VI — Discovery', [4, 3], 1600],
-    ['dayConnection', 'X — Connection', [4, 3], 1600],
-    ['dayClosing', 'XI — Closing', [4, 3], 1600]]],
+    ['dayConnection', 'VIII — Connection', [4, 3], 1600],
+    ['dayClosing', 'IX — Closing', [4, 3], 1600]]],
   ['Statement', [
     ['greenRoom', 'Statement photograph', [4, 5], 1600]]],
   ['Expert talks', [
@@ -126,7 +125,4 @@ export const IMAGE_SLOTS = [
     ['cafeMonstera', 'Main photograph', [1, 1], 1600],
     ['cafePlants', 'Second photograph', [4, 3], 1200],
     ['cafeChairs', 'Third photograph', [3, 4], 1200]]],
-  ['Launches', [
-    ['whiteRibs', 'Home page — launch 02 room backdrop', [16, 9], 2400],
-    ['lpRoom02', 'Launches page — product 02 room backdrop', [16, 9], 2400]]],
 ];

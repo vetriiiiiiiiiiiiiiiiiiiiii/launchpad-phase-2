@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { loadContent } from './lib/content.js';
 import './styles/site.css';
-import './styles/launches.css';
 import './styles/react.css';
 
 // content first, then the app: sections read the saved photos as they load

@@ -36,7 +36,7 @@ export default function Nav() {
           : <Link className="nav__mark" to="/" aria-label="Launchpad — home"><span className="wordmark">Launchpad</span></Link>}
         <nav className="nav__links" aria-label="Primary">
           <A hash="#the-day">The Day</A>
-          <Link to="/launches" aria-current={pathname === '/launches' ? 'page' : undefined}>The Launches</Link>
+          <A hash="#the-launches">The Launches</A>
           <A hash="#the-experience">The Experience</A>
           <A hash="#about">About</A>
         </nav>
@@ -49,7 +49,7 @@ export default function Nav() {
       <div className="sheet" id="sheet" aria-hidden={!open}>
         <nav aria-label="Mobile" onClick={() => setOpen(false)}>
           <A hash="#the-day"><em>i.</em> The Day</A>
-          <Link to="/launches"><em>ii.</em> The Launches</Link>
+          <A hash="#the-launches"><em>ii.</em> The Launches</A>
           <A hash="#the-experience"><em>iii.</em> The Experience</A>
           <A hash="#about"><em>iv.</em> About</A>
         </nav>

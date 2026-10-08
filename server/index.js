@@ -385,9 +385,7 @@ if (fs.existsSync(UPLOADS)) {
 
 const dist = path.join(root, 'dist');
 if (fs.existsSync(dist)) {
-  app.get('/launches', (req, res, next) => {
-    res.sendFile(path.join(dist, 'launches', 'index.html'), (error) => { if (error) next(error); });
-  });
+  app.get('/launches', (req, res) => res.redirect(301, '/#the-launches'));
   app.get('/privacy', (req, res, next) => {
     res.sendFile(path.join(dist, 'privacy', 'index.html'), (error) => { if (error) next(error); });
   });

@@ -53,39 +53,3 @@ export function useEventSeo() {
 
   usePageSeo({ title, description, path: '/', image: IMG(P.heroTalk, 1200), schema });
 }
-
-const launchesTitle = 'Three Product Launches Revealed Live | Launchpad 2026';
-const launchesDescription = 'Discover the three products launching live at Launchpad on 26 October 2026, alongside expert talks, pitching and hands-on problem solving.';
-
-export function useLaunchesSeo() {
-  const schema = useCallback((url) => {
-    const home = new URL('/', url).href;
-    return {
-      '@context': 'https://schema.org',
-      '@graph': [
-        { '@type': 'WebSite', '@id': `${home}#website`, name: 'Launchpad', url: home, inLanguage: 'en' },
-        {
-          '@type': 'CollectionPage',
-          name: launchesTitle,
-          description: launchesDescription,
-          url,
-          inLanguage: 'en',
-          mainEntity: {
-            '@type': 'ItemList',
-            itemListElement: ['The First Reveal', 'The Second Reveal', 'The Final Reveal'].map((name, index) => ({
-              '@type': 'ListItem', position: index + 1, name, url: `${url}#product-0${index + 1}`,
-            })),
-          },
-          breadcrumb: {
-            '@type': 'BreadcrumbList',
-            itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Launchpad', item: home },
-              { '@type': 'ListItem', position: 2, name: 'The Launches', item: url },
-            ],
-          },
-        },
-      ],
-    };
-  }, []);
-  usePageSeo({ title: launchesTitle, description: launchesDescription, path: '/launches', image: DEFAULT_SEO_IMAGE, schema });
-}

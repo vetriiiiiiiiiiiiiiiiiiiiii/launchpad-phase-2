@@ -729,3 +729,6 @@ body { font-weight: 450; }
   .foot__top { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .foot__top > .foot__col:last-child { grid-column: 1 / -1; }
 }
+
+/* launches: mentioned only, so the section closes on its own */
+.launches-intro { padding-bottom: clamp(140px, 22vh, 260px); }

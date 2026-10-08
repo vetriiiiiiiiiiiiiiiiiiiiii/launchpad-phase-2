@@ -30,12 +30,6 @@ const home = {
   description: 'Entrepreneurship & Innovation Summit on 26 October 2026: expert talks, live pitching, hands-on problem solving and three product launches.',
   path: '/',
 };
-const launches = {
-  title: 'Three Product Launches Revealed Live | Launchpad 2026',
-  description: 'Discover the three products launching live at Launchpad on 26 October 2026, alongside expert talks, pitching and hands-on problem solving.',
-  path: '/launches',
-};
-
 const privacy = {
   title: 'Privacy Policy | Launchpad 2026',
   description: 'How the Launchpad website handles information: what it collects, browser storage, third-party services and how to contact us.',
@@ -94,7 +88,6 @@ function makePage(template, page, schema) {
 }
 
 const homeUrl = origin ? new URL('/', `${origin}/`).href : null;
-const launchesUrl = origin ? new URL('/launches', `${origin}/`).href : null;
 const website = {
   '@type': 'WebSite', name: 'Launchpad', inLanguage: 'en',
   ...(homeUrl ? { '@id': `${homeUrl}#website`, url: homeUrl } : {}),
@@ -112,37 +105,9 @@ const homeSchema = origin ? {
     },
   ],
 } : null;
-const launchSchema = origin ? {
-  '@context': 'https://schema.org',
-  '@graph': [
-    website,
-    {
-      '@type': 'CollectionPage',
-      name: launches.title,
-      description: launches.description,
-      url: launchesUrl,
-      inLanguage: 'en',
-      mainEntity: {
-        '@type': 'ItemList',
-        itemListElement: ['The First Reveal', 'The Second Reveal', 'The Final Reveal'].map((name, index) => ({
-          '@type': 'ListItem', position: index + 1, name, url: `${launchesUrl}#product-0${index + 1}`,
-        })),
-      },
-      breadcrumb: {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Launchpad', item: homeUrl },
-          { '@type': 'ListItem', position: 2, name: 'The Launches', item: launchesUrl },
-        ],
-      },
-    },
-  ],
-} : null;
 
 const template = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
 fs.writeFileSync(path.join(dist, 'index.html'), makePage(template, home, homeSchema));
-fs.mkdirSync(path.join(dist, 'launches'), { recursive: true });
-fs.writeFileSync(path.join(dist, 'launches', 'index.html'), makePage(template, launches, launchSchema));
 fs.mkdirSync(path.join(dist, 'privacy'), { recursive: true });
 fs.writeFileSync(path.join(dist, 'privacy', 'index.html'), makePage(template, privacy, null));
 
@@ -172,7 +137,7 @@ const robots = ['User-agent: *', 'Allow: /', ...(origin ? [`Sitemap: ${origin}/s
 fs.writeFileSync(path.join(dist, 'robots.txt'), robots);
 const sitemapFile = path.join(dist, 'sitemap.xml');
 if (origin) {
-  const urls = ['/', '/launches', '/privacy'].map((route) => `  <url><loc>${escapeXml(new URL(route, `${origin}/`).href)}</loc></url>`).join('\n');
+  const urls = ['/', '/privacy'].map((route) => `  <url><loc>${escapeXml(new URL(route, `${origin}/`).href)}</loc></url>`).join('\n');
   fs.writeFileSync(sitemapFile, `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
 } else if (fs.existsSync(sitemapFile)) {
   fs.rmSync(sitemapFile);
