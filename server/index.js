@@ -376,8 +376,8 @@ app.get(['/api/media/:id', '/api/uploads/:id'], async (req, res, next) => {
   }
 });
 
-/* Seat tickets: 300 seats, rows A–O, seats 1–10 left of the aisle and 11–20 right of it */
-const SEAT = /^[A-O](?:[1-9]|1\d|20)$/;
+/* Seat tickets: 300 seats, B1–B150 left of the aisle and G1–G150 right of it */
+const SEAT = /^[BG](?:[1-9]\d?|1[0-4]\d|150)$/;
 const ticketOut = ({ id, number, seat, name, year, dept, section, createdAt }) => ({ id, number, seat, name, year, dept, section, createdAt });
 
 app.get('/api/tickets', auth, async (req, res, next) => {

@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { drawPass, downloadPass, loadPassFonts, ticketNo } from '../../lib/boardingPass.js';
 
 /* Seat passes: fill in the attendee, pick a seat on the map, issue and download.
-   300 seats — rows A–O, 10 seats each side of a centre aisle (150 | 150). */
-const ROWS = 'ABCDEFGHIJKLMNO'.split('');
-const LEFT = Array.from({ length: 10 }, (_, i) => i + 1);
-const RIGHT = Array.from({ length: 10 }, (_, i) => i + 11);
+   300 seats — B1–B150 left of the centre aisle, G1–G150 right of it,
+   15 rows of 10 on each side, numbered from the stage. */
+const ROWS = Array.from({ length: 15 }, (_, i) => i + 1);
+const COLS = Array.from({ length: 10 }, (_, i) => i + 1);
 const EMPTY = { name: '', year: '', dept: '', section: '' };
 
 export default function Tickets({ api, token, settings, defaults, onError }) {
@@ -64,13 +64,13 @@ export default function Tickets({ api, token, settings, defaults, onError }) {
   };
 
   const list = (tickets || []).filter((t) => !q.trim() || `${t.name} ${t.seat} ${t.dept} ${t.year} ${t.section} ${ticketNo(t.number)}`.toLowerCase().includes(q.trim().toLowerCase()));
-  const seatBtn = (row, n) => {
-    const id = `${row}${n}`, who = taken.get(id);
+  const seatBtn = (block, n) => {
+    const id = `${block}${n}`, who = taken.get(id);
     const cls = who ? 'is-taken' : id === seat ? 'is-on' : '';
     return (
       <button key={id} type="button" className={`ad-seat ${cls}`} disabled={!!who}
         title={who ? `${id} — ${who.name}` : `Seat ${id}`} aria-label={who ? `Seat ${id}, taken by ${who.name}` : `Seat ${id}`}
-        aria-pressed={id === seat} onClick={() => { setSeat(id === seat ? '' : id); setDone(''); }}>{n}</button>
+        aria-pressed={id === seat} onClick={() => { setSeat(id === seat ? '' : id); setDone(''); }}>{id}</button>
     );
   };
 
@@ -90,12 +90,19 @@ export default function Tickets({ api, token, settings, defaults, onError }) {
           <div className="ad-hall__stage">Stage</div>
           <div className="ad-hall__scroll">
             <div className="ad-hall__grid" role="group" aria-label="Seat map">
+              <div className="ad-hall__row ad-hall__row--head" aria-hidden="true">
+                <span className="ad-hall__r" />
+                <div className="ad-hall__block"><b>B</b> block · B1–B150</div>
+                <span className="ad-hall__aisle" />
+                <div className="ad-hall__block"><b>G</b> block · G1–G150</div>
+                <span className="ad-hall__r" />
+              </div>
               {ROWS.map((r) => (
                 <div className="ad-hall__row" key={r}>
                   <span className="ad-hall__r">{r}</span>
-                  <div className="ad-hall__block">{LEFT.map((n) => seatBtn(r, n))}</div>
+                  <div className="ad-hall__block">{COLS.map((c) => seatBtn('B', (r - 1) * 10 + c))}</div>
                   <span className="ad-hall__aisle" aria-hidden="true" />
-                  <div className="ad-hall__block">{RIGHT.map((n) => seatBtn(r, n))}</div>
+                  <div className="ad-hall__block">{COLS.map((c) => seatBtn('G', (r - 1) * 10 + c))}</div>
                   <span className="ad-hall__r">{r}</span>
                 </div>
               ))}

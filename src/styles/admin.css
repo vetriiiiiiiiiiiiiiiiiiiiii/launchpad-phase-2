@@ -120,10 +120,10 @@
 .ad-hall__scroll { overflow-x: auto; padding-bottom: 6px; }
 .ad-hall__grid { display: grid; gap: 7px; width: max-content; margin: 0 auto; }
 .ad-hall__row { display: flex; align-items: center; gap: 10px; }
-.ad-hall__r { width: 16px; text-align: center; font: 600 12px/1 var(--sans); color: var(--ink-3); }
+.ad-hall__r { width: 20px; text-align: center; font: 600 12px/1 var(--sans); color: var(--ink-3); }
 .ad-hall__block { display: flex; gap: 5px; }
 .ad-hall__aisle { width: 44px; align-self: stretch; border-left: 1px dashed rgba(2,59,44,.15); border-right: 1px dashed rgba(2,59,44,.15); }
-.ad-seat { width: 28px; height: 26px; padding: 0; border-radius: 6px 6px 4px 4px; border: 1px solid rgba(8,122,86,.45); background: #fff; color: var(--emerald); font: 600 10px/1 var(--sans); display: inline-grid; place-items: center; transition: background .15s, color .15s, transform .15s; }
+.ad-seat { width: 38px; height: 28px; padding: 0; border-radius: 6px 6px 4px 4px; border: 1px solid rgba(8,122,86,.45); background: #fff; color: var(--emerald); font: 600 10px/1 var(--sans); display: inline-grid; place-items: center; transition: background .15s, color .15s, transform .15s; }
 .ad .ad-seat:hover:not(:disabled) { background: var(--pale); transform: translateY(-1px); }
 .ad-seat.is-on { background: var(--emerald-2); border-color: var(--emerald-2); color: #fff; }
 .ad .ad-seat.is-on:hover { background: var(--emerald); }
@@ -142,3 +142,7 @@
 .ad-tk__table tr:last-child td { border-bottom: 0; }
 .ad-tk__act { display: flex; gap: 8px; justify-content: flex-end; }
 @media (max-width: 860px) { .ad-tk__fields { grid-template-columns: 1fr 1fr; } }
+.ad-hall__row--head .ad-hall__block { justify-content: center; font: 500 12px/1 var(--sans); letter-spacing: .08em; color: var(--ink-3); padding-bottom: 4px; }
+.ad-hall__row--head .ad-hall__block b { font: 400 22px/1 var(--serif); color: var(--emerald); margin-right: 6px; }
+.ad-hall__row--head .ad-hall__aisle { border: 0; }
+.ad-hall__row--head .ad-hall__block { width: calc(10 * 38px + 9 * 5px); align-items: baseline; }

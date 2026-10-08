@@ -8,9 +8,10 @@ const C = {
 };
 const SERIF = 'Fraunces, Georgia, serif', SANS = 'Manrope, system-ui, sans-serif';
 
-export const seatRow = (seat) => seat?.[0] || '';
+/* seats are B1–B150 (left of the aisle) and G1–G150 (right), 10 to a row from the stage */
+export const seatBlock = (seat) => seat?.[0] || '';
 export const seatNo = (seat) => +(seat || '').slice(1) || 0;
-export const seatBlock = (seat) => (seatNo(seat) <= 10 ? 'Left' : 'Right');
+export const seatRow = (seat) => Math.ceil(seatNo(seat) / 10);
 export const ticketNo = (n) => (n ? `LP26-${String(n).padStart(4, '0')}` : 'LP26-····');
 
 export async function loadPassFonts() {
@@ -124,7 +125,7 @@ export function drawPass(canvas, t, ev) {
   g.fillStyle = C.pale; g.beginPath(); g.roundRect(1150, 186, 262, 168, 22); g.fill();
   label(g, 'Seat', 1176, 228, C.emerald);
   g.fillStyle = C.forest; g.font = `400 112px ${SERIF}`; g.textAlign = 'left';
-  g.fillText(t.seat || '—', 1172, 330);
+  g.fillText(fit(g, t.seat || '—', (s) => `400 ${s}px ${SERIF}`, 112, 216, 60), 1172, 330);
 
   // passenger
   g.strokeStyle = 'rgba(2,59,44,.12)'; g.lineWidth = 2;
@@ -152,9 +153,10 @@ export function drawPass(canvas, t, ev) {
   const sx = STUB + 64;
   g.font = `700 18px ${SANS}`; g.fillStyle = C.mint; spaced(g, 'LAUNCHPAD · 2026', sx, 76, 4.5);
   label(g, 'Seat', sx, 168, C.sageL);
-  g.fillStyle = C.paper; g.font = `400 168px ${SERIF}`; g.textAlign = 'left'; g.fillText(t.seat || '—', sx - 6, 318);
+  g.fillStyle = C.paper; g.textAlign = 'left';
+  g.fillText(fit(g, t.seat || '—', (s) => `400 ${s}px ${SERIF}`, 168, W - sx - 64, 80), sx - 6, 318);
   g.font = `600 22px ${SANS}`; g.fillStyle = C.mint;
-  spaced(g, t.seat ? `ROW ${seatRow(t.seat)} · ${seatBlock(t.seat).toUpperCase()} BLOCK` : 'CHOOSE A SEAT', sx, 362, 2.5);
+  spaced(g, t.seat ? `${seatBlock(t.seat)} BLOCK · ROW ${seatRow(t.seat)}` : 'CHOOSE A SEAT', sx, 362, 2.5);
   g.fillStyle = C.paper; g.textAlign = 'left';
   g.fillText(fit(g, t.name || 'Name', (s) => `500 ${s}px ${SANS}`, 32, W - sx - 64, 18), sx, 432);
   g.font = `500 22px ${SANS}`; g.fillStyle = C.sageL;
