@@ -55,7 +55,7 @@ export default function Footer() {
       <div className="foot__bottom">
         <span>© 2026 Launchpad · <Link to="/privacy">Privacy policy</Link></span>
         <span>One day · Three launches · Where ideas become real</span>
-        {home ? <a href="#top">Back to the top ↑</a> : <Link to="/">Back to Launchpad ↑</Link>}
+        <span>Crafted by <a href="https://lumiodigital.store" target="_blank" rel="noopener">Lumio Digital</a></span>
       </div>
     </footer>
   );
