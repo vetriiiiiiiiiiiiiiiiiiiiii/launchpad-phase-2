@@ -4,7 +4,7 @@ import CropDialog, { fmt } from '../components/admin/CropDialog.jsx';
 import Tickets from '../components/admin/Tickets.jsx';
 import { ACCEPT, decodeAny } from '../lib/decodeImage.js';
 import { DEFAULT_P, DERIVED, IMAGE_SLOTS, IMG } from '../lib/images.js';
-import { DEFAULT_SETTINGS, DEFAULT_FAQ, DEFAULT_PRIVACY, DEFAULT_LOGOS } from '../lib/content.js';
+import { DEFAULT_SETTINGS, DEFAULT_FAQ, DEFAULT_PRIVACY, DEFAULT_LOGOS, DEFAULT_PROGRAMME } from '../lib/content.js';
 
 /* /asdfghjkl — change every photograph and the key event settings.
    Saved content is served by the content server and applies on next load. */
@@ -218,6 +218,7 @@ export default function Admin() {
   const [speakers, setSpeakers] = useState([]);
   const [logos, setLogos] = useState(DEFAULT_LOGOS);
   const [contacts, setContacts] = useState([]);
+  const [programme, setProgramme] = useState(DEFAULT_PROGRAMME);
   const [tab, setTab] = useState(() => decodeURIComponent(location.hash.slice(1)) || 'event');
   const [saved, setSaved] = useState('');
   const [status, setStatus] = useState('');
@@ -241,7 +242,7 @@ export default function Admin() {
   }, []);
   useEffect(() => { api('/api/auth').then((a) => setNeedsLogin(!!a.required)).catch(() => setNeedsLogin(true)); }, []);
   useEffect(() => {
-    api('/api/content').then((c) => { const f = Array.isArray(c.faq) ? c.faq : DEFAULT_FAQ; const sp = Array.isArray(c.speakers) ? c.speakers : []; const { logos: lg0, contacts: ct0, ...st } = c.settings || {}; const lg = Array.isArray(lg0) ? lg0 : DEFAULT_LOGOS; const ct = Array.isArray(ct0) ? ct0 : []; setImages(c.images || {}); setSettings(st); setFaq(f); setSpeakers(sp); setLogos(lg); setContacts(ct); setSaved(JSON.stringify({ i: c.images || {}, s: st, f, sp, lg, ct })); })
+    api('/api/content').then((c) => { const f = Array.isArray(c.faq) ? c.faq : DEFAULT_FAQ; const sp = Array.isArray(c.speakers) ? c.speakers : []; const { logos: lg0, contacts: ct0, programme: pg0, ...st } = c.settings || {}; const pg = Array.isArray(pg0) && pg0.length ? pg0 : DEFAULT_PROGRAMME; const lg = Array.isArray(lg0) ? lg0 : DEFAULT_LOGOS; const ct = Array.isArray(ct0) ? ct0 : []; setImages(c.images || {}); setSettings(st); setFaq(f); setSpeakers(sp); setLogos(lg); setContacts(ct); setProgramme(pg); setSaved(JSON.stringify({ i: c.images || {}, s: st, f, sp, lg, ct, pg })); })
       .catch(() => setErr('Cannot reach the content server. Start it with "npm run dev".'));
   }, []);
   const keep = (t) => { setToken(t); try { sessionStorage.setItem('lp-admin', t); } catch { /* private mode */ } };
@@ -249,13 +250,13 @@ export default function Admin() {
     if (token) api('/api/logout', { method: 'POST' }, token).catch(() => {});
     keep('');
   };
-  const dirty = useMemo(() => saved && JSON.stringify({ i: images, s: settings, f: faq, sp: speakers, lg: logos, ct: contacts }) !== saved, [images, settings, faq, speakers, logos, contacts, saved]);
+  const dirty = useMemo(() => saved && JSON.stringify({ i: images, s: settings, f: faq, sp: speakers, lg: logos, ct: contacts, pg: programme }) !== saved, [images, settings, faq, speakers, logos, contacts, programme, saved]);
 
   const save = async () => {
     setStatus('Saving…'); setErr('');
     try {
-      await api('/api/content', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ images, settings, faq, speakers, logos, contacts }) }, token);
-      setSaved(JSON.stringify({ i: images, s: settings, f: faq, sp: speakers, lg: logos, ct: contacts }));
+      await api('/api/content', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ images, settings, faq, speakers, logos, contacts, programme }) }, token);
+      setSaved(JSON.stringify({ i: images, s: settings, f: faq, sp: speakers, lg: logos, ct: contacts, pg: programme }));
       setStatus('Saved — reload the site to see it');
     } catch (x) {
       if (/signed in/i.test(x.message)) keep('');
@@ -280,6 +281,7 @@ export default function Admin() {
     ['Passes', [['tickets', 'Seat passes']]],
     ['Content', [
       ['event', 'Event details'],
+      ['programme', 'Programme', programme.length],
       ['contact', 'Contact & social', contacts.filter((c) => c.name.trim()).length],
       ['faq', 'Questions (FAQ)', faq.length],
       ['speakers', 'Speakers', speakers.filter((x) => x.name.trim()).length],
@@ -335,8 +337,8 @@ export default function Admin() {
       <section className="ad-sec" hidden={active !== 'event'}>
         <h2>Event</h2>
         <div className="ad-fields">
-          {setting('summitLabel', 'Line above the headline', 'Shown in the hero, e.g. "Entrepreneurship & Innovation Summit"')}
-          {setting('eventStart', 'Doors open (countdown target)', 'ISO date & time with offset, e.g. 2026-10-26T09:00:00+05:30')}
+          {setting('summitLabel', 'Line above the headline', 'Shown in the hero, e.g. "Entrepreneurs & Startup Summit"')}
+          {setting('eventStart', 'Doors open (countdown target)', 'ISO date & time with offset, e.g. 2026-10-28T09:30:00+05:30')}
           {setting('registerUrl', 'Registration link', 'All “Be in the room” buttons and “Enter Launchpad” open this link. Leave blank to scroll to the invitation section.', 'url')}
           {setting('doorsTime', 'Doors open (shown)', 'As visitors read it, e.g. 9:00 AM. Empty shows "To be announced"')}
           {setting('venue', 'Venue', 'e.g. Main Auditorium, SRM Campus. Empty shows "To be announced"')}
@@ -424,6 +426,34 @@ export default function Admin() {
       <section className="ad-sec" hidden={active !== 'tickets'}>
         <h2>Seat passes</h2>
         <Tickets api={api} token={token} settings={settings} defaults={DEFAULT_SETTINGS} onError={setErr} />
+      </section>
+
+      <section className="ad-sec" hidden={active !== 'programme'}>
+        <h2>Programme</h2>
+        <p className="ad-hint">The timetable shown in the Programme section of the site, in this order. Each row needs a time (e.g. <i>9:30 – 10:00 AM</i>) and a title. The first time also appears in the key facts under “Doors open”.</p>
+        <div className="ad-faq">
+          {programme.map((r, i) => {
+            const set = (k) => (e) => setProgramme((l) => l.map((x, j) => (j === i ? { ...x, [k]: e.target.value } : x)));
+            return (
+              <div className="ad-faq__item" key={i}>
+                <span className="ad-faq__n">{String(i + 1).padStart(2, '0')}</span>
+                <div className="ad-prog">
+                  <input value={r.time} placeholder="Time, e.g. 9:30 – 10:00 AM" onChange={set('time')} maxLength={40} />
+                  <input value={r.title} placeholder="What happens, e.g. Speaker Session 1" onChange={set('title')} maxLength={120} />
+                </div>
+                <div className="ad-faq__tools">
+                  <button type="button" className="ad-btn ad-btn--ghost" disabled={i === 0} onClick={() => setProgramme((l) => { const n = [...l]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; return n; })} aria-label="Move up">↑</button>
+                  <button type="button" className="ad-btn ad-btn--ghost" disabled={i === programme.length - 1} onClick={() => setProgramme((l) => { const n = [...l]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; return n; })} aria-label="Move down">↓</button>
+                  <button type="button" className="ad-btn ad-btn--ghost" onClick={() => setProgramme((l) => l.filter((_, j) => j !== i))}>Remove</button>
+                </div>
+              </div>
+            );
+          })}
+          <div className="ad-row">
+            <button type="button" className="ad-btn" disabled={programme.length >= 20} onClick={() => setProgramme((l) => [...l, { time: '', title: '' }])}>Add row</button>
+            <button type="button" className="ad-btn ad-btn--ghost" onClick={() => setProgramme(DEFAULT_PROGRAMME)}>Restore defaults</button>
+          </div>
+        </div>
       </section>
 
       <section className="ad-sec" hidden={active !== 'logos'}>

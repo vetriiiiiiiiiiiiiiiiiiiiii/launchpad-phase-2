@@ -11,11 +11,12 @@ export default function Footer() {
         <div className="foot__brand">
           <p className="foot__word">Launchpad</p>
           <p className="foot__tag">{S.summitLabel}</p>
-          <p className="foot__when">26 October 2026 · {placeLine()}</p>
+          <p className="foot__when">28 October 2026 · {placeLine()}</p>
         </div>
         <nav className="foot__col" aria-label="Footer">
           <p>The day</p>
-          <A hash="#the-day">Programme</A>
+          <A hash="#programme">Programme</A>
+          <A hash="#the-day">The day</A>
           <A hash="#the-talks">Expert talks</A>
           <A hash="#the-workshop">Workshop</A>
           <A hash="#the-pitch">Pitching</A>

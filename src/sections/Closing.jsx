@@ -13,7 +13,7 @@ export function Marks() {
       <div className="marks__row" style={{ '--marks': S.logos.length }}>
         <figure className="mark mark--word" data-reveal>
           <p className="mark__name">Launchpad</p>
-          <p className="mark__date">26 October 2026</p>
+          <p className="mark__date">28 October 2026</p>
         </figure>
         {S.logos.map((l, i) => (
           <figure className="mark" data-reveal key={i}>
@@ -60,10 +60,10 @@ export function Finale() {
         <p className="finale__line finale__line--1">You came<br /><em>for the launch.</em></p>
         <p className="finale__line finale__line--2">You leave<br /><em>with what's next.</em></p>
         <div className="finale__end">
-          <div className="count" role="timer" aria-label="Time until 26 October 2026">
+          <div className="count" role="timer" aria-label="Time until 28 October 2026">
             {[[d, 'Days'], [h, 'Hours'], [m, 'Minutes'], [s, 'Seconds']].map(([v, l]) => <div key={l}><b>{v}</b><span>{l}</span></div>)}
           </div>
-          <p className="finale__date">26 October 2026</p>
+          <p className="finale__date">28 October 2026</p>
           <p className="finale__word">Launchpad</p>
           <RegistrationButton big magnetic>Be in the room</RegistrationButton>
         </div>

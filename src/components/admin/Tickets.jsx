@@ -22,7 +22,7 @@ export default function Tickets({ api, token, settings, defaults, onError }) {
     const v = (k) => (settings[k] ?? '').trim() || defaults[k] || '';
     return {
       summit: v('summitLabel'),
-      date: '26 October 2026',
+      date: '28 October 2026',
       doors: v('doorsTime') || 'To be announced',
       venue: [v('venue'), v('city')].filter(Boolean).join(', ') || 'To be announced',
     };

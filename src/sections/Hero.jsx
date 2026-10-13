@@ -208,14 +208,14 @@ export default function Hero() {
 
       <div className="hero__mark" aria-hidden="true">
         <span className="wordmark">Launchpad</span>
-        <small>26 · 10 · 2026</small>
+        <small>28 · 10 · 2026</small>
       </div>
 
       <div className="hero__copy">
         <p className="hero__meta">
           <Rv>{S.summitLabel}</Rv>
           <span className="hero__rule" aria-hidden="true" />
-          <Rv>26 October 2026</Rv>
+          <Rv>28 October 2026</Rv>
         </p>
         <div className="hero__count"><FlapClock /></div>
         <h1 className="hero__title" ref={titleRef} aria-label="Where ideas become real.">
@@ -231,7 +231,7 @@ export default function Hero() {
         </ul>
         <div className="hero__actions">
           <Btn href={registerHref()} magnetic {...ext()}>Enter Launchpad</Btn>
-          <Btn href="#the-day" variant="ghost" icon="↓">Explore the day</Btn>
+          <Btn href="#programme" variant="ghost" icon="↓">See the programme</Btn>
         </div>
       </div>
 

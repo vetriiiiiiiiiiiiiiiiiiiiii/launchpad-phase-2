@@ -37,9 +37,9 @@ export default function Statement() {
   const onLeave = () => letters.current.forEach((l) => l.style.setProperty('--w', 400));
 
   return (
-    <section className="statement" data-tone="light" id="about" ref={ref} data-folio="Not another event">
+    <section className="statement" data-tone="light" id="statement" ref={ref} data-folio="Not another event">
       <div className="statement__inner">
-        <p className="eyebrow" data-reveal>Launchpad · 26.10.2026</p>
+        <p className="eyebrow" data-reveal>Launchpad · 28.10.2026</p>
         <h2 className="statement__big" data-reveal onPointerMove={onMove} onPointerLeave={onLeave}>
           <Rv><Weighted text="Not another" letters={letters} /></Rv>
           <Rv><Weighted text="event." letters={letters} /></Rv>
@@ -51,7 +51,7 @@ export default function Statement() {
         <div className="statement__after">
           <h3 className="statement__sub" data-reveal><Rv>A day built around</Rv><Rv><em>people who build.</em></Rv></h3>
           <p className="statement__body" data-reveal>
-            Launchpad brings together entrepreneurs, innovators, creators and ambitious minds for a concentrated day of conversations, experiences and three major product launches.
+            LaunchPad brings together startup founders, innovators, investors, industry leaders and aspiring entrepreneurs — bridging the gap between ideas and opportunities, talent and mentorship, innovation and investment.
           </p>
         </div>
       </div>

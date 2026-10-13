@@ -3,8 +3,8 @@
 import { P, DEFAULT_P, DERIVED } from './images.js';
 
 export const DEFAULT_SETTINGS = {
-  summitLabel: 'Entrepreneurship & Innovation Summit',
-  eventStart: '2026-10-26T00:00:00+05:30',
+  summitLabel: 'Entrepreneurs & Startup Summit',
+  eventStart: '2026-10-28T09:30:00+05:30',
   registerUrl: '',
   doorsTime: '',          // e.g. "9:00 AM" — shown in the key facts
   venue: '',              // e.g. "Main Auditorium, SRM Campus"
@@ -22,7 +22,7 @@ export const DEFAULT_SETTINGS = {
    paragraphs. {contact} becomes the contact email. */
 export const DEFAULT_PRIVACY = `Last updated: 6 October 2026
 
-This policy explains what information the Launchpad website handles and why. Launchpad is an entrepreneurship and innovation event taking place on 26 October 2026.
+This policy explains what information the Launchpad website handles and why. Launchpad is an entrepreneurship and innovation event taking place on 28 October 2026.
 
 ## What this website collects
 The website does not ask you to create an account, and it does not collect your name, email address or phone number.
@@ -50,18 +50,29 @@ If we change how the website handles information, we will update this page and t
 
 /* questions people ask before they register; editable in the admin */
 export const DEFAULT_FAQ = [
-  { q: 'What is Launchpad?', a: 'A one-day entrepreneurship and innovation experience on 26 October 2026: expert talks, live pitching, hands-on problem solving, an exhibition of what is being built, and three product launches revealed on stage.' },
-  { q: 'Who should attend?', a: 'Founders, students, creators, innovators, investors and anyone building something — or about to.' },
+  { q: 'What is Launchpad?', a: 'LaunchPad 2026 – Phase 2 is an Entrepreneurs & Startup Summit in Trichy on 28 October 2026, presented by the R. Shivakumar Foundation and the Entrepreneurship Development Cell, SRM IST Tiruchirappalli. It brings together startup founders, innovators, investors, industry leaders and aspiring entrepreneurs.' },
+  { q: 'Who should attend?', a: 'Investors, angels and VCs; startups; innovators; students; and aspiring entrepreneurs — anyone building something, or about to.' },
   { q: 'What are the three launches?', a: 'Three products revealed live on stage during the day. What they are stays under wraps until the moment they are revealed.' },
   { q: 'How do I register?', a: 'Use “Be in the room” on this page. Registration details are shared there as soon as they open.' },
   { q: 'Where is it held?', a: 'The venue will be announced here soon.' },
 ];
+/* the programme for the day; editable in the admin */
+export const DEFAULT_PROGRAMME = [
+  { time: '9:30 – 10:00 AM', title: 'Inauguration Ceremony' },
+  { time: '10:00 – 10:25 AM', title: 'Speaker Session 1' },
+  { time: '10:25 – 10:50 AM', title: 'Speaker Session 2' },
+  { time: '10:50 – 11:15 AM', title: 'Speaker Session 3' },
+  { time: '11:15 – 11:40 AM', title: 'Speaker Session 4' },
+  { time: '11:40 AM – 12:50 PM', title: 'Panel Discussion' },
+  { time: '12:50 – 1:00 PM', title: 'Vote of Thanks & Closing' },
+];
+
 /* the logo row near the end of the page */
 export const DEFAULT_LOGOS = [
   { name: 'RS Foundation', image: '/assets/logos/rs-foundation.png' },
   { name: 'SRM Organization', image: '/assets/logos/srm.png' },
 ];
-export const S = { ...DEFAULT_SETTINGS, faq: DEFAULT_FAQ, speakers: [], logos: DEFAULT_LOGOS, contacts: [] };
+export const S = { ...DEFAULT_SETTINGS, faq: DEFAULT_FAQ, speakers: [], logos: DEFAULT_LOGOS, contacts: [], programme: DEFAULT_PROGRAMME };
 
 export async function loadContent() {
   try {
@@ -76,6 +87,7 @@ export async function loadContent() {
     Object.entries(DERIVED).forEach(([k, base]) => { if (!data.images?.[k] && data.images?.[base]) P[k] = data.images[base]; });
     Object.entries(data.settings || {}).forEach(([k, v]) => { if (k in DEFAULT_SETTINGS && typeof v === 'string') S[k] = v; });
     if (Array.isArray(data.faq)) S.faq = data.faq;
+    if (Array.isArray(data.settings?.programme) && data.settings.programme.length) S.programme = data.settings.programme.filter((r) => r && r.title);
     if (Array.isArray(data.settings?.contacts)) S.contacts = data.settings.contacts.filter((c) => c && c.name);
     if (Array.isArray(data.settings?.logos)) S.logos = data.settings.logos.filter((l) => l && l.image);
     if (Array.isArray(data.speakers)) S.speakers = data.speakers.filter((sp) => sp && sp.name);
@@ -87,6 +99,10 @@ export const registerHref = () => S.registerUrl || '#be-in-the-room';
 
 /* tidy display values for the key facts */
 export const TBA = 'To be announced';
+/* "9:30 – 10:00 AM" → start "9:30 AM", end "10:00 AM" (a start with no AM/PM borrows the end's) */
+const ampm = (t) => (t.match(/\b(AM|PM)\b/i) || [])[1];
+export const timeStart = (t = '') => { const [a, b = ''] = t.split(/[–-]/).map((x) => x.trim()); return a && !ampm(a) && ampm(b) ? `${a} ${ampm(b)}` : a; };
+export const timeEnd = (t = '') => t.split(/[–-]/).pop().trim();
 export const placeLine = () => [S.venue, S.city].filter(Boolean).join(', ') || TBA;
 
 /* a phone number as a tel: link (digits and a leading +) */

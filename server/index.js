@@ -243,6 +243,19 @@ app.put('/api/content', auth, express.json({ limit: '256kb' }), async (req, res,
       settings.privacyPolicy = body.settings.privacyPolicy.replace(/\r\n/g, '\n').trim().slice(0, 20000);
     }
 
+    // the programme (time + title rows), up to 20; when sent, the list replaces the saved one
+    if (body.programme !== undefined) {
+      if (!Array.isArray(body.programme)) return res.status(400).json({ error: 'Programme must be a list' });
+      settings.programme = [];
+      for (const item of body.programme.slice(0, 20)) {
+        const time = String(item?.time || '').trim().slice(0, 40);
+        const title = String(item?.title || '').trim().slice(0, 120);
+        if (!time && !title) continue;
+        if (!time || !title) return res.status(400).json({ error: 'Each programme row needs a time and a title' });
+        settings.programme.push({ time, title });
+      }
+    }
+
     // named contacts (name + email and/or phone), up to 4; when sent, the list replaces the saved one
     if (body.contacts !== undefined) {
       if (!Array.isArray(body.contacts)) return res.status(400).json({ error: 'Contacts must be a list' });

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const BASE_DESCRIPTION = 'Join Launchpad on 26 October 2026 for expert talks, live pitching, hands-on problem solving and three product launches.';
+const BASE_DESCRIPTION = 'LaunchPad 2026 – Phase 2, an Entrepreneurs & Startup Summit in Trichy on 28 October 2026: speaker sessions, a panel discussion and three product launches.';
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=1200&h=630&q=75';
 
 function setMeta(attribute, key, value) {

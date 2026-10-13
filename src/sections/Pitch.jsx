@@ -42,7 +42,7 @@ export default function Pitch() {
             </article>
           ))}
           <article className="card card--end" ref={(el) => { cards.current[CARDS.length] = el; }}>
-            <h3>The room is <em>listening.</em></h3><span className="card__f">26 October 2026</span>
+            <h3>The room is <em>listening.</em></h3><span className="card__f">28 October 2026</span>
           </article>
         </div>
         <p className="pitch__progress"><span className="pitch__count" ref={count}>01</span> / 06</p>

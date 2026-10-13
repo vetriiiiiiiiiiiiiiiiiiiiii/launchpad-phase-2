@@ -4,7 +4,7 @@ import { IMG, P } from '../lib/images.js';
 import { absoluteUrl, DEFAULT_SEO_IMAGE, usePageSeo } from '../lib/seo.js';
 
 const title = `Launchpad 2026 | ${S.summitLabel}`;
-const description = `${S.summitLabel} on 26 October 2026: expert talks, live pitching, hands-on problem solving and three product launches.`;
+const description = `LaunchPad 2026 – Phase 2, an Entrepreneurs & Startup Summit in Trichy on 28 October 2026: speaker sessions, a panel discussion and three product launches, presented by the R. Shivakumar Foundation and EDC, SRM IST Tiruchirappalli.`;
 
 /* Event and FAQ structured data follow the editable event details. */
 export function useEventSeo() {
@@ -15,7 +15,7 @@ export function useEventSeo() {
         '@type': 'Event',
         '@id': `${url}#event`,
         name: 'Launchpad 2026',
-        description: `${S.summitLabel}: one day of expert talks, live pitching, hands-on problem solving and three product launches.`,
+        description: `LaunchPad 2026 – Phase 2, an Entrepreneurs & Startup Summit in Trichy on 28 October 2026: speaker sessions, a panel discussion and three product launches, presented by the R. Shivakumar Foundation and EDC, SRM IST Tiruchirappalli.`,
         startDate: S.eventStart,
         eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
         eventStatus: 'https://schema.org/EventScheduled',

@@ -1,12 +1,12 @@
-import { S, TBA, placeLine } from '../lib/content.js';
+import { S, TBA, placeLine, timeStart } from '../lib/content.js';
 
 /* The essentials at a glance, right after the hero. */
 export default function Facts() {
   const facts = [
-    ['Date', '26 October 2026', 'Monday · one day'],
-    ['Doors open', S.doorsTime || TBA, 'Full day programme'],
+    ['Date', '28 October 2026', 'Wednesday · one day'],
+    ['Doors open', S.doorsTime || TBA, S.programme.length ? `Programme from ${timeStart(S.programme[0].time)}` : 'Programme to be announced'],
     ['Venue', placeLine(), S.venue ? 'In person' : 'Announced soon'],
-    ['Format', 'In person', 'Talks · Pitching · Workshop · Launches'],
+    ['Format', 'In person', 'Speaker sessions · Panel discussion · Launches'],
   ];
   return (
     <section className="facts" data-tone="light" aria-label="Key facts">

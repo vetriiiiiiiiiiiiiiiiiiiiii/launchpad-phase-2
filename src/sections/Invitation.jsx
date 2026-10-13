@@ -40,7 +40,7 @@ function drawTicket(name, s) {
   for (let y = 24; y < H; y += 34) { g.beginPath(); g.arc(1500, y, 6, 0, Math.PI * 2); g.fill(); }
   const serif = 'Fraunces, Georgia, serif', sans = 'Manrope, Helvetica, Arial, sans-serif';
   g.fillStyle = '#7fe0b5'; g.font = `600 30px ${sans}`; g.letterSpacing = '12px';
-  g.fillText('SOUVENIR  ·  26 OCTOBER 2026', 110, 140);
+  g.fillText('SOUVENIR  ·  28 OCTOBER 2026', 110, 140);
   g.fillStyle = '#fafbf8'; g.font = `400 150px ${serif}`; g.letterSpacing = '-4px';
   g.fillText('LAUNCHPAD', 100, 330);
   g.font = `italic 400 76px ${serif}`; g.letterSpacing = '0px'; g.fillStyle = '#cfe5d9';
@@ -108,7 +108,7 @@ export default function Invitation() {
         <div className="invite__stage" onPointerMove={tilt} onPointerLeave={rest}>
           <div className="ticket" ref={card} role="img" aria-label={`Souvenir ticket for ${name.trim() || 'a guest'} — not valid for entry`}>
             <div className="ticket__main">
-              <p className="ticket__admit">Souvenir · 26 October 2026</p>
+              <p className="ticket__admit">Souvenir · 28 October 2026</p>
               <p className="ticket__word">Launchpad</p>
               <p className="ticket__name">{name.trim() || 'Your name here'}</p>
               <p className="ticket__foot">One day · Three launches · Where ideas become real</p>

@@ -35,7 +35,7 @@ export default function Nav() {
           ? <a className="nav__mark" href="#top" aria-label="Launchpad — back to the beginning"><span className="wordmark">Launchpad</span></a>
           : <Link className="nav__mark" to="/" aria-label="Launchpad — home"><span className="wordmark">Launchpad</span></Link>}
         <nav className="nav__links" aria-label="Primary">
-          <A hash="#the-day">The Day</A>
+          <A hash="#programme">Programme</A>
           <A hash="#the-launches">The Launches</A>
           <A hash="#the-experience">The Experience</A>
           <A hash="#about">About</A>
@@ -48,13 +48,13 @@ export default function Nav() {
 
       <div className="sheet" id="sheet" aria-hidden={!open}>
         <nav aria-label="Mobile" onClick={() => setOpen(false)}>
-          <A hash="#the-day"><em>i.</em> The Day</A>
+          <A hash="#programme"><em>i.</em> Programme</A>
           <A hash="#the-launches"><em>ii.</em> The Launches</A>
           <A hash="#the-experience"><em>iii.</em> The Experience</A>
           <A hash="#about"><em>iv.</em> About</A>
         </nav>
         <div className="sheet__foot">
-          <span>26 October 2026</span>
+          <span>28 October 2026</span>
           <RegistrationLink onClick={() => setOpen(false)}>Be in the room →</RegistrationLink>
         </div>
       </div>

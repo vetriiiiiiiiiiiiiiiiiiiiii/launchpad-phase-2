@@ -1,5 +1,6 @@
 import Hero from '../sections/Hero.jsx';
 import Statement from '../sections/Statement.jsx';
+import { About, Programme, Audience } from '../sections/About.jsx';
 import Inside from '../sections/Inside.jsx';
 import Day from '../sections/Day.jsx';
 import Talks from '../sections/Talks.jsx';
@@ -27,13 +28,16 @@ export default function Home() {
         <Hero />
         <Facts />
         <Statement />
+        <About />
         <Inside />
+        <Programme />
         <Day />
         <Talks />
         <Workshop />
         <Pitch />
         <LaunchesIntro />
         <Builders />
+        <Audience />
         <Conversation />
         <Exhibition />
         <Connection />

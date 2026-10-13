@@ -26,8 +26,8 @@ if (process.env.NODE_ENV === 'production' && !origin) {
 
 const image = 'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&w=1200&h=630&q=75';
 const home = {
-  title: 'Launchpad 2026 | Entrepreneurship & Innovation Summit',
-  description: 'Entrepreneurship & Innovation Summit on 26 October 2026: expert talks, live pitching, hands-on problem solving and three product launches.',
+  title: 'Launchpad 2026 | Entrepreneurs & Startup Summit',
+  description: 'LaunchPad 2026 – Phase 2, an Entrepreneurs & Startup Summit in Trichy on 28 October 2026: speaker sessions, a panel discussion and three product launches, presented by the R. Shivakumar Foundation and EDC, SRM IST Tiruchirappalli.',
   path: '/',
 };
 const privacy = {

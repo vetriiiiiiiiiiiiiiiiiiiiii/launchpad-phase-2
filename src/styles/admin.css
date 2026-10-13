@@ -146,3 +146,5 @@
 .ad-hall__row--head .ad-hall__block b { font: 400 22px/1 var(--serif); color: var(--emerald); margin-right: 6px; }
 .ad-hall__row--head .ad-hall__aisle { border: 0; }
 .ad-hall__row--head .ad-hall__block { width: calc(10 * 38px + 9 * 5px); align-items: baseline; }
+.ad-prog { display: grid; grid-template-columns: 220px 1fr; gap: 10px; flex: 1; min-width: 0; }
+@media (max-width: 860px) { .ad-prog { grid-template-columns: 1fr; } }

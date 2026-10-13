@@ -31,7 +31,7 @@ const MOMENTS = [
   { act: 'Discover', time: 'Exhibition', title: 'Discovery', text: 'Ideas, products and people meet.', img: P.dayDiscovery, alt: 'Inside a glasshouse full of green.' },
   { act: 'Launch', time: 'On stage', title: 'Three Launches', text: 'Three products, revealed live — under wraps until the moment.', veil: 'spot' },
   { act: 'Connect', time: 'After', title: 'Connection', text: 'People meet.', img: P.dayConnection, alt: 'A crowded café under hanging lights, everyone mid-conversation.' },
-  { act: 'Leave different', time: 'Evening', title: 'Closing', text: 'The room leaves with something new.', img: P.dayClosing, alt: 'A library opening onto a forest.' },
+  { act: 'Leave different', time: 'To close', title: 'Closing', text: 'The room leaves with something new.', img: P.dayClosing, alt: 'A library opening onto a forest.' },
 ];
 
 /* The day as one continuous journey: a sticky frame on the left follows the
@@ -56,7 +56,7 @@ export default function Day() {
     const k = tDay < 0.5 ? tDay * 2 : (tDay - 0.5) * 2, [a, b2] = tDay < 0.5 ? [stops[0], stops[1]] : [stops[1], stops[2]];
     return `rgb(${a.map((v, i) => Math.round(v + (b2[i] - v) * k)).join(',')})`;
   })();
-  const clock = ['Morning', 'Morning', 'Late morning', 'Midday', 'Midday', 'Afternoon', 'Late afternoon', 'Evening', 'Evening'][active];
+  const clock = MOMENTS[active].time;
 
   return (
     <section className="day is-light" data-tone="light" id="the-day" data-folio="The Day" style={{ background: sky }}>

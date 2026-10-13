@@ -44,7 +44,7 @@ export default function Privacy() {
   return (
     <main className="privacy" data-tone="light">
       <article className="privacy__doc">
-        <p className="eyebrow">Launchpad · 26 October 2026</p>
+        <p className="eyebrow">Launchpad · 28 October 2026</p>
         <h1>Privacy policy</h1>
         <div className="privacy__body">{render(text)}</div>
         <p className="privacy__back"><Link to="/">← Back to Launchpad</Link></p>

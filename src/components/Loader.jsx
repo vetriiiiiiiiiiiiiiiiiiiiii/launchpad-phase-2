@@ -90,7 +90,7 @@ export default function Loader() {
         >
           <div className="loader__mark" aria-hidden="true">
             <span className="wordmark" style={{ '--track': `${0.9 - 0.48 * (shown / 100)}em` }}>Launchpad</span>
-            <small>26 · 10 · 2026</small>
+            <small>28 · 10 · 2026</small>
           </div>
 
           <div className="loader__foot" aria-hidden="true">
